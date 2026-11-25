@@ -506,7 +506,7 @@ $("mbSolve").addEventListener("click", () => {
 $("mbNext").addEventListener("click", newTarget);
 function setMbMode(m) {
   mbMode = m;
-  [sM, sB].forEach(s => s.step = m === "quiz" ? 0.02 : 0.05); // Quiz: feiner, weniger fummelig
+  sM.step = m === "quiz" ? 0.25 : 0.05; sB.step = m === "quiz" ? 0.2 : 0.05; // Quiz: grober, weniger fummelig (Ziele für m: halbe Werte)
   $("mbTabs").querySelectorAll("button").forEach(b => b.setAttribute("aria-selected", b.dataset.m === m));
   $("mbQuizCard").hidden = m !== "quiz"; $("mbLegTarget").hidden = m !== "quiz";
   $("mbTableCard").hidden = m === "quiz"; $("mbLegTri").hidden = false;
