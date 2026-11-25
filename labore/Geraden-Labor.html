@@ -474,8 +474,8 @@ draggable(bMb,
     return null;
   },
   (g, x, y) => {
-    if (g.k === "b") sB.value = clamp(snapTo(y, 0.05), -6, 6);
-    else sM.value = clamp(snapTo(y - +sB.value, 0.05), -4, 4);
+    if (g.k === "b") sB.value = clamp(snapTo(y, +sB.step), -6, 6);
+    else sM.value = clamp(snapTo(y - +sB.value, +sM.step), -4, 4);
     $("mbFb").textContent = ""; updMb();
   });
 const M_CHOICES = [-3, -2, -1.5, -1, -0.5, 0.5, 1, 1.5, 2, 3];
@@ -506,6 +506,7 @@ $("mbSolve").addEventListener("click", () => {
 $("mbNext").addEventListener("click", newTarget);
 function setMbMode(m) {
   mbMode = m;
+  [sM, sB].forEach(s => s.step = m === "quiz" ? 0.02 : 0.05); // Quiz: feiner, weniger fummelig
   $("mbTabs").querySelectorAll("button").forEach(b => b.setAttribute("aria-selected", b.dataset.m === m));
   $("mbQuizCard").hidden = m !== "quiz"; $("mbLegTarget").hidden = m !== "quiz";
   $("mbTableCard").hidden = m === "quiz"; $("mbLegTri").hidden = false;

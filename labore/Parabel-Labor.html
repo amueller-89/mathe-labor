@@ -893,7 +893,7 @@ $("spNorm").addEventListener("change", () => { $("spLegNorm").hidden = !$("spNor
 $("spReset").addEventListener("click", () => { sa.value = 1; sd.value = 0; se.value = 0; updSp(); });
 draggable(bS,
   (x, y, px, py) => nearPx(bS, +sd.value, +se.value, px, py, 18) ? { v: 1 } : null,
-  (g, x, y) => { sd.value = r6(snapTo(x, 0.05)); se.value = r6(snapTo(y, 0.05)); $("spFb").textContent = ""; updSp(); }, () => {});
+  (g, x, y) => { sd.value = r6(snapTo(x, +sd.step)); se.value = r6(snapTo(y, +se.step)); $("spFb").textContent = ""; updSp(); }, () => {});
 
 const A_CHOICES = [-2, -1, -0.5, 0.5, 1, 2];
 function newTarget() {
@@ -923,6 +923,7 @@ $("spSolve").addEventListener("click", () => {
 $("spNext").addEventListener("click", newTarget);
 function setSpMode(m) {
   spMode = m;
+  [sa, sd, se].forEach(s => s.step = m === "quiz" ? 0.02 : 0.05); // Quiz: feiner, weniger fummelig
   $("spTabs").querySelectorAll("button").forEach(b => b.setAttribute("aria-selected", b.dataset.m === m));
   $("spQuizCard").hidden = m !== "quiz"; $("spLegTarget").hidden = m !== "quiz";
   $("spLegMine").textContent = m === "quiz" ? "Eure Parabel" : "Parabel";
