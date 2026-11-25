@@ -34,7 +34,8 @@ h2{font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 10px}
 .links{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:6px 10px;align-items:center;font-size:14px}
 .links h3{grid-column:1/-1;font-size:13px;font-weight:700;color:var(--muted);margin:8px 0 0}
 .links h3:first-child{margin-top:0}
-.links code{font-size:13px;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:4px 8px;word-break:break-all;user-select:all}
+.links a{color:var(--ink);text-decoration:none;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:4px 8px;word-break:break-all}
+.links a:hover{border-color:var(--curve,#6b9bff);color:var(--curve,#6b9bff)}
 .links .btn{font-size:13px;padding:4px 10px}
 @media (max-width:860px){.grid2{grid-template-columns:minmax(0,1fr)}}
 .muted{color:var(--muted)}
@@ -150,16 +151,16 @@ function renderLinks(d) {
   const head = t => box.appendChild(el("h3", "", t));
   const row = (label, url, shown) => {
     box.appendChild(el("span", "", label));
-    box.appendChild(el("code", "", shown || url));
+    const a = el("a", "", shown || url); a.href = url; a.target = "_blank"; a.rel = "noopener"; box.appendChild(a);
     const b = el("button", "btn", "Kopieren"); b.type = "button"; b.addEventListener("click", () => copyText(url, b)); box.appendChild(b);
   };
-  head("GitHub (ohne Banner)");
+  head("GitHub");
   row("Startseite", pages);
   row("Geraden · UIIIb", pages + "geraden");
   row("Parabel · OIIIa", pages + "parabel");
   row("Admin", pages + "admin");
   if (google) {
-    head("Google (Ersatz, mit Banner)");
+    head("Google");
     row("Geraden · UIIIb", google + "?lab=geraden");
     row("Parabel · OIIIa", google + "?lab=parabel");
     row("Admin", google + "?admin=" + KEY, google + "?admin=••••");
