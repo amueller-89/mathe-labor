@@ -120,7 +120,7 @@ function apply() {
   const L = window.__lab2; if (!L) return;
   document.querySelectorAll("#mainTabs button").forEach(b => { if (b.dataset.tab !== "pro") b.hidden = !window.__tabOk(b.dataset.tab); });
   L.updProTab();
-  $("winPro").hidden = !window.__tabOk("pro"); $("winProTxt").hidden = !window.__tabOk("pro");
+  $("winPro").hidden = !window.__tabOk("pro"); $("winProTxt").hidden = true;
   const vis = [...document.querySelectorAll("#mainTabs button")].filter(b => !b.hidden);
   if (!vis.length) { gate("gWait"); return; }
   if (!$("gWait").hidden || !$("gLogin").hidden || !$("gAgain").hidden) gate(null);
@@ -153,7 +153,7 @@ def build(src_name, out_name, lab, title, first_tab_comment):
         ('try { const s = JSON.parse(localStorage.getItem(KEY));', 'try { const s = window.__initProg;'),
         ('const save = () => { try { localStorage.setItem(KEY, JSON.stringify(prog)); } catch (_) {} };',
          'const save = () => { try { localStorage.setItem(KEY, JSON.stringify(prog)); } catch (_) {} if (window.__changed) window.__changed(); };'),
-        ('function proVisible() { return !!prog.won || allOpen(); }', 'function proVisible() { return !!prog.won && window.__tabOk("pro"); }'),
+        ('function proVisible() { return !!prog.won || allOpen(); }', 'function proVisible() { return window.__tabOk("pro"); }'),
         ('function answerPro(k, btn) {', 'function answerPro(k, btn) {\n  if (window.__changed) window.__changed();'),
         ('function nextPro() {', 'function nextPro() {\n  if (window.__changed) window.__changed();'),
         ('function show(tab) {\n  current = tab;', 'function show(tab) {\n  current = tab; if (window.__changed) window.__changed();'),

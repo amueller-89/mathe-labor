@@ -24,7 +24,7 @@ const LABS = {
   },
   parabel: {
     title: 'Parabel-Labor', file: 'Parabel', klasse: 'OIIIa',
-    tabs: [['pq', '1 pq-Formel'], ['forms', '2 Drei Formen'], ['sp', '3 Scheitelpunktform'], ['train', '4 Rechentrainer'], ['pro', '5 Profi ★']],
+    tabs: [['sp', '1 Scheitelpunktform'], ['forms', '2 Drei Formen'], ['pq', '3 pq-Formel'], ['train', '4 Rechentrainer'], ['pro', '5 Profi ★']],
   },
 };
 

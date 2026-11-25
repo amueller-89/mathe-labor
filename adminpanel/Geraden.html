@@ -422,7 +422,7 @@ function apply() {
   const L = window.__lab2; if (!L) return;
   document.querySelectorAll("#mainTabs button").forEach(b => { if (b.dataset.tab !== "pro") b.hidden = !window.__tabOk(b.dataset.tab); });
   L.updProTab();
-  $("winPro").hidden = !window.__tabOk("pro"); $("winProTxt").hidden = !window.__tabOk("pro");
+  $("winPro").hidden = !window.__tabOk("pro"); $("winProTxt").hidden = true;
   const vis = [...document.querySelectorAll("#mainTabs button")].filter(b => !b.hidden);
   if (!vis.length) { gate("gWait"); return; }
   if (!$("gWait").hidden || !$("gLogin").hidden || !$("gAgain").hidden) gate(null);
@@ -957,7 +957,7 @@ const PRO = [
 const bPro = new Board($("cPro"), 7);
 let pro = { i: 0, score: 0, answered: false, order: [], minis: [], errs: [] };
 function shuffle(n) { const a = [...Array(n).keys()]; for (let i = n - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
-function proVisible() { return !!prog.won && window.__tabOk("pro"); }
+function proVisible() { return window.__tabOk("pro"); }
 function updProTab() {
   const b = document.querySelector('#mainTabs [data-tab="pro"]'); if (!b) return;
   b.hidden = !proVisible();

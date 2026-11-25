@@ -138,9 +138,9 @@ footer{font-size:13px;color:var(--muted)}
   <header>
     <h1>Parabel-Labor</h1>
     <nav class="seg" role="tablist" id="mainTabs">
-      <button role="tab" data-tab="pq" aria-selected="true">1 pq-Formel</button>
+      <button role="tab" data-tab="sp" aria-selected="true">1 Scheitelpunktform</button>
       <button role="tab" data-tab="forms" aria-selected="false">2 Drei Formen</button>
-      <button role="tab" data-tab="sp" aria-selected="false">3 Scheitelpunktform</button>
+      <button role="tab" data-tab="pq" aria-selected="false">3 pq-Formel</button>
       <button role="tab" data-tab="train" aria-selected="false">4 Rechentrainer</button>
       <button role="tab" data-tab="pro" aria-selected="false" hidden>5 Profi ★</button>
     </nav>
@@ -996,7 +996,7 @@ function proVisible() { return !!prog.won || allOpen(); }
 function updProTab() {
   const vis = proVisible(), b = document.querySelector('#mainTabs [data-tab="pro"]');
   b.hidden = !vis;
-  if (!vis && typeof current !== "undefined" && current === "pro") show("pq");
+  if (!vis && typeof current !== "undefined" && current === "pro") show("sp");
 }
 function buildOpts(Q) {
   let order; do order = shuffle(4); while (pro.order.length && order.every((k, i) => k === pro.order[i]));
@@ -1109,7 +1109,7 @@ window.addEventListener("hashchange", updProTab);
 /* =============================================================
    Tabs + Zeichnen
    ============================================================= */
-let current = "pq";
+let current = "sp";
 const drawers = { pro: drawPro, train: drawTrain, pq: drawPq, forms: drawForms, sp: () => { fitVertex(); drawSp(); } };
 function show(tab) {
   current = tab;
@@ -1126,8 +1126,8 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { fi
 
 renderLevels(); newTask(); updPq(); updForms(); updSp(); renderPro(); updProTab();
 $("winPro").addEventListener("click", () => { closeWin(); show("pro"); });
-let startTab = "pq"; try { startTab = localStorage.getItem(KEY + "-tab") || "pq"; } catch (_) {}
-show(drawers[startTab] && (startTab !== "pro" || proVisible()) ? startTab : "pq");
+let startTab = "sp"; try { startTab = localStorage.getItem(KEY + "-tab") || "sp"; } catch (_) {}
+show(drawers[startTab] && (startTab !== "pro" || proVisible()) ? startTab : "sp");
 window.__lab = { get task() { return task; }, prog: () => prog };
 })();
 </script>

@@ -13,7 +13,7 @@ const [ac,admin]=await mk(false);
 await admin.goto(U('?admin=falsch'));await admin.waitForTimeout(800);
 console.log('wrong key:',await admin.textContent('#err'));
 await admin.goto(U('?admin=test123'));await admin.waitForTimeout(800);
-console.log('admin main visible',await admin.isVisible('#main'),'url',await admin.textContent('#kidUrl'));
+console.log('admin main visible',await admin.isVisible('#main'),'url',await admin.textContent('#links'));
 
 const [kc,kid]=await mk();
 await kid.goto(U('?lab=geraden'));await kid.waitForTimeout(500);
@@ -43,7 +43,8 @@ await kid2.fill('#gWer','mia');await kid2.click('#gGo');await kid2.waitForTimeou
 console.log('device2 prog',JSON.stringify(await kid2.evaluate(()=>window.__lab.prog())), 'name', await kid2.textContent('#whoName'));
 await kc2.close();
 // unlock pro, win trainer
-await admin.click('.tg:nth-child(4)');await admin.waitForTimeout(600);
+await admin.click('.tg:nth-child(4)');await admin.waitForTimeout(600);await kid.waitForTimeout(2500);
+console.log('pro tab before win (expect visible):',await kid.isVisible('#mainTabs [data-tab=pro]'));
 for(let lv=1;lv<4;lv++){ await kid.click(`#levels button:nth-child(${lv+1})`); for(let i=0;i<3;i++){
   const t=await kid.evaluate(()=>window.__lab.task.want); for(const k in t) await kid.fill(`[data-k=${k}]`,fmt(t[k]));
   await kid.click('#trCheck'); if(!(lv===3&&i===2)) await kid.click('#trNext'); }}

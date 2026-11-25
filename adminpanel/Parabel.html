@@ -152,9 +152,9 @@ footer{font-size:13px;color:var(--muted)}
   <header>
     <div><h1>Parabel-Labor</h1><div class="who" id="who" hidden><span class="dot" id="whoDot"></span>Angemeldet als <b id="whoName"></b> · <button class="linkbtn" id="whoSwitch">abmelden</button></div></div>
     <nav class="seg" role="tablist" id="mainTabs">
-      <button role="tab" data-tab="pq" aria-selected="true">1 pq-Formel</button>
+      <button role="tab" data-tab="sp" aria-selected="true">1 Scheitelpunktform</button>
       <button role="tab" data-tab="forms" aria-selected="false">2 Drei Formen</button>
-      <button role="tab" data-tab="sp" aria-selected="false">3 Scheitelpunktform</button>
+      <button role="tab" data-tab="pq" aria-selected="false">3 pq-Formel</button>
       <button role="tab" data-tab="train" aria-selected="false">4 Rechentrainer</button>
       <button role="tab" data-tab="pro" aria-selected="false" hidden>5 Profi ★</button>
     </nav>
@@ -461,7 +461,7 @@ function apply() {
   const L = window.__lab2; if (!L) return;
   document.querySelectorAll("#mainTabs button").forEach(b => { if (b.dataset.tab !== "pro") b.hidden = !window.__tabOk(b.dataset.tab); });
   L.updProTab();
-  $("winPro").hidden = !window.__tabOk("pro"); $("winProTxt").hidden = !window.__tabOk("pro");
+  $("winPro").hidden = !window.__tabOk("pro"); $("winProTxt").hidden = true;
   const vis = [...document.querySelectorAll("#mainTabs button")].filter(b => !b.hidden);
   if (!vis.length) { gate("gWait"); return; }
   if (!$("gWait").hidden || !$("gLogin").hidden || !$("gAgain").hidden) gate(null);
@@ -1122,11 +1122,11 @@ const PRO = [
 const bPro = new Board($("cPro"), 7);
 let pro = { i: 0, score: 0, answered: false, order: [], minis: [], errs: [] };
 function shuffle(n) { const a = [...Array(n).keys()]; for (let i = n - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
-function proVisible() { return !!prog.won && window.__tabOk("pro"); }
+function proVisible() { return window.__tabOk("pro"); }
 function updProTab() {
   const vis = proVisible(), b = document.querySelector('#mainTabs [data-tab="pro"]');
   b.hidden = !vis;
-  if (!vis && typeof current !== "undefined" && current === "pro") show("pq");
+  if (!vis && typeof current !== "undefined" && current === "pro") show("sp");
 }
 function buildOpts(Q) {
   let order; do order = shuffle(4); while (pro.order.length && order.every((k, i) => k === pro.order[i]));
@@ -1241,7 +1241,7 @@ window.addEventListener("hashchange", updProTab);
 /* =============================================================
    Tabs + Zeichnen
    ============================================================= */
-let current = "pq";
+let current = "sp";
 const drawers = { pro: drawPro, train: drawTrain, pq: drawPq, forms: drawForms, sp: () => { fitVertex(); drawSp(); } };
 function show(tab) {
   current = tab; if (window.__changed) window.__changed();
@@ -1258,8 +1258,8 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { fi
 
 renderLevels(); newTask(); updPq(); updForms(); updSp(); renderPro(); updProTab();
 $("winPro").addEventListener("click", () => { closeWin(); show("pro"); });
-let startTab = "pq"; try { startTab = localStorage.getItem(KEY + "-tab") || "pq"; } catch (_) {}
-show(drawers[startTab] && (startTab !== "pro" || proVisible()) ? startTab : "pq");
+let startTab = "sp"; try { startTab = localStorage.getItem(KEY + "-tab") || "sp"; } catch (_) {}
+show(drawers[startTab] && (startTab !== "pro" || proVisible()) ? startTab : "sp");
 window.__lab2 = { show, updProTab, current: () => current, prog: () => prog, pro: () => pro, PRO_N: PRO.length };
 window.__lab = { get task() { return task; }, prog: () => prog };
 };

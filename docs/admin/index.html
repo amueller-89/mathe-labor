@@ -29,7 +29,12 @@ h2{font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 10px}
 .seg button:last-child{border-radius:0 8px 8px 0}
 .seg button[aria-selected="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 .card{background:var(--surface);border-radius:12px;padding:16px;min-width:0}
-.grid2{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:16px}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+.links{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:6px 10px;align-items:center;font-size:14px}
+.links h3{grid-column:1/-1;font-size:13px;font-weight:700;color:var(--muted);margin:8px 0 0}
+.links h3:first-child{margin-top:0}
+.links code{font-size:13px;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:4px 8px;word-break:break-all;user-select:all}
+.links .btn{font-size:13px;padding:4px 10px}
 @media (max-width:860px){.grid2{grid-template-columns:minmax(0,1fr)}}
 .muted{color:var(--muted)}
 .hint{font-size:14px;color:var(--muted);margin:10px 0 0}
@@ -82,11 +87,11 @@ td.name{font-weight:700;white-space:nowrap}
       <div class="card">
         <h2>Freigaben</h2>
         <div class="toggles" id="toggles"></div>
-        <p class="hint">Gilt sofort für die ganze Klasse (spätestens nach 20 Sekunden). Den Profi-Tab sieht ein Kind erst, wenn er hier frei ist <b>und</b> es alle Stufen im Rechentrainer geschafft hat.</p>
+        <p class="hint">Gilt sofort für die ganze Klasse (spätestens nach 20 Sekunden), auch der Profi-Tab.</p>
       </div>
       <div class="card">
-        <h2>Link für die Klasse</h2>
-        <div class="link"><code id="kidUrl"></code><button class="btn" id="copy">Kopieren</button></div>
+        <h2>Links</h2>
+        <div class="links" id="links"></div>
         <p class="hint">Kinder tippen beim ersten Aufruf ihren Vornamen ein. Gleicher Name = gleicher Fortschritt, auch an einem anderen Rechner.</p>
       </div>
     </div>
@@ -122,6 +127,43 @@ const call = (fn, ...args) => window.LABOR_API
       catch (e) { rej(e); }
     });
 let KEY = "", LAB = "geraden", data = null, busy = false, timer = null;
+const PAGES = "https://amueller-89.github.io/mathe-labore/";
+const TAB_ORDER = { parabel: ["sp", "forms", "pq", "train", "pro"] };
+const TAB_LABEL = { "sp@parabel": "1 Scheitelpunktform", "forms@parabel": "2 Drei Formen", "pq@parabel": "3 pq-Formel" };
+
+function copyText(t, btn) {
+  const done = () => { btn.textContent = "Kopiert ✓"; setTimeout(() => btn.textContent = "Kopieren", 1500); };
+  const fallback = () => {
+    const ta = el("textarea"); ta.value = t; ta.style.position = "fixed"; ta.style.opacity = "0"; document.body.appendChild(ta);
+    ta.select(); try { document.execCommand("copy"); done(); } catch (_) {} ta.remove();
+  };
+  try { navigator.clipboard.writeText(t).then(done, fallback); } catch (_) { fallback(); }
+}
+let linksDone = false;
+function renderLinks(d) {
+  if (linksDone) return;
+  const google = window.LABOR_API || d.url || "";
+  const pages = window.LABOR_API ? new URL("../", location.href).href : PAGES;
+  const box = $("links"); box.innerHTML = "";
+  const head = t => box.appendChild(el("h3", "", t));
+  const row = (label, url, shown) => {
+    box.appendChild(el("span", "", label));
+    box.appendChild(el("code", "", shown || url));
+    const b = el("button", "btn", "Kopieren"); b.type = "button"; b.addEventListener("click", () => copyText(url, b)); box.appendChild(b);
+  };
+  head("GitHub (ohne Banner)");
+  row("Startseite", pages);
+  row("Geraden · UIIIb", pages + "geraden");
+  row("Parabel · OIIIa", pages + "parabel");
+  row("Admin", pages + "admin");
+  if (google) {
+    head("Google (Ersatz, mit Banner)");
+    row("Geraden · UIIIb", google + "?lab=geraden");
+    row("Parabel · OIIIa", google + "?lab=parabel");
+    row("Admin", google + "?admin=" + KEY, google + "?admin=••••");
+  }
+  linksDone = true;
+}
 
 function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
 function ago(s) {
@@ -159,13 +201,15 @@ function render() {
   });
   // Freigaben
   const tg = $("toggles"); tg.innerHTML = "";
+  const order = TAB_ORDER[LAB] || [];
+  d.tabs.forEach(t => { if (TAB_LABEL[t.id + "@" + LAB]) t.label = TAB_LABEL[t.id + "@" + LAB]; });
+  d.tabs.sort((a, b) => (order.indexOf(a.id) + 99) % 99 - (order.indexOf(b.id) + 99) % 99);
   d.tabs.forEach(t => {
     const b = el("button", "tg", t.label); b.setAttribute("aria-pressed", t.on);
     b.addEventListener("click", () => toggle(t.id));
     tg.appendChild(b);
   });
-  $("kidUrl").textContent = window.LABOR_API ? new URL("../" + LAB + "/", location.href).href
-    : d.url ? d.url + "?lab=" + LAB : "(erscheint nach dem Bereitstellen)";
+  renderLinks(d);
   // Statistik
   const kids = d.kids.slice().sort((a, b) => a.name.localeCompare(b.name, "de"));
   $("sAll").textContent = kids.length;
@@ -227,11 +271,7 @@ async function toggle(id) {
   await load();
 }
 
-$("copy").addEventListener("click", () => {
-  const t = $("kidUrl").textContent;
-  try { navigator.clipboard.writeText(t).then(() => { $("copy").textContent = "Kopiert ✓"; setTimeout(() => $("copy").textContent = "Kopieren", 1500); }); }
-  catch (_) {}
-});
+
 
 function init(params) {
   KEY = params.admin || ""; if (params.lab) LAB = params.lab;
