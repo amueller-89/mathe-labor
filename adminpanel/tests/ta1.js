@@ -1,0 +1,87 @@
+const {chromium}=require('playwright');
+const B='http://localhost:8765/exec';
+const fmt=v=>String(v).replace('.',',').replace('-','−');
+(async()=>{const b=await chromium.launch();
+const errs=[];
+const mk=async(fast=true)=>{const c=await b.newContext({viewport:{width:1366,height:950}}); const p=await c.newPage();
+  p.on('pageerror',e=>errs.push(e.message));
+  if(fast) await p.addInitScript(()=>{const si=window.setInterval;window.setInterval=(f,t)=>si(f,Math.min(t,1500));});
+  return [c,p];};
+const [ac,admin]=await mk(false);
+await admin.goto(B+'?admin=falsch');await admin.waitForTimeout(800);
+console.log('wrong key:',await admin.textContent('#err'));
+await admin.goto(B+'?admin=test123');await admin.waitForTimeout(800);
+console.log('admin main visible',await admin.isVisible('#main'),'url',await admin.textContent('#kidUrl'));
+
+const [kc,kid]=await mk();
+await kid.goto(B+'?lab=geraden');await kid.waitForTimeout(500);
+await kid.screenshot({path:__dirname+'/a_login.png'});
+await kid.fill('#gName','x');await kid.click('#gGo');await kid.waitForTimeout(400);
+console.log('short name err:',await kid.textContent('#gErr'));
+await kid.fill('#gName','  Mia  ');await kid.click('#gGo');await kid.waitForTimeout(800);
+console.log('gate hidden',await kid.isHidden('#gate'),'who',await kid.textContent('#who'));
+const vis=async()=>kid.$$eval('#mainTabs button',bs=>bs.filter(b=>!b.hidden).map(b=>b.dataset.tab).join(','));
+console.log('tabs',await vis());
+// admin unlocks pts + train
+await admin.click('.tg:nth-child(2)');await admin.waitForTimeout(600);await admin.click('.tg:nth-child(3)');await admin.waitForTimeout(600);
+await kid.waitForTimeout(2500);console.log('tabs after unlock',await vis());
+// solve level 1 x3
+await kid.click('#mainTabs [data-tab=train]');
+for(let i=0;i<3;i++){const t=await kid.evaluate(()=>window.__lab.task.want);for(const k in t) await kid.fill(`[data-k=${k}]`,fmt(t[k]));
+ if(i==0){await kid.fill('[data-k=m]','99');await kid.click('#trCheck');for(const k in t) await kid.fill(`[data-k=${k}]`,fmt(t[k]));}
+ await kid.click('#trCheck');await kid.click('#trNext');}
+await kid.waitForTimeout(3000);
+await admin.waitForTimeout(500);await admin.evaluate(()=>0);
+await admin.reload();await admin.waitForTimeout(1200);
+console.log('admin row:',await admin.textContent('#rows'));
+// second device, same name
+const [kc2,kid2]=await mk();
+await kid2.goto(B+'?lab=geraden');await kid2.waitForTimeout(500);
+await kid2.fill('#gName','mia');await kid2.click('#gGo');await kid2.waitForTimeout(800);
+console.log('device2 prog',JSON.stringify(await kid2.evaluate(()=>window.__lab.prog())), 'name', await kid2.textContent('#whoName'));
+await kc2.close();
+// unlock pro, win trainer
+await admin.click('.tg:nth-child(4)');await admin.waitForTimeout(600);
+for(let lv=1;lv<4;lv++){ await kid.click(`#levels button:nth-child(${lv+1})`); for(let i=0;i<3;i++){
+  const t=await kid.evaluate(()=>window.__lab.task.want); for(const k in t) await kid.fill(`[data-k=${k}]`,fmt(t[k]));
+  await kid.click('#trCheck'); if(!(lv===3&&i===2)) await kid.click('#trNext'); }}
+await kid.waitForTimeout(1200);
+console.log('win',await kid.isVisible('#win'),'winPro',await kid.isVisible('#winPro'));
+await kid.click('#winPro');await kid.waitForTimeout(400);
+// wrong answer in profi
+const os=await kid.$$('#proOpts .opt');
+for(const o of os){await o.click();await kid.waitForTimeout(150); if(await kid.isVisible('#proLock')) break; await kid.click('#proNext'); break;}
+await kid.waitForTimeout(3500);
+await admin.reload();await admin.waitForTimeout(1200);
+console.log('admin row 2:',await admin.textContent('#rows'));
+await admin.screenshot({path:__dirname+'/a_admin.png',fullPage:true});
+// lock pts → kid loses tab
+await admin.click('.tg:nth-child(2)');await admin.waitForTimeout(600);await kid.waitForTimeout(2500);
+console.log('tabs after lock pts',await vis());
+// delete kid
+await admin.click('.del');await admin.click('.del');await admin.waitForTimeout(800);
+await kid.click('#mainTabs [data-tab=mb]');await kid.waitForTimeout(3500);
+console.log('kid bye',await kid.isVisible('#gBye'));
+// reload same browser -> asks "Bist du"
+await kid.reload();await kid.waitForTimeout(500);
+console.log('again visible',await kid.isVisible('#gAgain'),'(name removed so expect login):',await kid.isVisible('#gLogin'));
+// new kid, then reload -> "Bist du"
+await kid.fill('#gName','Ben');await kid.click('#gGo');await kid.waitForTimeout(800);
+await kid.reload();await kid.waitForTimeout(500);
+console.log('gAgain',await kid.isVisible('#gAgain'),await kid.textContent('#gWho'));
+await kid.screenshot({path:__dirname+'/a_again.png'});
+await kid.click('#gYes');await kid.waitForTimeout(800);console.log('after yes gate hidden',await kid.isHidden('#gate'));
+// all tabs locked -> wait screen
+for(const t of await admin.$$('.tg[aria-pressed=true]')){}
+const pressed=await admin.$$eval('.tg',bs=>bs.map(b=>b.getAttribute('aria-pressed')));
+for(let i=0;i<pressed.length;i++) if(pressed[i]==='true'){await admin.click(`.tg:nth-child(${i+1})`);await admin.waitForTimeout(500);}
+await kid.waitForTimeout(2500);console.log('wait gate',await kid.isVisible('#gWait'));
+await admin.click('.tg:nth-child(1)');await admin.waitForTimeout(500);await kid.waitForTimeout(2500);
+console.log('after reopen gate hidden',await kid.isHidden('#gate'),'tabs',await vis());
+// parabel lab quick
+const [pc,par]=await mk();await par.goto(B+'?lab=parabel');await par.waitForTimeout(400);
+await par.fill('#gName','Lena');await par.click('#gGo');await par.waitForTimeout(800);
+console.log('parabel tabs',await par.$$eval('#mainTabs button',bs=>bs.filter(b=>!b.hidden).map(b=>b.dataset.tab).join(',')));
+await par.setViewportSize({width:390,height:844});console.log('parabel width',await par.evaluate(()=>document.documentElement.scrollWidth));
+await admin.setViewportSize({width:390,height:844});console.log('admin width',await admin.evaluate(()=>document.documentElement.scrollWidth));
+console.log('errs',errs);await b.close();})();

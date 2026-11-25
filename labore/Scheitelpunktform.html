@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Scheitelpunktform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+:root{
+  --paper:#fbfcfd; --ink:#15212c; --muted:#58697a; --line:#d4dee8; --surface:#eef3f8;
+  --grid:#dbe6f0; --grid-strong:#b3c6d8;
+  --a:#8e44ad; --d:#e07a1f; --e:#2e9e4f; --curve:#1f5eff; --pencil:#d2452f; --focus:#1f5eff;
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible",system-ui,-apple-system,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0f161d; --ink:#e5ecf3; --muted:#93a5b6; --line:#273543; --surface:#17212b;
+  --grid:#1c2834; --grid-strong:#2e3f50;
+  --a:#c387e0; --d:#f5a25a; --e:#5fcf82; --curve:#6b9bff; --pencil:#ff7d60; --focus:#6b9bff; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0f161d; --ink:#e5ecf3; --muted:#93a5b6; --line:#273543; --surface:#17212b;
+  --grid:#1c2834; --grid-strong:#2e3f50;
+  --a:#c387e0; --d:#f5a25a; --e:#5fcf82; --curve:#6b9bff; --pencil:#ff7d60; --focus:#6b9bff; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding:20px max(16px,env(safe-area-inset-right,0px)) 32px max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 24px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,4vw,40px);line-height:1.05;margin:0}
+.tabs{display:inline-flex}
+.tabs button{font:inherit;font-size:15px;padding:8px 16px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer;margin-left:-1.5px}
+.tabs button:first-child{border-radius:8px 0 0 8px;margin-left:0}
+.tabs button:last-child{border-radius:0 8px 8px 0}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.stage{display:grid;grid-template-columns:minmax(0,11fr) minmax(0,9fr);gap:18px;align-items:start}
+@media (max-width:820px){.stage{grid-template-columns:minmax(0,1fr)}}
+canvas{display:block;width:100%;aspect-ratio:1/1;max-height:640px;border:1px solid var(--line);border-radius:12px;background:var(--paper)}
+.side{display:flex;flex-direction:column;gap:14px;min-width:0}
+.card{background:var(--surface);border-radius:12px;padding:14px 16px}
+.label{font-size:13px;color:var(--muted);margin:0 0 4px}
+.formula{font-family:var(--display);font-weight:800;font-size:clamp(28px,3.6vw,40px);line-height:1.15;white-space:nowrap;overflow-x:auto}
+.formula.small{font-size:clamp(18px,2.2vw,24px);font-weight:600}
+.ca{color:var(--a)} .cd{color:var(--d)} .ce{color:var(--e)}
+.vertex{font-size:19px;font-weight:700;margin-top:6px;white-space:nowrap;overflow:hidden;font-variant-numeric:tabular-nums}
+.vertex .gap{display:inline-block;width:1.2em}
+.vertex.probe{position:fixed;left:0;top:0;visibility:hidden;overflow:visible;width:auto;margin:0;pointer-events:none}
+.sl{display:grid;grid-template-columns:28px minmax(0,1fr) 64px;align-items:center;gap:10px;margin:8px 0}
+.sl b{font-family:var(--display);font-size:22px}
+.sl input{width:100%;min-width:0}
+#sa{accent-color:var(--a)} #sd{accent-color:var(--d)} #se{accent-color:var(--e)}
+.sl output{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button.btn{font:inherit;font-size:15px;padding:8px 14px;border-radius:8px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+button.btn.primary{background:var(--curve);border-color:var(--curve);color:#fff;font-weight:700}
+button:focus-visible,input:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+label.chk{display:inline-flex;gap:6px;align-items:center;font-size:15px;color:var(--muted);cursor:pointer}
+.feedback{font-family:var(--display);font-weight:800;font-size:22px;min-height:32px}
+.feedback.ok{color:var(--e)} .feedback.no{color:var(--pencil)}
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:14px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{display:inline-block;width:22px;height:3px;border-radius:2px}
+.hint{font-size:13px;color:var(--muted);margin:0}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Die Scheitelpunktform</h1>
+    <div class="tabs" role="tablist">
+      <button role="tab" id="tabExplore" aria-selected="true">Erkunden</button>
+      <button role="tab" id="tabQuiz" aria-selected="false">Quiz</button>
+    </div>
+  </header>
+
+  <div class="stage">
+    <section>
+      <canvas id="can" aria-label="Koordinatensystem mit Parabel"></canvas>
+      <div class="legend" style="margin-top:8px">
+        <span><i style="background:var(--curve)"></i><span id="legMine">Parabel</span></span>
+        <span id="legTarget" hidden><i style="background:var(--pencil)"></i>Gesuchte Parabel</span>
+        <span id="legNorm"><i style="background:var(--muted)"></i>Normalparabel y = x²</span>
+      </div>
+    </section>
+
+    <aside class="side">
+      <div class="card" id="quizCard" hidden>
+        <p class="label">Quiz</p>
+        <p style="margin:0 0 10px">Stellt die Regler so ein, dass eure Parabel genau auf der <b style="color:var(--pencil)">roten</b> liegt. Wie lautet ihre Gleichung?</p>
+        <div class="row">
+          <button class="btn primary" id="check">Prüfen</button>
+          <button class="btn" id="solve">Auflösen</button>
+          <button class="btn" id="next">Neue Parabel</button>
+        </div>
+        <div class="feedback" id="fb" aria-live="polite"></div>
+        <p class="hint" id="score">Treffer: 0 von 0</p>
+      </div>
+
+      <div class="card">
+        <p class="label">Scheitelpunktform &nbsp; y = <span class="ca">a</span>·(x − <span class="cd">d</span>)² + <span class="ce">e</span></p>
+        <div class="formula" id="fScheitel"></div>
+        <div class="vertex" id="fVertex"></div>
+        <div class="vertex probe" id="vProbe" aria-hidden="true"></div>
+      </div>
+
+      <div class="card">
+        <div class="sl"><b class="ca">a</b><input type="range" id="sa" min="-3" max="3" step="0.05" value="1"><output id="oa"></output></div>
+        <div class="sl"><b class="cd">d</b><input type="range" id="sd" min="-6" max="6" step="0.05" value="0"><output id="od"></output></div>
+        <div class="sl"><b class="ce">e</b><input type="range" id="se" min="-6" max="6" step="0.05" value="0"><output id="oe"></output></div>
+        <div class="row" style="margin-top:4px">
+          <button class="btn" id="reset">Zurück auf y = x²</button>
+          <label class="chk"><input type="checkbox" id="showNorm" checked> Normalparabel</label>
+        </div>
+      </div>
+
+      <div class="card" id="expCard">
+        <p class="label">Ausmultipliziert (Normalform)</p>
+        <div class="formula small" id="fSteps"></div>
+        <div class="formula small" id="fNormal" style="margin-top:4px"></div>
+      </div>
+      <p class="hint">a = 0 ist gesperrt, sonst wäre es keine Parabel mehr. Pfeiltasten verschieben die Regler in kleinen Schritten.</p>
+    </aside>
+  </div>
+</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const can = $("can"), sa = $("sa"), sd = $("sd"), se = $("se");
+  const R = 8; // Koordinatenbereich −8 … 8
+  const tok = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  let mode = "explore", target = null, solved = false, hits = 0, tries = 0;
+
+  // ---------- Zahlen deutsch ----------
+  const num = v => {
+    const r = Math.round(v * 1e6) / 1e6;
+    return (r < 0 ? "−" : "") + String(Math.abs(r)).replace(".", ",");
+  };
+  const span = (cls, t) => `<span class="${cls}">${t}</span>`;
+
+  function scheitelHTML(a, d, e, colored = true) {
+    const c = (cls, t) => colored ? span(cls, t) : t;
+    let aPart = a === 1 ? "" : a === -1 ? c("ca", "−") : c("ca", num(a));
+    let inner = d === 0 ? "x" : d > 0 ? `x − ${c("cd", num(d))}` : `x + ${c("cd", num(-d))}`;
+    let sq = d === 0 ? `${aPart}x²` : `${aPart}(${inner})²`;
+    let ePart = e === 0 ? "" : e > 0 ? ` + ${c("ce", num(e))}` : ` − ${c("ce", num(-e))}`;
+    return `y = ${sq}${ePart}`;
+  }
+  function polyHTML(A, B, C) {
+    const terms = [];
+    const coef = (k, s) => k === 1 ? s : k === -1 ? "−" + s : num(k) + s;
+    if (A) terms.push(coef(A, "x²"));
+    if (B) terms.push(terms.length ? (B > 0 ? " + " : " − ") + coef(Math.abs(B), "x") : coef(B, "x"));
+    if (C) terms.push(terms.length ? (C > 0 ? " + " : " − ") + num(Math.abs(C)) : num(C));
+    return "y = " + (terms.join("") || "0");
+  }
+  function stepsHTML(a, d, e) {
+    if (d === 0) return "";
+    const sgn = -2 * d;
+    const mid = `x² ${sgn > 0 ? "+" : "−"} ${num(Math.abs(sgn))}x + ${num(d * d)}`;
+    const aPart = a === 1 ? "" : a === -1 ? span("ca", "−") : span("ca", num(a));
+    const ePart = e === 0 ? "" : e > 0 ? ` + ${span("ce", num(e))}` : ` − ${span("ce", num(-e))}`;
+    return `y = ${aPart}(${mid})${ePart}`;
+  }
+
+  // ---------- Zeichnen ----------
+  function fit() {
+    const r = can.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+    const w = Math.max(1, Math.round(r.width * dpr)), h = Math.max(1, Math.round(r.height * dpr));
+    if (can.width !== w || can.height !== h) { can.width = w; can.height = h; }
+    const ctx = can.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx, w: r.width, h: r.height };
+  }
+  function draw() {
+    const { ctx, w, h } = fit();
+    const m = 14, size = Math.min(w, h) - 2 * m, u = size / (2 * R);
+    const ox = w / 2, oy = h / 2;
+    const X = x => ox + x * u, Y = y => oy - y * u;
+    ctx.clearRect(0, 0, w, h);
+    // Kästchen
+    ctx.lineWidth = 1;
+    for (let i = -R; i <= R; i++) {
+      ctx.strokeStyle = i % 5 ? tok("--grid") : tok("--grid-strong");
+      ctx.beginPath(); ctx.moveTo(X(i), Y(-R)); ctx.lineTo(X(i), Y(R)); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(X(-R), Y(i)); ctx.lineTo(X(R), Y(i)); ctx.stroke();
+    }
+    // Achsen
+    const ink = tok("--ink"), muted = tok("--muted");
+    ctx.strokeStyle = ink; ctx.fillStyle = ink; ctx.lineWidth = 1.6;
+    ctx.beginPath(); ctx.moveTo(X(-R), Y(0)); ctx.lineTo(X(R), Y(0)); ctx.moveTo(X(0), Y(-R)); ctx.lineTo(X(0), Y(R)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X(R) + 2, Y(0)); ctx.lineTo(X(R) - 7, Y(0) - 4); ctx.lineTo(X(R) - 7, Y(0) + 4); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(X(0), Y(R) - 2); ctx.lineTo(X(0) - 4, Y(R) + 7); ctx.lineTo(X(0) + 4, Y(R) + 7); ctx.fill();
+    ctx.font = `12px ${tok("--body")}`; ctx.fillStyle = muted;
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    for (let i = -R + 1; i < R; i++) if (i) ctx.fillText(num(i), X(i), Y(0) + 4);
+    ctx.textAlign = "right"; ctx.textBaseline = "middle";
+    for (let i = -R + 1; i < R; i++) if (i) ctx.fillText(num(i), X(0) - 5, Y(i));
+    ctx.fillStyle = ink; ctx.font = `700 14px ${tok("--body")}`;
+    ctx.textAlign = "right"; ctx.textBaseline = "bottom"; ctx.fillText("x", X(R) - 4, Y(0) - 6);
+    ctx.textAlign = "left"; ctx.textBaseline = "top"; ctx.fillText("y", X(0) + 8, Y(R) + 2);
+
+    const plot = (f, color, width, dash) => {
+      ctx.save(); ctx.beginPath(); ctx.rect(X(-R), Y(R), 2 * R * u, 2 * R * u); ctx.clip();
+      ctx.strokeStyle = color; ctx.lineWidth = width; ctx.setLineDash(dash || []); ctx.lineJoin = "round"; ctx.lineCap = "round";
+      ctx.beginPath();
+      const N = 600; let started = false;
+      for (let i = 0; i <= N; i++) {
+        const x = -R + 2 * R * i / N, y = f(x);
+        if (y > R + 4 || y < -R - 4) { if (started) { ctx.lineTo(X(x), Y(Math.max(-R - 4, Math.min(R + 4, y)))); ctx.stroke(); ctx.beginPath(); started = false; } continue; }
+        if (!started) { ctx.moveTo(X(x), Y(y)); started = true; } else ctx.lineTo(X(x), Y(y));
+      }
+      ctx.stroke(); ctx.restore();
+    };
+    const dot = (x, y, color, r) => { ctx.fillStyle = color; ctx.strokeStyle = tok("--paper"); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(X(x), Y(y), r, 0, 2 * Math.PI); ctx.fill(); ctx.stroke(); };
+
+    if ($("showNorm").checked) plot(x => x * x, muted, 1.6, [6, 5]);
+    if (mode === "quiz" && target) {
+      plot(x => target.a * (x - target.d) ** 2 + target.e, tok("--pencil"), 6);
+      if (solved) dot(target.d, target.e, tok("--pencil"), 6);
+    }
+    const a = +sa.value, d = +sd.value, e = +se.value;
+    plot(x => a * (x - d) ** 2 + e, tok("--curve"), 3.5);
+    if (mode === "explore") {
+      // Hilfslinien zum Scheitel
+      ctx.setLineDash([4, 4]); ctx.lineWidth = 1.5;
+      ctx.strokeStyle = tok("--d"); ctx.beginPath(); ctx.moveTo(X(d), Y(e)); ctx.lineTo(X(d), Y(0)); ctx.stroke();
+      ctx.strokeStyle = tok("--e"); ctx.beginPath(); ctx.moveTo(X(d), Y(e)); ctx.lineTo(X(0), Y(e)); ctx.stroke();
+      ctx.setLineDash([]);
+      dot(d, e, tok("--curve"), 6);
+      ctx.font = `700 15px ${tok("--body")}`; ctx.textBaseline = a > 0 ? "top" : "bottom";
+      ctx.textAlign = X(d) > w - 90 ? "right" : "left";
+      const lx = X(d) + (ctx.textAlign === "left" ? 10 : -10), ly = Y(e) + (a > 0 ? 8 : -8);
+      // farbig: S(d|e)
+      let cx = lx; const parts = [["S(", ink], [num(d), tok("--d")], ["|", ink], [num(e), tok("--e")], [")", ink]];
+      if (ctx.textAlign === "right") { const tw = parts.reduce((s, p) => s + ctx.measureText(p[0]).width, 0); cx = lx - tw; }
+      ctx.textAlign = "left";
+      ctx.fillStyle = tok("--paper"); const tw = parts.reduce((s, p) => s + ctx.measureText(p[0]).width, 0);
+      ctx.fillRect(cx - 3, a > 0 ? ly - 1 : ly - 18, tw + 6, 19);
+      for (const [t, col] of parts) { ctx.fillStyle = col; ctx.fillText(t, cx, ly); cx += ctx.measureText(t).width; }
+    } else {
+      dot(d, e, tok("--curve"), 5);
+    }
+  }
+
+  // ---------- Formeln ----------
+  // Schriftgröße so wählen, dass der längstmögliche Text in eine Zeile passt (springt nie)
+  const vText = (a, d, e) => `Scheitelpunkt S(${span("cd", num(d))} | ${span("ce", num(e))})<span class="gap"></span>Streckfaktor ${span("ca", num(a))}`;
+  function fitVertex() {
+    const el = $("fVertex"), pr = $("vProbe");
+    pr.style.fontSize = "19px"; pr.innerHTML = vText(-2.95, -5.95, -5.95);
+    const avail = el.clientWidth, need = pr.getBoundingClientRect().width;
+    el.style.fontSize = need > avail && avail > 0 ? (19 * avail / need * 0.98).toFixed(2) + "px" : "19px";
+  }
+  new ResizeObserver(fitVertex).observe($("fVertex"));
+
+  function update() {
+    if (+sa.value === 0) sa.value = sa.dataset.last > 0 ? -sa.step : sa.step;
+    sa.dataset.last = sa.value;
+    const a = +sa.value, d = +sd.value, e = +se.value;
+    $("oa").textContent = num(a); $("od").textContent = num(d); $("oe").textContent = num(e);
+    $("fScheitel").innerHTML = scheitelHTML(a, d, e);
+    $("fVertex").innerHTML = vText(a, d, e);
+    const st = stepsHTML(a, d, e);
+    $("fSteps").innerHTML = st; $("fSteps").hidden = !st;
+    $("fNormal").innerHTML = (st ? "&nbsp;&nbsp;" : "") + polyHTML(a, -2 * a * d, a * d * d + e).replace("y = ", st ? "= " : "y = ");
+    draw();
+  }
+  [sa, sd, se].forEach(s => s.addEventListener("input", () => { $("fb").textContent = ""; update(); }));
+  $("showNorm").addEventListener("change", () => { $("legNorm").hidden = !$("showNorm").checked; draw(); });
+  $("reset").addEventListener("click", () => { sa.value = 1; sd.value = 0; se.value = 0; update(); });
+
+  // ---------- Quiz ----------
+  const A_CHOICES = [-2, -1, -0.5, 0.5, 1, 2];
+  const rnd = n => Math.floor(Math.random() * n);
+  function newTarget() {
+    let t;
+    do { t = { a: A_CHOICES[rnd(A_CHOICES.length)], d: rnd(9) - 4, e: rnd(11) - 5 }; }
+    while (target && t.a === target.a && t.d === target.d && t.e === target.e);
+    target = t; solved = false; $("fb").textContent = ""; $("fb").className = "feedback";
+    sa.value = 1; sd.value = 0; se.value = 0; update();
+  }
+  $("check").addEventListener("click", () => {
+    if (solved) return;
+    const a = +sa.value, d = +sd.value, e = +se.value; tries++;
+    const fb = $("fb");
+    const okS = Math.abs(d - target.d) <= 0.15 && Math.abs(e - target.e) <= 0.15, okA = Math.abs(a - target.a) <= 0.1;
+    if (okS && okA) {
+      hits++; solved = true; fb.className = "feedback ok";
+      fb.innerHTML = "Treffer! Exakt: " + scheitelHTML(target.a, target.d, target.e);
+    } else {
+      fb.className = "feedback no";
+      const wrong = [];
+      if (!okS) wrong.push("Scheitel");
+      if (!okA) wrong.push(Math.sign(a) !== Math.sign(target.a) ? "Öffnung" : "Streckfaktor");
+      fb.textContent = "Noch nicht: " + wrong.join(" und ") + " prüfen.";
+    }
+    $("score").textContent = `Treffer: ${hits} von ${tries}`;
+    draw();
+  });
+  $("solve").addEventListener("click", () => {
+    solved = true; sa.value = target.a; sd.value = target.d; se.value = target.e; update();
+    const fb = $("fb"); fb.className = "feedback ok"; fb.innerHTML = scheitelHTML(target.a, target.d, target.e);
+  });
+  $("next").addEventListener("click", newTarget);
+
+  function setMode(m) {
+    mode = m;
+    $("tabExplore").setAttribute("aria-selected", m === "explore");
+    $("tabQuiz").setAttribute("aria-selected", m === "quiz");
+    $("quizCard").hidden = m !== "quiz"; $("legTarget").hidden = m !== "quiz";
+    $("legMine").textContent = m === "quiz" ? "Eure Parabel" : "Parabel";
+    if (m === "quiz") newTarget(); else update();
+  }
+  $("tabExplore").addEventListener("click", () => setMode("explore"));
+  $("tabQuiz").addEventListener("click", () => setMode("quiz"));
+
+  new ResizeObserver(draw).observe(can);
+  try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", draw); } catch (_) {}
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { fitVertex(); draw(); });
+  update();
+})();
+</script>
+</body>
+</html>

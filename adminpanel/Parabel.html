@@ -1,0 +1,1264 @@
+<!doctype html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%2317212b%22/%3E%3Cpath%20d%3D%22M4%2026H29M7%2029V3%22%20stroke%3D%22%2393a5b6%22%20stroke-width%3D%222%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22/%3E%3Cpath%20d%3D%22M8%204Q17%2034%2026%204%22%20stroke%3D%22%236b9bff%22%20stroke-width%3D%223.2%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22/%3E%3C/svg%3E">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Parabel-Labor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+:root{
+  --paper:#fbfcfd; --ink:#15212c; --muted:#58697a; --line:#d4dee8; --surface:#eef3f8;
+  --grid:#dbe6f0; --grid-strong:#b3c6d8;
+  --a:#8e44ad; --d:#e07a1f; --e:#2e9e4f; --z:#0e7c86; --curve:#1f5eff; --pencil:#d2452f; --focus:#1f5eff;
+  --ok-bg:#e3f4e8; --bad-bg:#fbe6e2;
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible",system-ui,-apple-system,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0f161d; --ink:#e5ecf3; --muted:#93a5b6; --line:#273543; --surface:#17212b;
+  --grid:#1c2834; --grid-strong:#2e3f50;
+  --a:#c387e0; --d:#f5a25a; --e:#5fcf82; --z:#4fc3cf; --curve:#6b9bff; --pencil:#ff7d60; --focus:#6b9bff;
+  --ok-bg:#16301f; --bad-bg:#3a1d17; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0f161d; --ink:#e5ecf3; --muted:#93a5b6; --line:#273543; --surface:#17212b;
+  --grid:#1c2834; --grid-strong:#2e3f50;
+  --a:#c387e0; --d:#f5a25a; --e:#5fcf82; --z:#4fc3cf; --curve:#6b9bff; --pencil:#ff7d60; --focus:#6b9bff;
+  --ok-bg:#16301f; --bad-bg:#3a1d17; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+.wrap{max-width:1240px;margin:0 auto;padding:20px max(16px,env(safe-area-inset-right,0px)) 32px max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 24px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,4vw,40px);line-height:1.05;margin:0}
+.seg{display:inline-flex;flex-wrap:wrap}
+.seg button{font:inherit;font-size:15px;padding:8px 14px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer;margin-left:-1.5px}
+.seg button:first-child{border-radius:8px 0 0 8px;margin-left:0}
+.seg button:last-child{border-radius:0 8px 8px 0}
+.seg button[aria-selected="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.lede{margin:0;color:var(--muted);max-width:75ch}
+.stage{display:grid;grid-template-columns:minmax(0,11fr) minmax(0,10fr);gap:18px;align-items:start}
+@media (max-width:860px){.stage{grid-template-columns:minmax(0,1fr)}}
+canvas{display:block;width:100%;aspect-ratio:1/1;max-height:640px;border:1px solid var(--line);border-radius:12px;background:var(--paper);touch-action:none}
+.side{display:flex;flex-direction:column;gap:14px;min-width:0}
+.card{background:var(--surface);border-radius:12px;padding:14px 16px;min-width:0}
+.label{font-size:13px;color:var(--muted);margin:0 0 4px}
+.formula{font-family:var(--display);font-weight:800;font-size:clamp(24px,3vw,36px);line-height:1.2;white-space:nowrap;overflow-x:auto}
+.formula.mid{font-size:clamp(20px,2.4vw,28px)}
+.formula.small{font-size:clamp(17px,2vw,22px);font-weight:600}
+.formula.off{color:var(--muted);font-weight:600;font-size:17px;white-space:normal}
+.ca{color:var(--a)} .cd{color:var(--d)} .ce{color:var(--e)} .cz{color:var(--z)}
+.vertex{font-size:19px;font-weight:700;margin-top:6px;white-space:nowrap;overflow:hidden;font-variant-numeric:tabular-nums}
+.vertex .gap{display:inline-block;width:1.2em}
+.vertex.probe{position:fixed;left:0;top:0;visibility:hidden;overflow:visible;margin:0;pointer-events:none}
+.sl{display:grid;grid-template-columns:28px minmax(0,1fr) 72px;align-items:center;gap:10px;margin:8px 0}
+.sl b{font-family:var(--display);font-size:22px}
+.sl input{width:100%;min-width:0}
+.sl output{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
+input.ra{accent-color:var(--a)} input.rd{accent-color:var(--d)} input.re{accent-color:var(--e)} input.rz{accent-color:var(--z)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button.btn{font:inherit;font-size:15px;padding:8px 14px;border-radius:8px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+button.btn.primary{background:var(--curve);border-color:var(--curve);color:#fff;font-weight:700}
+button.btn:disabled{opacity:.45;cursor:default}
+button.btn.small{font-size:13px;padding:4px 10px}
+button:focus-visible,input:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+label.chk{display:inline-flex;gap:6px;align-items:center;font-size:15px;color:var(--muted);cursor:pointer}
+.feedback{font-family:var(--display);font-weight:800;font-size:21px;min-height:30px;margin-top:8px}
+.feedback.ok{color:var(--e)} .feedback.no{color:var(--pencil)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px;color:var(--muted);margin-top:8px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{display:inline-block;width:22px;height:3px;border-radius:2px}
+.hint{font-size:13px;color:var(--muted);margin:6px 0 0}
+.levels{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:860px){.levels{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.lvl{font:inherit;text-align:left;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+.lvl[aria-pressed="true"]{border-color:var(--curve);box-shadow:inset 0 0 0 1.5px var(--curve)}
+.lvl:disabled{cursor:not-allowed;opacity:.5}
+.lvl .t{font-weight:700;display:block}
+.lvl .s{font-size:13px;color:var(--muted);display:block}
+.dots{letter-spacing:3px;color:var(--e);font-size:14px}
+.eqgrid{display:grid;grid-template-columns:repeat(7,auto);justify-content:start;align-items:baseline;column-gap:10px;row-gap:2px;font-family:var(--display);font-weight:800;font-size:clamp(24px,3vw,34px);line-height:1.25}
+.eqgrid .v{text-align:center;min-width:1.2em}
+.eqgrid span:nth-child(-n+7){font-size:.8em;font-weight:600;color:var(--muted)}
+.eqgrid span.v:nth-child(-n+7){color:inherit}
+.eqgrid span.cd:nth-child(-n+7){color:var(--d)} .eqgrid span.ca:nth-child(-n+7){color:var(--a)}
+.slots{display:grid;grid-template-columns:repeat(6,auto);justify-content:start;align-items:center;column-gap:6px;line-height:1.3;row-gap:6px}
+.slots .p{text-align:center;font-size:1.3em}
+.answer{font-family:var(--display);font-weight:800;font-size:clamp(20px,2.4vw,28px);line-height:2.1;display:flex;flex-wrap:wrap;align-items:center;gap:2px 6px}
+.answer input.in{font:inherit;font-family:var(--body);font-weight:700;font-size:22px;width:4.2em;padding:2px 6px;text-align:center;border:2px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink)}
+.answer input.in.ok{border-color:var(--e);background:var(--ok-bg)}
+.answer input.in.bad{border-color:var(--pencil);background:var(--bad-bg)}
+.prog{display:grid;grid-template-columns:auto 1fr auto;gap:2px 12px;font-size:15px;font-variant-numeric:tabular-nums}
+.prog .muted{color:var(--muted)}
+.steps div{white-space:nowrap}
+.prowrap{max-width:860px;display:flex;flex-direction:column;gap:14px}
+.proq{font-family:var(--display);font-weight:800;font-size:clamp(21px,2.6vw,28px);line-height:1.25;margin:2px 0 12px}
+canvas.procan{max-width:400px;margin:0 0 14px}
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:600px){.opts:not(.graphs){grid-template-columns:minmax(0,1fr)}}
+.opt{font:inherit;font-size:18px;text-align:left;display:flex;align-items:center;gap:12px;padding:12px 14px;border:2px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--curve)}
+.opt:disabled{cursor:default;opacity:.55}
+.opt.right{border-color:var(--e);background:var(--ok-bg);opacity:1}
+.opt.wrong{border-color:var(--pencil);background:var(--bad-bg)}
+.opt .badge{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--surface);font-weight:700;font-size:15px}
+.opts.graphs{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:700px){.opts.graphs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.opts.graphs .opt{flex-direction:column;align-items:stretch;padding:8px;gap:6px}
+.opts.graphs .opt:disabled:not(.wrong){opacity:.8}
+.opts.graphs canvas{max-height:none;border:0}
+.optwrap{position:relative}
+.revlist{display:flex;flex-direction:column;gap:6px;text-align:left}
+.revitem{font:inherit;font-size:15px;display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);cursor:pointer;text-align:left}
+.revitem:hover{border-color:var(--curve)}
+.revitem .nr{font-weight:700;color:var(--muted)}
+.revitem .er{font-weight:700;color:var(--e);white-space:nowrap}
+.revitem.had .er{color:var(--pencil)}
+.lock{position:absolute;inset:-6px;display:grid;place-items:center;text-align:center;padding:12px;border-radius:12px;border:2px solid var(--pencil);background:var(--bad-bg);color:var(--pencil);font-family:var(--display);font-size:clamp(20px,2.6vw,26px);line-height:1.3;z-index:2}
+.lock .count{font-size:38px;font-weight:800;line-height:1.1;margin:2px 0}
+.lock small{display:block;font-family:var(--body);font-size:14px;color:var(--muted)}
+.proex{margin:4px 0 0;padding:10px 12px;border-left:4px solid var(--e);background:var(--paper);border-radius:6px}
+[hidden]{display:none!important}
+.win{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:16px;background:rgb(10 16 24 / .55)}
+.win canvas{position:fixed;inset:0;width:100%;height:100%;aspect-ratio:auto;max-height:none;border:0;border-radius:0;background:transparent;pointer-events:none}
+.win .box{position:relative;background:var(--paper);color:var(--ink);border-radius:18px;padding:28px 28px 22px;max-width:520px;width:100%;text-align:center;box-shadow:0 20px 60px rgb(0 0 0 / .35);animation:pop .45s cubic-bezier(.2,1.4,.4,1)}
+.win h2{font-family:var(--display);font-weight:800;font-size:clamp(30px,5vw,44px);line-height:1.05;margin:4px 0 10px}
+.win .big{font-size:56px;line-height:1}
+.win p{margin:0 0 8px}
+.win .stats{color:var(--muted);font-size:15px;margin:10px 0 18px}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion: reduce){.win .box{animation:none}}
+footer{font-size:13px;color:var(--muted)}
+
+.gate{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:16px;background:var(--paper)}
+.gate .box{background:var(--surface);border-radius:16px;padding:28px 24px;max-width:460px;width:100%;box-shadow:0 20px 60px rgb(0 0 0 / .35)}
+.gate h2{font-family:var(--display);font-weight:800;font-size:clamp(28px,5vw,38px);line-height:1.05;margin:0 0 14px}
+.gate p{margin:0 0 14px}
+.gate input{font:inherit;font-size:20px;font-weight:700;padding:8px 12px;border:2px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);flex:1;min-width:0}
+.gate input:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.gate form{display:flex;gap:10px;flex-wrap:wrap}
+.gate .small{font-size:14px;color:var(--muted);margin:12px 0 0}
+.who{font-size:14px;color:var(--muted);margin-top:4px}
+.who b{color:var(--ink)}
+.linkbtn{font:inherit;background:none;border:0;padding:0;color:var(--muted);text-decoration:underline;cursor:pointer}
+.who .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--e);margin-right:6px;vertical-align:middle}
+.who .dot.off{background:var(--pencil)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>Parabel-Labor</h1><div class="who" id="who" hidden><span class="dot" id="whoDot"></span>Angemeldet als <b id="whoName"></b> · <button class="linkbtn" id="whoSwitch">abmelden</button></div></div>
+    <nav class="seg" role="tablist" id="mainTabs">
+      <button role="tab" data-tab="pq" aria-selected="true">1 pq-Formel</button>
+      <button role="tab" data-tab="forms" aria-selected="false">2 Drei Formen</button>
+      <button role="tab" data-tab="sp" aria-selected="false">3 Scheitelpunktform</button>
+      <button role="tab" data-tab="train" aria-selected="false">4 Rechentrainer</button>
+      <button role="tab" data-tab="pro" aria-selected="false" hidden>5 Profi ★</button>
+    </nav>
+  </header>
+
+  <!-- ================= 5 PROFI ================= -->
+  <section id="tab-pro" class="tab" hidden>
+    <div class="prowrap">
+      <p class="lede">Profi-Aufgaben für alle, die den Rechentrainer geschafft haben. Erst nachdenken, dann klicken.</p>
+      <div id="proQuiz" class="card">
+        <p class="label" id="proHead"></p>
+        <div class="proq" id="proQ"></div>
+        <canvas id="cPro" class="procan" aria-label="Skizze zur Frage"></canvas>
+        <p class="hint" id="proCap" style="margin:-8px 0 14px" hidden></p>
+        <div class="optwrap">
+          <div class="opts" id="proOpts"></div>
+          <div class="lock" id="proLock" hidden aria-live="assertive"><div><b>Leider nicht. Überleg nochmal …</b><small id="proPicked"></small><div class="count" id="proCount">3</div></div></div>
+        </div>
+        <div class="feedback" id="proFb" aria-live="polite"></div>
+        <p class="proex" id="proEx" hidden></p>
+        <div class="row" style="margin-top:10px"><button class="btn primary" id="proNext" hidden>Nächste Frage</button></div>
+      </div>
+      <div id="proDone" class="card" hidden style="text-align:center;padding:28px 16px">
+        <h2 class="proq" id="proDoneT" style="font-size:34px;margin:0 0 8px"></h2>
+        <p id="proDoneS" style="margin:0 0 16px"></p>
+        <button class="btn primary" id="proAgain">Nochmal von vorn</button>
+        <p class="label" style="text-align:left;margin:24px 0 8px">Alle Fragen zum Nachschauen (Fehler pro Frage):</p>
+        <div class="revlist" id="proList"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 1 RECHENTRAINER ================= -->
+  <section id="tab-train" class="tab">
+    <p class="lede" style="margin-bottom:12px">Rechne auf Papier, tippe das Ergebnis ein und prüfe. Die Skizze zeigt danach deine Parabel (blau) und die richtige (rot). 3 richtige Aufgaben schalten die nächste Stufe frei.</p>
+    <div class="levels" id="levels" style="margin-bottom:16px"></div>
+    <div class="stage">
+      <section>
+        <canvas id="cTrain" aria-label="Koordinatensystem zur Aufgabe"></canvas>
+        <div class="legend" id="legTrain"></div>
+      </section>
+      <aside class="side">
+        <div class="card">
+          <p class="label" id="trTitle"></p>
+          <div class="formula" id="trTask"></div>
+          <p class="hint" id="trHint"></p>
+        </div>
+        <div class="card">
+          <p class="label">Deine Antwort</p>
+          <div class="answer" id="trAnswer"></div>
+          <div class="row" style="margin-top:8px">
+            <button class="btn primary" id="trCheck">Prüfen</button>
+            <button class="btn" id="trShow">Lösung zeigen</button>
+            <button class="btn" id="trNext">Nächste Aufgabe</button>
+          </div>
+          <div class="feedback" id="trFb" aria-live="polite"></div>
+          <div class="formula small" id="trSol" hidden></div>
+        </div>
+        <div class="card">
+          <p class="label">Dein Fortschritt</p>
+          <div class="prog" id="trProg"></div>
+          <div class="row" style="margin-top:8px"><button class="btn small" id="trReset" hidden>Fortschritt zurücksetzen</button></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= 2 PQ-FORMEL ================= -->
+  <section id="tab-pq" class="tab" hidden>
+    <p class="lede" style="margin-bottom:12px">Die pq-Formel liest man an der Parabel y = x² + px + q ab: <span class="cd">−p/2</span> ist die Mitte (x-Wert des Scheitels), <span class="ce">√D</span> ist, wie weit die Nullstellen links und rechts davon liegen. D sagt außerdem, wie tief der Scheitel unter der x-Achse liegt.</p>
+    <div class="stage">
+      <section>
+        <canvas id="cPq" aria-label="Parabel zur pq-Formel"></canvas>
+        <div class="legend">
+          <span><i style="background:var(--curve)"></i>y = x² + px + q</span>
+          <span><i style="background:var(--d)"></i>Mitte −p/2</span>
+          <span><i style="background:var(--e)"></i>±√D und Tiefe D</span>
+        </div>
+      </section>
+      <aside class="side">
+        <div class="card">
+          <p class="label">Gleichung</p>
+          <div class="eqgrid" id="pqEq"></div>
+        </div>
+        <div class="card">
+          <p class="label">pq-Formel &nbsp; x₁,₂ = <span class="cd">−p/2</span> ± √((<span class="cd">p/2</span>)² − <span class="ca">q</span>)</p>
+          <div class="formula small steps" id="pqSteps"></div>
+          <div class="feedback" id="pqRes"></div>
+        </div>
+        <div class="card">
+          <div class="sl"><b class="cd">p</b><input type="range" id="pqP" class="rd" min="-8" max="8" step="0.1" value="-2"><output id="pqPo" class="cd"></output></div>
+          <div class="sl"><b class="ca">q</b><input type="range" id="pqQ" class="ra" min="-8" max="8" step="0.1" value="-3"><output id="pqQo" class="ca"></output></div>
+        </div>
+        <p class="hint">Zum Üben: Tab 4 Rechentrainer, Stufe 3.</p>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= 3 DREI FORMEN ================= -->
+  <section id="tab-forms" class="tab" hidden>
+    <p class="lede" style="margin-bottom:12px">Zieh die <span class="cz">Nullstellen</span> oder den <b>Scheitel</b> mit der Maus, oder benutze die Regler. Alle drei Schreibweisen beschreiben dieselbe Parabel.</p>
+    <div class="stage">
+      <section>
+        <canvas id="cForms" aria-label="Parabel mit ziehbaren Nullstellen und Scheitel"></canvas>
+        <div class="legend">
+          <span><i style="background:var(--z)"></i>Nullstellen (ziehbar)</span>
+          <span><i style="background:var(--curve)"></i>Scheitel (ziehbar)</span>
+        </div>
+      </section>
+      <aside class="side">
+        <div class="card">
+          <p class="label">Nullstellenform &nbsp; y = <span class="ca">a</span>·(x − <span class="cz">x₁</span>)·(x − <span class="cz">x₂</span>)</p>
+          <div class="formula mid" id="fmNull"></div>
+          <div class="hint" id="fmMid" style="font-size:15px"></div>
+        </div>
+        <div class="card">
+          <p class="label">Scheitelpunktform &nbsp; y = <span class="ca">a</span>·(x − <span class="cd">d</span>)² + <span class="ce">e</span></p>
+          <div class="formula mid" id="fmSp"></div>
+        </div>
+        <div class="card">
+          <p class="label">Normalform &nbsp; y = ax² + bx + c</p>
+          <div class="formula mid" id="fmNf"></div>
+        </div>
+        <div class="card">
+          <div class="sl"><b class="ca">a</b><input type="range" id="fmA" class="ra" min="-3" max="3" step="0.05" value="1"><output id="fmAo"></output></div>
+          <div class="sl"><b class="cz">x₁</b><input type="range" id="fmX1" class="rz" min="-7" max="7" step="0.05" value="-1"><output id="fmX1o" class="cz"></output></div>
+          <div class="sl"><b class="cz">x₂</b><input type="range" id="fmX2" class="rz" min="-7" max="7" step="0.05" value="3"><output id="fmX2o" class="cz"></output></div>
+          <p class="hint" id="fmZoff" hidden style="margin:0 0 8px">Keine Nullstellen: Zieh den Scheitel unter (bzw. über) die x-Achse, dann gehen die Regler wieder.</p>
+          <div class="row">
+            <button class="btn small" id="fmReset">Zurücksetzen</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= 4 SCHEITELPUNKTFORM ================= -->
+  <section id="tab-sp" class="tab" hidden>
+    <div class="row" style="margin-bottom:12px;justify-content:space-between">
+      <p class="lede">Regler bewegen oder den Scheitel direkt mit der Maus ziehen.</p>
+      <div class="seg" id="spTabs">
+        <button data-m="explore" aria-selected="true">Erkunden</button>
+        <button data-m="quiz" aria-selected="false">Quiz</button>
+      </div>
+    </div>
+    <div class="stage">
+      <section>
+        <canvas id="cSp" aria-label="Koordinatensystem mit Parabel"></canvas>
+        <div class="legend">
+          <span><i style="background:var(--curve)"></i><span id="spLegMine">Parabel</span></span>
+          <span id="spLegTarget" hidden><i style="background:var(--pencil)"></i>Gesuchte Parabel</span>
+          <span id="spLegNorm"><i style="background:var(--muted)"></i>Normalparabel y = x²</span>
+        </div>
+      </section>
+      <aside class="side">
+        <div class="card" id="spQuizCard" hidden>
+          <p class="label">Quiz</p>
+          <p style="margin:0 0 10px">Stellt die Regler so ein, dass eure Parabel genau auf der <b style="color:var(--pencil)">roten</b> liegt. Wie lautet ihre Gleichung?</p>
+          <div class="row">
+            <button class="btn primary" id="spCheck">Prüfen</button>
+            <button class="btn" id="spSolve">Auflösen</button>
+            <button class="btn" id="spNext">Neue Parabel</button>
+          </div>
+          <div class="feedback" id="spFb" aria-live="polite"></div>
+          <p class="hint" id="spScore">Treffer: 0 von 0</p>
+        </div>
+        <div class="card">
+          <p class="label">Scheitelpunktform &nbsp; y = <span class="ca">a</span>·(x − <span class="cd">d</span>)² + <span class="ce">e</span></p>
+          <div class="formula" id="spForm"></div>
+          <div class="vertex" id="spVertex"></div>
+          <div class="vertex probe" id="spProbe" aria-hidden="true"></div>
+        </div>
+        <div class="card">
+          <div class="sl"><b class="ca">a</b><input type="range" id="spA" class="ra" min="-3" max="3" step="0.05" value="1"><output id="spAo"></output></div>
+          <div class="sl"><b class="cd">d</b><input type="range" id="spD" class="rd" min="-6" max="6" step="0.05" value="0"><output id="spDo"></output></div>
+          <div class="sl"><b class="ce">e</b><input type="range" id="spE" class="re" min="-6" max="6" step="0.05" value="0"><output id="spEo"></output></div>
+          <div class="row" style="margin-top:4px">
+            <button class="btn" id="spReset">Zurück auf y = x²</button>
+            <label class="chk"><input type="checkbox" id="spNorm" checked> Normalparabel</label>
+          </div>
+        </div>
+        <div class="card">
+          <p class="label">Ausmultipliziert (Normalform)</p>
+          <div class="formula small" id="spSteps"></div>
+          <div class="formula small" id="spNf" style="margin-top:4px"></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+</div>
+
+<div class="win" id="win" hidden role="dialog" aria-modal="true" aria-labelledby="winT">
+  <canvas id="confetti" aria-hidden="true"></canvas>
+  <div class="box">
+    <div class="big" aria-hidden="true">🏆</div>
+    <h2 id="winT">Glückwunsch!</h2>
+    <p><b>Du hast alle 4 Stufen geschafft.</b></p>
+    <p>Scheitelpunktform, Nullstellenform, pq-Formel und Ablesen aus der Skizze: Du kannst Parabeln jetzt in allen Formen. Richtig gut gemacht!</p>
+    <p id="winProTxt"><b>Neu freigeschaltet: Tab 5 mit Profi-Aufgaben</b> zum Knobeln.</p>
+    <div class="stats" id="winStats"></div>
+    <div class="row" style="justify-content:center">
+      <button class="btn" id="winClose">Weiter üben</button>
+      <button class="btn primary" id="winPro">Zu den Profi-Aufgaben ★</button>
+    </div>
+  </div>
+</div>
+
+
+<div class="gate" id="gate">
+  <div class="box">
+    <h2>Parabel-Labor</h2>
+    <div id="gLogin">
+      <p>Wie heißt du? Nimm deinen Vornamen und immer genau denselben, dann geht es an jedem Rechner da weiter, wo du aufgehört hast.</p>
+      <form id="gForm"><input id="gName" maxlength="30" autocomplete="off" spellcheck="false" placeholder="Vorname" aria-label="Vorname"><button class="btn primary" id="gGo">Los geht’s</button></form>
+    </div>
+    <div id="gAgain" hidden>
+      <p>Bist du <b id="gWho"></b>?</p>
+      <div class="row"><button class="btn primary" id="gYes">Ja, weiter</button><button class="btn" id="gNo">Nein, ich bin jemand anderes</button></div>
+    </div>
+    <div id="gWait" hidden><p><b>Gleich geht’s los.</b></p><p>Deine Lehrkraft schaltet die erste Station gleich frei. Diese Seite merkt das von selbst.</p></div>
+    <div id="gBye" hidden><p><b>Du bist abgemeldet.</b></p><p>Lade die Seite neu (Taste F5), damit sich jemand anderes anmelden kann.</p></div>
+    <p class="feedback no" id="gErr" aria-live="polite"></p>
+    <p class="small" id="gLoad" hidden>Einen Moment …</p>
+  </div>
+</div>
+
+<script>
+(() => {
+"use strict";
+const LAB = "parabel", IDKEY = "labor-" + LAB + "-name";
+const $ = id => document.getElementById(id);
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch (_) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (_) {} },
+  del(k) { try { localStorage.removeItem(k); } catch (_) {} },
+};
+const call = (fn, ...args) => new Promise((res, rej) => {
+  try { google.script.run.withSuccessHandler(res).withFailureHandler(rej)[fn](...args); }
+  catch (e) { rej(e); }
+});
+const errMsg = e => {
+  const m = e && e.message ? String(e.message).replace(/^(Exception|Error):\s*/, "") : "";
+  return /Namen|Labor/.test(m) ? m : "Die Verbindung klappt gerade nicht. Versuch es gleich nochmal.";
+};
+let me = null, allowed = [], started = false, pingTimer = null, debounce = null, online = true;
+window.__tabOk = t => allowed.indexOf(t) >= 0;
+
+function gate(which) {
+  $("gate").hidden = !which;
+  ["gLogin", "gAgain", "gWait", "gBye"].forEach(id => $(id).hidden = id !== which);
+  $("gErr").textContent = ""; $("gLoad").hidden = true;
+  if (which === "gLogin") setTimeout(() => $("gName").focus(), 50);
+}
+async function login(name) {
+  $("gErr").textContent = ""; $("gLoad").hidden = false;
+  document.querySelectorAll("#gate button").forEach(b => b.disabled = true);
+  try {
+    const r = await call("anmelden", LAB, name);
+    me = { id: r.id, name: r.name }; store.set(IDKEY, r.name); allowed = r.tabs || [];
+    start(r.prog);
+  } catch (e) {
+    $("gLoad").hidden = true; $("gErr").textContent = errMsg(e);
+  } finally { document.querySelectorAll("#gate button").forEach(b => b.disabled = false); }
+}
+function start(prog) {
+  if (started) return;
+  started = true;
+  window.__initProg = prog || {};
+  window.__startLab();
+  $("whoName").textContent = me.name;
+  $("who").hidden = false;
+  apply();
+  pingTimer = setInterval(ping, 20000);
+  setTimeout(ping, 1500);
+}
+function snap() {
+  const L = window.__lab2; if (!L) return null;
+  const p = L.prog(), q = L.pro();
+  return {
+    tab: L.current(),
+    prog: { c: p.c, f: p.f, unl: p.unl, lvl: p.lvl, won: !!p.won },
+    pro: { i: q.i, score: q.score, errs: (q.errs || []).map(x => x || 0), n: L.PRO_N, answered: !!q.answered, done: !$("proDone").hidden },
+  };
+}
+let lastSent = "";
+async function ping() {
+  if (!me) return;
+  const s = snap(), js = JSON.stringify(s);
+  try {
+    const r = await call("ping", LAB, me.id, js !== lastSent ? s : null);
+    lastSent = js;
+    setOnline(true);
+    if (!r.known) { clearInterval(pingTimer); me = null; store.del(IDKEY); gate("gBye"); return; }
+    if (JSON.stringify(r.tabs) !== JSON.stringify(allowed)) { allowed = r.tabs || []; apply(); }
+  } catch (e) { setOnline(false); }
+}
+function setOnline(v) { online = v; $("whoDot").classList.toggle("off", !v); $("whoDot").title = v ? "verbunden" : "keine Verbindung"; }
+window.__changed = () => { clearTimeout(debounce); debounce = setTimeout(ping, 2000); };
+function apply() {
+  const L = window.__lab2; if (!L) return;
+  document.querySelectorAll("#mainTabs button").forEach(b => { if (b.dataset.tab !== "pro") b.hidden = !window.__tabOk(b.dataset.tab); });
+  L.updProTab();
+  $("winPro").hidden = !window.__tabOk("pro"); $("winProTxt").hidden = !window.__tabOk("pro");
+  const vis = [...document.querySelectorAll("#mainTabs button")].filter(b => !b.hidden);
+  if (!vis.length) { gate("gWait"); return; }
+  if (!$("gWait").hidden || !$("gLogin").hidden || !$("gAgain").hidden) gate(null);
+  if (!vis.some(b => b.dataset.tab === L.current())) L.show(vis[0].dataset.tab);
+}
+
+$("gForm").addEventListener("submit", e => { e.preventDefault(); login($("gName").value); });
+$("gYes").addEventListener("click", () => login(store.get(IDKEY)));
+$("gNo").addEventListener("click", () => { store.del(IDKEY); gate("gLogin"); });
+$("whoSwitch").addEventListener("click", () => { clearInterval(pingTimer); me = null; store.del(IDKEY); gate("gBye"); });
+document.addEventListener("DOMContentLoaded", () => {
+  const known = store.get(IDKEY);
+  if (known) { $("gWho").textContent = known; gate("gAgain"); } else gate("gLogin");
+});
+})();
+</script>
+<script>
+window.__startLab = () => {
+"use strict";
+const $ = id => document.getElementById(id);
+const tok = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const r6 = v => Math.round(v * 1e6) / 1e6;
+const num = v => { const r = r6(v); return (r < 0 ? "−" : "") + String(Math.abs(r)).replace(".", ","); };
+const sp = (cls, t) => cls ? `<span class="${cls}">${t}</span>` : t;
+const rnd = n => Math.floor(Math.random() * n);
+const pick = arr => arr[rnd(arr.length)];
+const near = (u, v, tol = 1e-6) => Math.abs(u - v) <= tol;
+
+// ---------- Formeln als HTML ----------
+function aPre(a, cls) { return a === 1 ? "" : a === -1 ? sp(cls, "−") : sp(cls, num(a)); }
+function shiftHTML(v, cls) { return v === 0 ? "x" : v > 0 ? `x − ${sp(cls, num(v))}` : `x + ${sp(cls, num(-v))}`; }
+function scheitelHTML(a, d, e, col = true) {
+  const ca = col ? "ca" : "", cd = col ? "cd" : "", ce = col ? "ce" : "";
+  const sq = d === 0 ? `${aPre(a, ca)}x²` : `${aPre(a, ca)}(${shiftHTML(d, cd)})²`;
+  const eP = e === 0 ? "" : e > 0 ? ` + ${sp(ce, num(e))}` : ` − ${sp(ce, num(-e))}`;
+  return `y = ${sq}${eP}`;
+}
+function polyBody(A, B, C) {
+  const t = [];
+  const co = (k, s) => k === 1 ? s : k === -1 ? "−" + s : num(k) + s;
+  if (A) t.push(co(A, "x²"));
+  if (B) t.push(t.length ? (B > 0 ? " + " : " − ") + co(Math.abs(B), "x") : co(B, "x"));
+  if (C) t.push(t.length ? (C > 0 ? " + " : " − ") + num(Math.abs(C)) : num(C));
+  return t.join("") || "0";
+}
+const polyHTML = (A, B, C) => "y = " + polyBody(A, B, C);
+function zfmt(v) { const z = Math.round(v * 100) / 100; return (Math.abs(z - v) > 1e-9 ? "≈ " : "") + num(z); }
+function factor(x0, cls, approx) {
+  if (near(x0, 0)) return "x";
+  const s = approx ? zfmt(Math.abs(x0)) : num(Math.abs(x0));
+  return `(x ${x0 > 0 ? "−" : "+"} ${sp(cls, s)})`;
+}
+function nullHTML(a, x1, x2, col = true, approx = false) {
+  const ca = col ? "ca" : "", cz = col ? "cz" : "";
+  if (near(x1, x2)) {
+    const f = near(x1, 0) ? "x²" : factor(x1, cz, approx) + "²";
+    return `y = ${aPre(a, ca)}${f}`;
+  }
+  let f1 = factor(x1, cz, approx), f2 = factor(x2, cz, approx);
+  if (f2 === "x") [f1, f2] = [f2, f1];
+  return `y = ${aPre(a, ca)}${f1}${f2}`;
+}
+
+// ---------- Koordinatensystem ----------
+class Board {
+  constructor(canvas, R = 8) { this.c = canvas; this.R = R; this.lab = 1; }
+  begin() {
+    const c = this.c, r = c.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+    const w = Math.max(1, Math.round(r.width * dpr)), h = Math.max(1, Math.round(r.height * dpr));
+    if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
+    const ctx = this.ctx = c.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    this.w = r.width; this.h = r.height;
+    const R = this.R, m = 14; this.u = (Math.min(this.w, this.h) - 2 * m) / (2 * R);
+    this.ox = this.w / 2; this.oy = this.h / 2;
+    const X = x => this.X(x), Y = y => this.Y(y);
+    ctx.clearRect(0, 0, this.w, this.h); ctx.setLineDash([]);
+    ctx.lineWidth = 1;
+    for (let i = -R; i <= R; i++) {
+      ctx.strokeStyle = i % 5 ? tok("--grid") : tok("--grid-strong");
+      ctx.beginPath(); ctx.moveTo(X(i), Y(-R)); ctx.lineTo(X(i), Y(R)); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(X(-R), Y(i)); ctx.lineTo(X(R), Y(i)); ctx.stroke();
+    }
+    const ink = tok("--ink"), muted = tok("--muted");
+    ctx.strokeStyle = ink; ctx.fillStyle = ink; ctx.lineWidth = 1.6;
+    ctx.beginPath(); ctx.moveTo(X(-R), Y(0)); ctx.lineTo(X(R), Y(0)); ctx.moveTo(X(0), Y(-R)); ctx.lineTo(X(0), Y(R)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X(R) + 2, Y(0)); ctx.lineTo(X(R) - 7, Y(0) - 4); ctx.lineTo(X(R) - 7, Y(0) + 4); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(X(0), Y(R) - 2); ctx.lineTo(X(0) - 4, Y(R) + 7); ctx.lineTo(X(0) + 4, Y(R) + 7); ctx.fill();
+    ctx.font = `12px ${tok("--body")}`; ctx.fillStyle = muted;
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    for (let i = -R + 1; i < R; i++) if (i && i % this.lab === 0) ctx.fillText(num(i), X(i), Y(0) + 4);
+    ctx.textAlign = "right"; ctx.textBaseline = "middle";
+    for (let i = -R + 1; i < R; i++) if (i && i % this.lab === 0) ctx.fillText(num(i), X(0) - 5, Y(i));
+    ctx.fillStyle = ink; ctx.font = `700 14px ${tok("--body")}`;
+    ctx.textAlign = "right"; ctx.textBaseline = "bottom"; ctx.fillText("x", X(R) - 4, Y(0) - 6);
+    ctx.textAlign = "left"; ctx.textBaseline = "top"; ctx.fillText("y", X(0) + 8, Y(R) + 2);
+    return ctx;
+  }
+  X(x) { return this.ox + x * this.u; }
+  Y(y) { return this.oy - y * this.u; }
+  ix(px) { return (px - this.ox) / this.u; }
+  iy(py) { return (this.oy - py) / this.u; }
+  clip(fn) { const c = this.ctx, R = this.R; c.save(); c.beginPath(); c.rect(this.X(-R), this.Y(R), 2 * R * this.u, 2 * R * this.u); c.clip(); fn(c); c.restore(); }
+  curve(f, color, width, dash) {
+    const R = this.R;
+    this.clip(c => {
+      c.strokeStyle = color; c.lineWidth = width; c.setLineDash(dash || []); c.lineJoin = "round"; c.lineCap = "round";
+      c.beginPath(); let started = false; const N = 700;
+      for (let i = 0; i <= N; i++) {
+        const x = -R + 2 * R * i / N, y = f(x);
+        if (y > R + 4 || y < -R - 4) { if (started) { c.lineTo(this.X(x), this.Y(Math.max(-R - 4, Math.min(R + 4, y)))); c.stroke(); c.beginPath(); started = false; } continue; }
+        if (!started) { c.moveTo(this.X(x), this.Y(y)); started = true; } else c.lineTo(this.X(x), this.Y(y));
+      }
+      c.stroke();
+    });
+  }
+  seg(x1, y1, x2, y2, color, width = 1.5, dash = [5, 4]) {
+    this.clip(c => { c.strokeStyle = color; c.lineWidth = width; c.setLineDash(dash); c.beginPath(); c.moveTo(this.X(x1), this.Y(y1)); c.lineTo(this.X(x2), this.Y(y2)); c.stroke(); });
+  }
+  dot(x, y, color, r = 6, ring = true) {
+    if (Math.abs(x) > this.R || Math.abs(y) > this.R) return;
+    const c = this.ctx; c.setLineDash([]); c.fillStyle = color; c.strokeStyle = tok("--paper"); c.lineWidth = 2;
+    c.beginPath(); c.arc(this.X(x), this.Y(y), r, 0, 2 * Math.PI); c.fill(); if (ring) c.stroke();
+  }
+  // farbiger Text mit Hintergrund; parts = [[text, farbe], ...]
+  tag(parts, px, py, { align = "left", base = "top", size = 15 } = {}) {
+    const c = this.ctx; c.font = `700 ${size}px ${tok("--body")}`; c.textBaseline = "alphabetic"; c.textAlign = "left";
+    const tw = parts.reduce((s, p) => s + c.measureText(p[0]).width, 0);
+    let x = align === "left" ? px : align === "right" ? px - tw : px - tw / 2;
+    x = Math.max(4, Math.min(this.w - tw - 4, x));
+    const y = base === "top" ? py + size : base === "bottom" ? py - 4 : py + size / 2 - 2;
+    c.fillStyle = tok("--paper"); c.globalAlpha = .85; c.fillRect(x - 3, y - size, tw + 6, size + 6); c.globalAlpha = 1;
+    for (const [t, col] of parts) { c.fillStyle = col; c.fillText(t, x, y); x += c.measureText(t).width; }
+  }
+  pointer(e) { const r = this.c.getBoundingClientRect(); return [this.ix(e.clientX - r.left), this.iy(e.clientY - r.top), e.clientX - r.left, e.clientY - r.top]; }
+}
+
+// Ziehen: hit(x,y,px,py) liefert Griff oder null; move(griff,x,y)
+function draggable(board, hit, move, redraw) {
+  const c = board.c; let grab = null;
+  c.addEventListener("pointerdown", e => { const [x, y, px, py] = board.pointer(e); grab = hit(x, y, px, py); if (grab) { c.setPointerCapture(e.pointerId); e.preventDefault(); } });
+  c.addEventListener("pointermove", e => {
+    const [x, y, px, py] = board.pointer(e);
+    if (grab) { move(grab, x, y); redraw(); } else c.style.cursor = hit(x, y, px, py) ? "grab" : "default";
+  });
+  const end = () => { grab = null; };
+  c.addEventListener("pointerup", end); c.addEventListener("pointercancel", end);
+}
+const nearPx = (board, x, y, px, py, r = 16) => Math.hypot(board.X(x) - px, board.Y(y) - py) <= r;
+const snapTo = (v, s) => Math.round(v / s) * s;
+
+// ---------- Zahlen einlesen ----------
+function parse(str) {
+  let s = String(str).trim().replace(/[−–—]/g, "-").replace(/\s/g, "").replace(",", ".");
+  if (s === "") return NaN;
+  if (s === "-") return -1;
+  if (s === "+") return 1;
+  const fr = s.match(/^([+-]?\d*\.?\d+)\/(\d*\.?\d+)$/);
+  if (fr) return Number(fr[1]) / Number(fr[2]);
+  if (!/^[+-]?(\d+\.?\d*|\.\d+)$/.test(s)) return NaN;
+  return Number(s);
+}
+
+/* =============================================================
+   1 RECHENTRAINER
+   ============================================================= */
+const LEVELS = [
+  { t: "Stufe 1", s: "Scheitelpunktform → Normalform" },
+  { t: "Stufe 2", s: "Nullstellenform → Normalform" },
+  { t: "Stufe 3", s: "Nullstellen mit der pq-Formel" },
+  { t: "Stufe 4", s: "Gleichung aus der Skizze" },
+];
+const NEED = 3, KEY = "parabel-labor-v1";
+let prog = { c: [0, 0, 0, 0], f: [0, 0, 0, 0], unl: 0, lvl: 0 };
+try { const s = window.__initProg; if (s && Array.isArray(s.c)) prog = Object.assign(prog, s); } catch (_) {}
+const allOpen = () => false;
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(prog)); } catch (_) {} if (window.__changed) window.__changed(); };
+const bTrain = new Board($("cTrain"));
+let task = null;
+
+const inp = k => `<input class="in" data-k="${k}" inputmode="decimal" autocomplete="off" spellcheck="false" aria-label="${k}">`;
+function nz(lo, hi) { let v; do v = lo + rnd(hi - lo + 1); while (v === 0); return v; }
+
+function makeTask(l) {
+  if (l === 0) {
+    const a = pick([1, 1, -1, 2, -2, 3]), d = nz(-5, 5), e = rnd(13) - 6;
+    return { l, a, d, e, want: { A: a, B: -2 * a * d, C: a * d * d + e },
+      title: "Schreibe in Normalform um.", task: scheitelHTML(a, d, e),
+      hint: "Erst die Klammer mit der binomischen Formel auflösen, dann mit a malnehmen. Negative Zahlen mit Minus eintippen.",
+      answer: `<div class="slots"><span>y =</span><span class="p">a</span><span>x² +</span><span class="p">b</span><span>x +</span><span class="p">c</span>
+      <span>y =</span>${inp("A")}<span>x² +</span>${inp("B")}<span>x +</span>${inp("C")}</div>`,
+      f: x => a * (x - d) ** 2 + e, sol: () => `${scheitelHTML(a, d, e, false)} = ${polyBody(a, -2 * a * d, a * d * d + e)}` };
+  }
+  if (l === 1) {
+    const a = pick([1, 1, -1, 2, -2]); let x1 = rnd(13) - 6, x2 = rnd(13) - 6; if (x1 > x2) [x1, x2] = [x2, x1];
+    return { l, a, x1, x2, want: { A: a, B: -a * (x1 + x2), C: a * x1 * x2 },
+      title: "Schreibe in Normalform um.", task: nullHTML(a, x1, x2),
+      hint: "Klammern ausmultiplizieren (jedes mit jedem), dann mit a malnehmen.",
+      answer: `<div class="slots"><span>y =</span><span class="p">a</span><span>x² +</span><span class="p">b</span><span>x +</span><span class="p">c</span>
+      <span>y =</span>${inp("A")}<span>x² +</span>${inp("B")}<span>x +</span>${inp("C")}</div>`,
+      f: x => a * (x - x1) * (x - x2), sol: () => `${nullHTML(a, x1, x2, false)} = ${polyBody(a, -a * (x1 + x2), a * x1 * x2)}` };
+  }
+  if (l === 2) {
+    const k = pick([1, 1, 1, 2, -1, 3]);
+    let p, q, roots;
+    if (Math.random() < 0.18) { const h = rnd(7) - 3; p = 2 * h; q = h * h + 1 + rnd(5); roots = []; }
+    else { let r1 = rnd(15) - 7, r2 = rnd(15) - 7; if (r1 > r2) [r1, r2] = [r2, r1]; p = -(r1 + r2); q = r1 * r2; roots = r1 === r2 ? [r1] : [r1, r2]; }
+    return { l, k, p, q, roots,
+      title: "Berechne die Lösungen.", task: polyBody(k, k * p, k * q) + " = 0",
+      hint: k === 1 ? "pq-Formel: x = −p/2 ± √((p/2)² − q). Gibt es nur eine Lösung, trag sie in beide Felder ein." : "Erst durch den Faktor vor x² teilen, dann die pq-Formel. Gibt es nur eine Lösung, trag sie in beide Felder ein.",
+      answer: `x₁ = ${inp("x1")} &nbsp; x₂ = ${inp("x2")} <label class="chk" style="font-size:17px;font-weight:700"><input type="checkbox" data-k="none"> keine Lösung</label>`,
+      f: x => k * (x * x + p * x + q),
+      sol: () => roots.length === 0 ? `D = (p/2)² − q = ${num((p / 2) ** 2 - q)} &lt; 0 → keine Lösung` : roots.length === 1 ? `x = ${num(roots[0])} (nur eine Lösung)` : `x₁ = ${num(roots[0])}, &nbsp; x₂ = ${num(roots[1])}` };
+  }
+  const a = pick([1, -1, 2, -2, 0.5, -0.5]), d = rnd(11) - 5, e = rnd(11) - 5;
+  return { l, a, d, e, want: { a, d, e },
+    title: "Lies die Scheitelpunktform aus der Skizze ab.", task: "",
+    hint: "Scheitel S(d | e) ablesen. Für a: vom Scheitel 1 nach rechts, wie viel geht es hoch oder runter? Bei S(−3 | …) ist d = −3.",
+    answer: `<div class="slots"><span>y =</span><span class="p ca">a</span><span>·(x −</span><span class="p cd">d</span><span>)² +</span><span class="p ce">e</span>
+      <span>y =</span>${inp("a")}<span>·(x −</span>${inp("d")}<span>)² +</span>${inp("e")}</div>`,
+    f: x => a * (x - d) ** 2 + e, sol: () => scheitelHTML(a, d, e, false) };
+}
+
+function renderLevels() {
+  const box = $("levels"); box.innerHTML = "";
+  LEVELS.forEach((L, i) => {
+    const b = document.createElement("button"); b.className = "lvl";
+    const open = allOpen() || i <= prog.unl;
+    b.disabled = !open; b.setAttribute("aria-pressed", i === prog.lvl);
+    const n = Math.min(prog.c[i], NEED);
+    b.innerHTML = `<span class="t">${open ? "" : "🔒 "}${L.t}</span><span class="s">${L.s}</span><span class="dots">${"●".repeat(n)}${"○".repeat(NEED - n)}</span>`;
+    b.addEventListener("click", () => { prog.lvl = i; save(); renderLevels(); newTask(); });
+    box.appendChild(b);
+  });
+  $("trProg").innerHTML = LEVELS.map((L, i) => `<span>${L.t}</span><span class="muted">${L.s}</span><span><b>${prog.c[i]}</b> richtig${prog.f[i] ? ` · ${prog.f[i]} ${prog.f[i] === 1 ? "Fehlversuch" : "Fehlversuche"}` : ""}</span>`).join("");
+}
+
+function newTask() {
+  task = makeTask(prog.lvl); task.state = "open"; task.counted = false; task.guess = null;
+  $("trTitle").textContent = LEVELS[task.l].t + ": " + task.title;
+  $("trTask").innerHTML = task.task; $("trTask").hidden = !task.task; $("trHint").textContent = task.hint;
+  $("trAnswer").innerHTML = task.answer;
+  $("trFb").textContent = ""; $("trFb").className = "feedback"; $("trSol").hidden = true;
+  $("trCheck").disabled = false; $("trShow").disabled = false;
+  const first = $("trAnswer").querySelector("input.in"); if (first && window.matchMedia("(pointer:fine)").matches) first.focus();
+  drawTrain();
+}
+
+function fields() { const o = {}; $("trAnswer").querySelectorAll("[data-k]").forEach(el => o[el.dataset.k] = el); return o; }
+function mark(el, ok) { el.classList.toggle("ok", ok); el.classList.toggle("bad", !ok); }
+
+function checkTask() {
+  if (!task || task.state !== "open") return;
+  const F = fields(), fb = $("trFb");
+  let ok = true;
+  if (task.l === 2) {
+    if (F.none.checked) {
+      ok = task.roots.length === 0; task.guess = { none: true };
+      [F.x1, F.x2].forEach(el => el.classList.remove("ok", "bad"));
+    } else {
+      const g = [parse(F.x1.value), parse(F.x2.value)];
+      if (g.some(isNaN)) { fb.className = "feedback no"; fb.textContent = "Bitte beide Felder ausfüllen (oder „keine Lösung“)."; return; }
+      const want = task.roots.length === 1 ? [task.roots[0], task.roots[0]] : task.roots.slice();
+      if (want.length === 0) { ok = false; mark(F.x1, false); mark(F.x2, false); }
+      else {
+        const straight = near(g[0], want[0], 0.01) && near(g[1], want[1], 0.01), cross = near(g[0], want[1], 0.01) && near(g[1], want[0], 0.01);
+        ok = straight || cross;
+        if (!ok) { mark(F.x1, want.some(w => near(w, g[0], 0.01))); mark(F.x2, want.some(w => near(w, g[1], 0.01))); }
+        else { mark(F.x1, true); mark(F.x2, true); }
+      }
+      task.guess = { xs: g };
+    }
+  } else {
+    const g = {};
+    for (const k in task.want) { g[k] = parse(F[k].value); }
+    if (Object.values(g).some(isNaN)) { fb.className = "feedback no"; fb.textContent = "Bitte alle Felder ausfüllen."; return; }
+    for (const k in task.want) { const good = near(g[k], task.want[k], 0.001); mark(F[k], good); ok = ok && good; }
+    task.guess = g;
+  }
+  if (ok) {
+    task.state = "done"; prog.c[task.l]++;
+    let msg = pick(["Richtig!", "Stark!", "Genau!", "Sauber gerechnet!"]);
+    if (prog.c[task.l] === NEED && task.l < 3 && prog.unl <= task.l) { prog.unl = task.l + 1; msg = `Richtig! ${LEVELS[task.l + 1].t} ist jetzt frei.`; }
+    fb.className = "feedback ok"; fb.textContent = msg;
+    $("trCheck").disabled = true; $("trShow").disabled = true;
+    $("trNext").focus();
+    if (!prog.won && prog.c.every(c => c >= NEED)) { prog.won = true; save(); setTimeout(showWin, 500); }
+  } else {
+    prog.f[task.l]++;
+    fb.className = "feedback no"; fb.textContent = "Noch nicht. Rot markierte Felder nochmal prüfen.";
+    if (task.l === 2 && task.guess.none) fb.textContent = "Doch, es gibt Lösungen. Rechne D = (p/2)² − q nochmal nach.";
+    if (task.l === 2 && !task.guess.none && task.roots.length === 0) fb.textContent = "Schau auf D = (p/2)² − q. Was ist, wenn D negativ ist?";
+  }
+  save(); renderLevels(); drawTrain();
+}
+
+function showSolution() {
+  if (!task || task.state !== "open") return;
+  task.state = "shown"; $("trSol").innerHTML = task.sol(); $("trSol").hidden = false;
+  const fb = $("trFb"); fb.className = "feedback"; fb.textContent = "Lösung (zählt nicht):";
+  $("trCheck").disabled = true; $("trShow").disabled = true; drawTrain();
+}
+
+function drawTrain() {
+  const B = bTrain; B.begin(); if (!task) return;
+  const reveal = task.state !== "open" || task.guess;
+  const leg = [];
+  if (task.l === 3) {
+    B.curve(task.f, tok("--pencil"), 5); leg.push(["--pencil", "Gegebene Parabel"]);
+    if (task.state !== "open") B.dot(task.d, task.e, tok("--pencil"), 6);
+  } else if (reveal) {
+    B.curve(task.f, tok("--pencil"), 5); leg.push(["--pencil", "Richtige Parabel"]);
+    if (task.l === 2) (task.roots).forEach(r => B.dot(r, 0, tok("--pencil"), 7));
+  }
+  const g = task.guess;
+  if (g && task.state !== "shown") {
+    if (task.l === 0 || task.l === 1) { B.curve(x => g.A * x * x + g.B * x + g.C, tok("--curve"), 3); leg.push(["--curve", "Deine Parabel"]); }
+    if (task.l === 3) { B.curve(x => g.a * (x - g.d) ** 2 + g.e, tok("--curve"), 3); leg.push(["--curve", "Deine Parabel"]); }
+    if (task.l === 2 && g.xs) { g.xs.forEach(x => B.dot(x, 0, tok("--curve"), 5)); leg.push(["--curve", "Deine Lösungen"]); }
+  }
+  if (!reveal && task.l !== 3) {
+    const c = B.ctx; c.font = `15px ${tok("--body")}`; c.fillStyle = tok("--muted"); c.textAlign = "center";
+    B.tag([["Skizze erscheint nach dem Prüfen", tok("--muted")]], B.w / 2, B.Y(-6), { align: "center", base: "middle" });
+  }
+  $("legTrain").innerHTML = leg.map(([c, t]) => `<span><i style="background:var(${c})"></i>${t}</span>`).join("");
+}
+
+$("trCheck").addEventListener("click", checkTask);
+$("trShow").addEventListener("click", showSolution);
+$("trNext").addEventListener("click", newTask);
+$("trAnswer").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); task.state === "open" ? checkTask() : newTask(); } });
+$("trAnswer").addEventListener("input", () => { if (task && task.state === "open") { $("trFb").textContent = ""; } });
+$("trReset").addEventListener("click", () => {
+  if (!confirmReset()) return;
+  prog = { c: [0, 0, 0, 0], f: [0, 0, 0, 0], unl: 0, lvl: 0, won: false }; save(); renderLevels(); newTask(); updProTab();
+});
+let resetArmed = 0;
+function confirmReset() {
+  const b = $("trReset");
+  if (Date.now() - resetArmed < 4000) { b.textContent = "Fortschritt zurücksetzen"; resetArmed = 0; return true; }
+  resetArmed = Date.now(); b.textContent = "Wirklich? Nochmal klicken"; setTimeout(() => { b.textContent = "Fortschritt zurücksetzen"; }, 4000); return false;
+}
+window.addEventListener("hashchange", renderLevels);
+if (!allOpen() && prog.lvl > prog.unl) prog.lvl = prog.unl;
+
+function showWin() {
+  const tot = prog.c.reduce((s, v) => s + v, 0), bad = prog.f.reduce((s, v) => s + v, 0);
+  $("winStats").textContent = `${tot} Aufgaben richtig gelöst${bad ? `, ${bad} ${bad === 1 ? "Fehlversuch" : "Fehlversuche"} unterwegs` : ", ohne einen einzigen Fehlversuch"}.`;
+  $("winStats").hidden = tot === 0;
+  $("win").hidden = false; $("winClose").focus(); confetti();
+}
+function closeWin() { $("win").hidden = true; confettiOn = false; updProTab(); }
+$("winClose").addEventListener("click", closeWin);
+$("win").addEventListener("click", e => { if (e.target.id === "win") closeWin(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("win").hidden) closeWin(); });
+let confettiOn = false;
+function confetti() {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const c = $("confetti"), dpr = window.devicePixelRatio || 1, W = innerWidth, H = innerHeight;
+  c.width = W * dpr; c.height = H * dpr; const ctx = c.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const cols = ["--a", "--d", "--e", "--z", "--curve", "--pencil"].map(tok);
+  const P = Array.from({ length: 180 }, () => ({ x: Math.random() * W, y: -20 - Math.random() * H * .6, vx: (Math.random() - .5) * 3, vy: 2 + Math.random() * 3,
+    r: 5 + Math.random() * 6, a: Math.random() * 6.3, va: (Math.random() - .5) * .3, c: pick(cols) }));
+  confettiOn = true; const t0 = performance.now();
+  (function frame(t) {
+    if (!confettiOn) { ctx.clearRect(0, 0, W, H); return; }
+    ctx.clearRect(0, 0, W, H);
+    for (const p of P) {
+      p.x += p.vx; p.y += p.vy; p.vy += 0.03; p.a += p.va;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.fillStyle = p.c; ctx.fillRect(-p.r / 2, -p.r / 4, p.r, p.r / 2); ctx.restore();
+    }
+    if (t - t0 < 6000) requestAnimationFrame(frame); else ctx.clearRect(0, 0, W, H);
+  })(t0);
+}
+
+/* =============================================================
+   2 PQ-FORMEL
+   ============================================================= */
+const bPq = new Board($("cPq"));
+const pqP = $("pqP"), pqQ = $("pqQ");
+const paren = v => v < 0 ? `(${num(v)})` : num(v);
+function updPq() {
+  const p = +pqP.value, q = +pqQ.value, h = p / 2, A = -h, D = r6(h * h - q);
+  $("pqPo").textContent = num(p); $("pqQo").textContent = num(q);
+  const sg = v => v < 0 ? "−" : "+";
+  $("pqEq").innerHTML =
+    `<span>x²</span><span>+</span><span class="v cd">p</span><span>x</span><span>+</span><span class="v ca">q</span><span>= 0</span>` +
+    `<span>x²</span><span>${sg(p)}</span><span class="v cd">${num(Math.abs(p))}</span><span>x</span><span>${sg(q)}</span><span class="v ca">${num(Math.abs(q))}</span><span>= 0</span>`;
+  const lines = [
+    `x₁,₂ = −${sp("cd", paren(h))} ± √(${sp("cd", paren(h))}² − ${sp("ca", paren(q))})`,
+    `x₁,₂ = ${sp("cd", num(A))} ± ${sp("ce", `√${D < 0 ? "(" + num(D) + ")" : num(D)}`)}`,
+  ];
+  let res = "", cls = "ok";
+  if (D > 1e-9) {
+    const s = Math.sqrt(D), exact = near(s, Math.round(s * 100) / 100, 1e-9);
+    lines.push(`x₁,₂ = ${sp("cd", num(A))} ± ${sp("ce", (exact ? "" : "≈ ") + num(Math.round(s * 100) / 100))}`);
+    res = `${sp("cz", `x₁ ${exact ? "=" : "≈"} ${num(Math.round((A - s) * 100) / 100)}`)}, &nbsp; ${sp("cz", `x₂ ${exact ? "=" : "≈"} ${num(Math.round((A + s) * 100) / 100)}`)} &nbsp; (2 Lösungen)`;
+  } else if (Math.abs(D) <= 1e-9) { res = `${sp("cz", "x = " + num(A))} &nbsp; (nur 1 Lösung, Scheitel auf der Achse)`; }
+  else { cls = "no"; res = "D < 0: Wurzel geht nicht, keine Lösung. Der Scheitel liegt über der x-Achse."; }
+  $("pqSteps").innerHTML = lines.map(l => `<div>${l}</div>`).join("");
+  $("pqRes").className = "feedback " + cls; $("pqRes").innerHTML = res;
+  drawPq();
+}
+function drawPq() {
+  const B = bPq; B.begin();
+  const p = +pqP.value, q = +pqQ.value, A = -p / 2, D = r6(A * A - q);
+  const cd = tok("--d"), ce = tok("--e"), ink = tok("--ink");
+  B.curve(x => x * x + p * x + q, tok("--curve"), 3.5);
+  // Tiefe D: senkrechte Strecke Scheitel - Achse
+  B.seg(A, 0, A, -D, ce, 3, []);
+  // Mitte -p/2 auf der Achse
+  B.seg(A, -0.35, A, 0.35, cd, 3, []);
+  B.tag([["−p/2 = ", cd], [num(A), cd]], B.X(A), B.Y(0) + (D > 0 ? -28 : 8), { align: "center", base: "top" });
+  if (Math.abs(D) > 0.05 && Math.abs(D) < 8) B.tag([[(D > 0 ? "Tiefe D = " : "D = ") + num(D), ce]], B.X(A) + 10, B.Y(-D / 2), { align: "left", base: "middle" });
+  if (D > 1e-9) {
+    const s = Math.sqrt(D);
+    B.seg(A - s, 0, A + s, 0, ce, 4, []);
+    B.dot(A - s, 0, tok("--z"), 7); B.dot(A + s, 0, tok("--z"), 7);
+    const sv = Math.round(s * 100) / 100, ex = near(s, sv, 1e-9);
+    if (s > 0.6) {
+      B.tag([["√D " + (ex ? "= " : "≈ ") + num(sv), ce]], B.X(A - s / 2), B.Y(0) + 10, { align: "center", base: "top", size: 13 });
+      B.tag([["√D", ce]], B.X(A + s / 2), B.Y(0) + 10, { align: "center", base: "top", size: 13 });
+    }
+  }
+  B.dot(A, -D, ink, 5);
+}
+[pqP, pqQ].forEach(s => s.addEventListener("input", updPq));
+
+/* =============================================================
+   3 DREI FORMEN
+   ============================================================= */
+const bF = new Board($("cForms"));
+let fm = { a: 1, d: 1, e: -4, flip: false };
+const fmA = $("fmA"), fmX1 = $("fmX1"), fmX2 = $("fmX2");
+function fmZeros() { const t = -fm.e / fm.a; if (t < -1e-9) return []; if (t <= 1e-9) return [fm.d]; const s = Math.sqrt(t); return [fm.d - s, fm.d + s]; }
+// Nullstellen in Beschriftungs-Reihenfolge [x1, x2] (x1 kann größer sein, wenn der Regler so steht)
+function fmLabeled() { const z = fmZeros(); if (!z.length) return null; if (z.length === 1) return [z[0], z[0]]; return fm.flip ? [z[1], z[0]] : [z[0], z[1]]; }
+const fmStep = () => 0.05;
+function fmSetZeros(x1, x2) { fm.d = (x1 + x2) / 2; fm.e = -fm.a * ((x2 - x1) / 2) ** 2; fm.flip = x1 > x2; }
+function updForms(fromSlider) {
+  const { a, d, e } = fm, Z = fmLabeled();
+  $("fmAo").textContent = num(a);
+  $("fmSp").innerHTML = scheitelHTML(a, r6(d), r6(e));
+  $("fmNf").innerHTML = polyHTML(a, r6(-2 * a * d), r6(a * d * d + e));
+  const nul = $("fmNull");
+  [fmX1, fmX2].forEach(s => s.disabled = !Z);
+  $("fmZoff").hidden = !!Z;
+  if (!Z) {
+    nul.className = "formula off"; nul.innerHTML = "Gibt es nicht: Die Parabel schneidet die x-Achse nicht, also gibt es keine Nullstellen.";
+    $("fmMid").textContent = ""; $("fmX1o").textContent = "–"; $("fmX2o").textContent = "–";
+  } else {
+    if (!fromSlider) { fmX1.value = r6(Z[0]); fmX2.value = r6(Z[1]); }
+    $("fmX1o").textContent = zfmt(Z[0]); $("fmX2o").textContent = zfmt(Z[1]);
+    nul.className = "formula mid";
+    const approx = Z.some(v => Math.abs(Math.round(v * 100) / 100 - v) > 1e-9);
+    nul.innerHTML = nullHTML(a, Z[0], Z[1], true, approx);
+    $("fmMid").innerHTML = near(Z[0], Z[1])
+      ? `Doppelte Nullstelle bei ${sp("cz", zfmt(Z[0]))}: Der Scheitel liegt auf der x-Achse.`
+      : `Mitte der Nullstellen: (${sp("cz", zfmt(Z[0]))} + ${sp("cz", zfmt(Z[1]))}) : 2 = ${sp("cd", num(r6(d)))} &nbsp;=&nbsp; x-Wert des Scheitels`;
+  }
+  drawForms();
+}
+function drawForms() {
+  const B = bF; B.begin();
+  const { a, d, e } = fm, Z = fmLabeled(), cz = tok("--z");
+  B.curve(x => a * (x - d) ** 2 + e, tok("--curve"), 3.5);
+  if (Z && !near(Z[0], Z[1])) {
+    B.seg(Z[0], 0, Z[1], 0, cz, 3, []);
+    B.seg(d, e, d, 0, tok("--d"), 1.8);
+    B.seg(d, -0.3, d, 0.3, tok("--d"), 3, []);
+  }
+  if (Z) [...new Set(Z.map(r6))].forEach(x => B.dot(x, 0, cz, 9));
+  B.dot(d, e, tok("--curve"), 8);
+  const below = a > 0;
+  B.tag([["S(", tok("--ink")], [num(r6(d)), tok("--d")], ["|", tok("--ink")], [num(r6(e)), tok("--e")], [")", tok("--ink")]], B.X(d) + 12, B.Y(e) + (below ? 6 : -6), { base: below ? "top" : "bottom" });
+  if (Z) {
+    if (near(Z[0], Z[1])) B.tag([["x₁ = x₂ = " + zfmt(Z[0]), cz]], B.X(Z[0]), B.Y(0) + (below ? -30 : 10), { align: "center", base: "top", size: 14 });
+    else Z.forEach((x, i) => B.tag([[(i ? "x₂ = " : "x₁ = ") + zfmt(x), cz]], B.X(x), B.Y(0) + (below ? -30 : 10), { align: "center", base: "top", size: 14 }));
+  }
+}
+draggable(bF,
+  (x, y, px, py) => {
+    const Z = fmLabeled();
+    if (Z) for (let i = 0; i < 2; i++) if (nearPx(bF, Z[i], 0, px, py, 18)) return { kind: "z", i, other: Z[1 - i] };
+    if (nearPx(bF, fm.d, fm.e, px, py, 18)) return { kind: "v" };
+    return null;
+  },
+  (g, x, y) => {
+    const s = fmStep(), R = bF.R - 0.5;
+    if (g.kind === "v") { fm.d = Math.max(-R, Math.min(R, snapTo(x, s))); fm.e = Math.max(-R, Math.min(R, snapTo(y, s))); fm.flip = false; }
+    else {
+      const xi = Math.max(-R, Math.min(R, snapTo(x, s))), xo = g.other;
+      if (Math.abs(fm.a * ((xi - xo) / 2) ** 2) > R) return; // Scheitel bleibt im Bild
+      g.i === 0 ? fmSetZeros(xi, xo) : fmSetZeros(xo, xi);
+    }
+    updForms();
+  }, () => {});
+function fmFromSliders() {
+  const x1 = +fmX1.value, x2 = +fmX2.value;
+  fmSetZeros(x1, x2);
+  if (Math.abs(fm.e) > bF.R - 0.5) $("fmMid").innerHTML += ""; // Scheitel evtl. außerhalb, Parabel trotzdem korrekt
+  updForms(true);
+}
+[fmX1, fmX2].forEach(sl => sl.addEventListener("input", fmFromSliders));
+fmA.addEventListener("input", () => {
+  if (+fmA.value === 0) fmA.value = fm.a > 0 ? -fmA.step : fmA.step;
+  const Z = fmLabeled(); fm.a = +fmA.value;
+  if (Z) fmSetZeros(Z[0], Z[1]); // Nullstellen bleiben, wenn es welche gibt
+  updForms();
+});
+$("fmReset").addEventListener("click", () => { fm = { a: 1, d: 1, e: -4, flip: false }; fmA.value = 1; updForms(); });
+
+/* =============================================================
+   4 SCHEITELPUNKTFORM (Erkunden + Quiz)
+   ============================================================= */
+const bS = new Board($("cSp"));
+const sa = $("spA"), sd = $("spD"), se = $("spE");
+let spMode = "explore", target = null, solved = false, hits = 0, tries = 0;
+const vText = (a, d, e) => `Scheitelpunkt S(${sp("cd", num(d))} | ${sp("ce", num(e))})<span class="gap"></span>Streckfaktor ${sp("ca", num(a))}`;
+function fitVertex() {
+  const el = $("spVertex"), pr = $("spProbe");
+  pr.style.fontSize = "19px"; pr.innerHTML = vText(-2.95, -5.95, -5.95);
+  const avail = el.clientWidth, need = pr.getBoundingClientRect().width;
+  el.style.fontSize = need > avail && avail > 0 ? (19 * avail / need * 0.98).toFixed(2) + "px" : "19px";
+}
+new ResizeObserver(fitVertex).observe($("spVertex"));
+function stepsHTML(a, d, e) {
+  if (d === 0) return "";
+  const s2 = -2 * d, mid = `x² ${s2 > 0 ? "+" : "−"} ${num(Math.abs(s2))}x + ${num(d * d)}`;
+  const eP = e === 0 ? "" : e > 0 ? ` + ${sp("ce", num(e))}` : ` − ${sp("ce", num(-e))}`;
+  return `y = ${aPre(a, "ca")}(${mid})${eP}`;
+}
+function updSp() {
+  if (+sa.value === 0) sa.value = sa.dataset.last > 0 ? -sa.step : sa.step;
+  sa.dataset.last = sa.value;
+  const a = +sa.value, d = +sd.value, e = +se.value;
+  $("spAo").textContent = num(a); $("spDo").textContent = num(d); $("spEo").textContent = num(e);
+  $("spForm").innerHTML = scheitelHTML(a, d, e);
+  $("spVertex").innerHTML = vText(a, d, e);
+  const st = stepsHTML(a, d, e);
+  $("spSteps").innerHTML = st; $("spSteps").hidden = !st;
+  $("spNf").innerHTML = (st ? "&nbsp;&nbsp;= " : "y = ") + polyBody(a, r6(-2 * a * d), r6(a * d * d + e));
+  drawSp();
+}
+function drawSp() {
+  const B = bS; B.begin();
+  const a = +sa.value, d = +sd.value, e = +se.value, muted = tok("--muted"), ink = tok("--ink");
+  if ($("spNorm").checked) B.curve(x => x * x, muted, 1.6, [6, 5]);
+  if (spMode === "quiz" && target) { B.curve(x => target.a * (x - target.d) ** 2 + target.e, tok("--pencil"), 6); if (solved) B.dot(target.d, target.e, tok("--pencil"), 6); }
+  B.curve(x => a * (x - d) ** 2 + e, tok("--curve"), 3.5);
+  if (spMode === "explore") {
+    B.seg(d, e, d, 0, tok("--d"), 1.5, [4, 4]); B.seg(d, e, 0, e, tok("--e"), 1.5, [4, 4]);
+    B.dot(d, e, tok("--curve"), 7);
+    B.tag([["S(", ink], [num(d), tok("--d")], ["|", ink], [num(e), tok("--e")], [")", ink]], B.X(d) + 12, B.Y(e) + (a > 0 ? 6 : -6), { base: a > 0 ? "top" : "bottom" });
+  } else B.dot(d, e, tok("--curve"), 7);
+}
+[sa, sd, se].forEach(s => s.addEventListener("input", () => { $("spFb").textContent = ""; updSp(); }));
+$("spNorm").addEventListener("change", () => { $("spLegNorm").hidden = !$("spNorm").checked; drawSp(); });
+$("spReset").addEventListener("click", () => { sa.value = 1; sd.value = 0; se.value = 0; updSp(); });
+draggable(bS,
+  (x, y, px, py) => nearPx(bS, +sd.value, +se.value, px, py, 18) ? { v: 1 } : null,
+  (g, x, y) => { sd.value = r6(snapTo(x, 0.05)); se.value = r6(snapTo(y, 0.05)); $("spFb").textContent = ""; updSp(); }, () => {});
+
+const A_CHOICES = [-2, -1, -0.5, 0.5, 1, 2];
+function newTarget() {
+  let t;
+  do t = { a: pick(A_CHOICES), d: rnd(9) - 4, e: rnd(11) - 5 }; while (target && t.a === target.a && t.d === target.d && t.e === target.e);
+  target = t; solved = false; $("spFb").textContent = ""; $("spFb").className = "feedback";
+  sa.value = 1; sd.value = 0; se.value = 0; updSp();
+}
+$("spCheck").addEventListener("click", () => {
+  if (solved) return;
+  const a = +sa.value, d = +sd.value, e = +se.value; tries++;
+  const fb = $("spFb");
+  const okS = Math.abs(d - target.d) <= 0.15 && Math.abs(e - target.e) <= 0.15, okA = Math.abs(a - target.a) <= 0.1;
+  if (okS && okA) { hits++; solved = true; fb.className = "feedback ok"; fb.innerHTML = "Treffer! Exakt: " + scheitelHTML(target.a, target.d, target.e); }
+  else {
+    fb.className = "feedback no"; const wrong = [];
+    if (!okS) wrong.push("Scheitel");
+    if (!okA) wrong.push(Math.sign(a) !== Math.sign(target.a) ? "Öffnung" : "Streckfaktor");
+    fb.textContent = "Noch nicht: " + wrong.join(" und ") + " prüfen.";
+  }
+  $("spScore").textContent = `Treffer: ${hits} von ${tries}`; drawSp();
+});
+$("spSolve").addEventListener("click", () => {
+  solved = true; sa.value = target.a; sd.value = target.d; se.value = target.e; updSp();
+  const fb = $("spFb"); fb.className = "feedback ok"; fb.innerHTML = scheitelHTML(target.a, target.d, target.e);
+});
+$("spNext").addEventListener("click", newTarget);
+function setSpMode(m) {
+  spMode = m;
+  $("spTabs").querySelectorAll("button").forEach(b => b.setAttribute("aria-selected", b.dataset.m === m));
+  $("spQuizCard").hidden = m !== "quiz"; $("spLegTarget").hidden = m !== "quiz";
+  $("spLegMine").textContent = m === "quiz" ? "Eure Parabel" : "Parabel";
+  if (m === "quiz") newTarget(); else updSp();
+}
+$("spTabs").querySelectorAll("button").forEach(b => b.addEventListener("click", () => setSpMode(b.dataset.m)));
+
+/* =============================================================
+   5 PROFI-AUFGABEN (erst nach allen 4 Stufen sichtbar)
+   ============================================================= */
+const PRO = [
+  { q: "Eine nach oben geöffnete Normalparabel hat die Nullstellen −1 und 5 (siehe Skizze). Wo liegt ihr Scheitel?",
+    pts: [[-1, 0], [5, 0]], cap: "Nur die Nullstellen sind eingezeichnet.",
+    opts: ["S(2 | −9)", "S(3 | −9)", "S(2 | 9)", "S(2 | −5)"], ok: 0, after: [{ f: x => (x + 1) * (x - 5) }], afterPts: [[2, -9]],
+    ex: "Der Scheitel liegt genau in der Mitte: x = (−1 + 5) : 2 = 2. Einsetzen in y = (x + 1)(x − 5): y = 3 · (−3) = −9." },
+  { q: "Für welches e hat y = −2(x − 1)² + e genau eine Nullstelle?",
+    graph: [{ f: x => -2 * (x - 1) ** 2 + 3 }], cap: "So sieht die Parabel zum Beispiel für e = 3 aus.",
+    opts: ["e = −2", "e = 0", "e = 1", "e = 2"], ok: 1, after: [{ f: x => -2 * (x - 1) ** 2, c: "--e" }],
+    ex: "Genau eine Nullstelle heißt: Der Scheitel S(1 | e) liegt auf der x-Achse. Also e = 0 (grün)." },
+  { q: "Die Parabel y = (x − 1)(x − 5) wird um 2 nach oben verschoben. Was passiert mit den Nullstellen?",
+    graph: [{ f: x => (x - 1) * (x - 5) }], pts: [[1, 0], [5, 0]],
+    cap: "Das ist y = (x − 1)(x − 5) mit ihren Nullstellen 1 und 5.",
+    after: [{ f: x => (x - 1) * (x - 5) + 2, c: "--pencil", dash: true }], afterPts: [[3 - Math.SQRT2, 0], [3 + Math.SQRT2, 0]],
+    afterCap: "Gestrichelt: die um 2 nach oben verschobene Parabel mit ihren neuen Nullstellen.",
+    opts: ["Sie wandern beide 2 nach oben.", "Sie rücken näher zusammen.", "Sie rücken weiter auseinander.", "Sie bleiben gleich."], ok: 1,
+    ex: "Nullstellen liegen immer auf der x-Achse, sie können nicht „nach oben wandern“. Die verschobene Parabel schneidet die x-Achse weiter unten im Bogen, wo er schmaler ist. Aus 1 und 5 werden 3 − √2 ≈ 1,59 und 3 + √2 ≈ 4,41." },
+  { q: "Was haben y = (x − 3)² + 1 und y = −(x − 3)² + 1 gemeinsam?",
+    opts: ["Dieselben Nullstellen", "Denselben Scheitel", "Dieselbe Normalform", "Beide haben keine Nullstellen"], ok: 1,
+    after: [{ f: x => (x - 3) ** 2 + 1 }, { f: x => -((x - 3) ** 2) + 1, c: "--pencil" }], afterPts: [[3, 1]],
+    ex: "Beide haben S(3 | 1). Die blaue ist nach oben geöffnet und hat keine Nullstellen, die rote nach unten und schneidet die x-Achse bei 2 und 4." },
+  { q: "Bei der pq-Formel kommt unter der Wurzel genau 0 heraus. Was bedeutet das für die Parabel y = x² + px + q?",
+    opts: ["Der Scheitel liegt auf der x-Achse.", "Der Scheitel liegt auf der y-Achse.", "Die Parabel geht durch den Ursprung.", "Die Parabel hat keine Nullstelle."], ok: 0,
+    after: [{ f: x => (x - 2) ** 2 }], afterCap: "Beispiel: x² − 4x + 4 = 0, unter der Wurzel steht 4 − 4 = 0.",
+    ex: "x = −p/2 ± √0 liefert nur eine Lösung. Die Parabel berührt die x-Achse also nur in einem Punkt, und das ist ihr Scheitel." },
+  { q: "Die Parabel y = x² + px + q hat keine Nullstellen. Was gilt dann sicher?",
+    opts: ["(p/2)² − q < 0", "q < 0", "p < 0", "q = 0"], ok: 0,
+    after: [{ f: x => x * x - 2 * x + 3 }], afterCap: "Beispiel: y = x² − 2x + 3, unter der Wurzel steht 1 − 3 = −2.",
+    ex: "Keine Nullstellen heißt: Unter der Wurzel der pq-Formel steht etwas Negatives. Vorsicht: Bei q < 0 gibt es sogar immer zwei Nullstellen, denn dann ist (p/2)² − q sicher positiv." },
+  { q: "Die Parabel y = a(x − 1)² + 4 hat den Scheitel S(1 | 4) und geht durch P(3 | 0). Wie groß ist a?",
+    pts: [[1, 4, "S"], [3, 0, "P"]], cap: "Nur S und P sind eingezeichnet.",
+    opts: ["a = −1", "a = 1", "a = −2", "a = −0,5"], ok: 0, after: [{ f: x => -((x - 1) ** 2) + 4 }],
+    ex: "P einsetzen: 0 = a · (3 − 1)² + 4 = 4a + 4. Also a = −1. In der Skizze: Vom Scheitel 2 nach rechts geht es 4 nach unten, bei der Normalparabel wären es genau 2² = 4 nach oben." },
+  { q: "Die Parabel y = x² + px + q ist symmetrisch zur gestrichelten Geraden x = 3. Was weißt du über p?",
+    graph: [{ f: x => x * x - 6 * x + 5 }], vlines: [3], cap: "Die Parabel ist symmetrisch zur Geraden x = 3.",
+    opts: ["p = 3", "p = −3", "p = −6", "p = 6"], ok: 2,
+    ex: "Die Symmetrieachse geht durch den Scheitel, und der hat den x-Wert −p/2. Also −p/2 = 3 und damit p = −6. Über q weiß man nichts: Hoch- oder Runterschieben ändert die Achse nicht." },
+  { q: "Welche Aussage über diese Parabel ist falsch?", graph: [{ f: x => 0.5 * (x + 2) ** 2 - 2 }],
+    opts: ["Der Scheitel ist S(−2 | −2).", "Sie ist gestaucht (breiter als die Normalparabel).", "Ihre Nullstellen sind −4 und 0.", "Sie ist nach unten geöffnet."], ok: 3,
+    ex: "Die Parabel ist nach oben geöffnet (a = 0,5 > 0). Alles andere stimmt: y = 0,5(x + 2)² − 2." },
+  { q: "Du willst 2x² − 8x = −6 mit der pq-Formel lösen. Welche Werte haben p und q?",
+    opts: ["p = −8, q = 6", "p = −4, q = 3", "p = −4, q = −3", "p = 4, q = 3"], ok: 1,
+    ex: "Erst alles auf eine Seite: 2x² − 8x + 6 = 0. Dann durch 2 teilen: x² − 4x + 3 = 0. Also p = −4 und q = 3." },
+  { q: "Wie viele Schnittpunkte haben y = x² und die Gerade y = 2x − 1?",
+    opts: ["Keinen", "Genau einen", "Zwei", "Kann man ohne Zeichnung nicht sagen"], ok: 1,
+    after: [{ f: x => x * x }, { f: x => 2 * x - 1, c: "--pencil" }], afterPts: [[1, 1]],
+    ex: "Gleichsetzen: x² = 2x − 1, also x² − 2x + 1 = 0. Unter der Wurzel steht 1 − 1 = 0, also genau eine Lösung x = 1. Die Gerade berührt die Parabel in P(1 | 1)." },
+  { q: "Was stimmt für y = (x − 2)² − 9 und y = (x + 1)(x − 5)?",
+    opts: ["Das ist dieselbe Parabel.", "Gleicher Scheitel, aber andere Öffnung", "Gleiche Nullstellen, aber verschiedene Scheitel", "Sie haben nichts gemeinsam."], ok: 0,
+    after: [{ f: x => (x - 2) ** 2 - 9 }], afterPts: [[2, -9], [-1, 0], [5, 0]],
+    ex: "Beide ausmultiplizieren: x² − 4x + 4 − 9 = x² − 4x − 5 und x² − 5x + x − 5 = x² − 4x − 5. Gleiche Normalform, also dieselbe Parabel in zwei Schreibweisen." },
+  { q: "Welche Gleichung gehört zu dieser Parabel?", graph: [{ f: x => (x - 2) ** 2 - 3 }],
+    opts: ["y = (x + 2)² − 3", "y = x² − 4x + 1", "y = x² + 4x + 1", "y = (x − 2)² + 3"], ok: 1,
+    ex: "Scheitel ablesen: S(2 | −3), also y = (x − 2)² − 3. Die steht hier nicht, aber ausmultipliziert: x² − 4x + 4 − 3 = x² − 4x + 1." },
+  { q: "Welcher Graph gehört zu y = −(x + 1)(x − 3)?", gopts: [x => (x + 1) * (x - 3), x => -(x - 1) * (x + 3), x => -(x + 1) * (x - 3), x => -((x - 1) ** 2) - 4], ok: 2,
+    ex: "Minus vorne: nach unten geöffnet. Nullstellen dort, wo eine Klammer 0 wird: x = −1 und x = 3. Der Scheitel liegt in der Mitte bei x = 1." },
+];
+const bPro = new Board($("cPro"), 7);
+let pro = { i: 0, score: 0, answered: false, order: [], minis: [], errs: [] };
+function shuffle(n) { const a = [...Array(n).keys()]; for (let i = n - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function proVisible() { return !!prog.won && window.__tabOk("pro"); }
+function updProTab() {
+  const vis = proVisible(), b = document.querySelector('#mainTabs [data-tab="pro"]');
+  b.hidden = !vis;
+  if (!vis && typeof current !== "undefined" && current === "pro") show("pq");
+}
+function buildOpts(Q) {
+  let order; do order = shuffle(4); while (pro.order.length && order.every((k, i) => k === pro.order[i]));
+  pro.order = order;
+  const box = $("proOpts"); box.innerHTML = ""; box.classList.toggle("graphs", !!Q.gopts); pro.minis = [];
+  pro.order.forEach((k, pos) => {
+    const b = document.createElement("button"); b.className = "opt"; b.dataset.k = k;
+    const L = "ABCD"[pos];
+    if (Q.gopts) {
+      b.innerHTML = `<span class="badge">${L}</span><canvas aria-label="Graph ${L}"></canvas>`;
+      const board = new Board(b.querySelector("canvas"), 5); board.lab = 2;
+      pro.minis.push({ board, f: Q.gopts[k] });
+    } else b.innerHTML = `<span class="badge">${L}</span><span>${Q.opts[k]}</span>`;
+    b.addEventListener("click", () => answerPro(k, b));
+    box.appendChild(b);
+  });
+  requestAnimationFrame(drawPro);
+}
+function proHead() { $("proHead").textContent = `Frage ${pro.i + 1} von ${PRO.length} · ${pro.score} beim ersten Versuch richtig`; }
+function renderPro() {
+  const Q = PRO[pro.i]; pro.answered = false; pro.missed = false; pro.order = [];
+  clearInterval(pro.timer); $("proLock").hidden = true; pro.locked = false;
+  $("proDone").hidden = true; $("proQuiz").hidden = false;
+  proHead(); $("proQ").textContent = Q.q;
+  $("cPro").hidden = !proHasPic(Q, false); $("proCap").textContent = Q.cap || ""; $("proCap").hidden = !Q.cap;
+  buildOpts(Q);
+  $("proFb").textContent = ""; $("proFb").className = "feedback"; $("proEx").hidden = true; $("proNext").hidden = true;
+}
+function answerPro(k, btn) {
+  if (window.__changed) window.__changed();
+  const Q = PRO[pro.i];
+  if (pro.answered || pro.locked) return;
+  const fb = $("proFb");
+  if (k === Q.ok) {
+    if (!pro.missed) pro.score++;
+    pro.answered = true; btn.classList.add("right");
+    fb.className = "feedback ok"; fb.textContent = pro.missed ? "Jetzt stimmt’s." : pick(["Richtig!", "Genau!", "Stark!"]);
+    $("proEx").textContent = Q.ex; $("proEx").hidden = false;
+    $("proNext").hidden = false; $("proNext").textContent = pro.i < PRO.length - 1 ? "Nächste Frage" : "Auswertung";
+    $("proNext").focus();
+    $("proOpts").querySelectorAll(".opt").forEach(o => o.disabled = o !== btn);
+    if (proHasPic(Q, true)) $("cPro").hidden = false;
+    if (Q.afterCap) { $("proCap").textContent = Q.afterCap; $("proCap").hidden = false; }
+    drawPro();
+  } else {
+    // falsch: 3 Sekunden sperren, dann alle 4 Antworten neu mischen
+    pro.missed = true; pro.locked = true; btn.classList.add("wrong"); pro.errs[pro.i] = (pro.errs[pro.i] || 0) + 1;
+    $("proOpts").querySelectorAll(".opt").forEach(o => o.disabled = true);
+    let n = 3; $("proCount").textContent = n; $("proLock").hidden = false;
+    $("proPicked").textContent = Q.gopts ? `Du hattest Graph ${"ABCD"[pro.order.indexOf(k)]} gewählt.` : `Du hattest „${Q.opts[k]}“ gewählt.`;
+    clearInterval(pro.timer);
+    pro.timer = setInterval(() => {
+      n--;
+      if (n > 0) { $("proCount").textContent = n; return; }
+      clearInterval(pro.timer); pro.locked = false; $("proLock").hidden = true; buildOpts(Q);
+    }, 1000);
+  }
+  proHead();
+}
+function nextPro() {
+  if (window.__changed) window.__changed();
+  if (pro.review) { showProDone(); return; }
+  if (pro.i < PRO.length - 1) { pro.i++; renderPro(); return; }
+  pro.finished = true; showProDone();
+}
+function showProDone() {
+  pro.review = false;
+  $("proQuiz").hidden = true; $("proDone").hidden = false;
+  const s = pro.score, n = PRO.length;
+  $("proDoneT").textContent = s >= n - 2 ? "Parabel-Profi! 🏅" : s >= n / 2 ? "Stark gemacht!" : "Geschafft!";
+  $("proDoneS").textContent = `${s} von ${n} Fragen beim ersten Versuch richtig.` + (s < n / 2 ? " Lies dir die Erklärungen in Ruhe nochmal durch, dann klappt es beim zweiten Durchgang besser." : "");
+  const list = $("proList"); list.innerHTML = "";
+  PRO.forEach((Q, i) => {
+    const e = pro.errs[i] || 0;
+    const b = document.createElement("button"); b.className = "revitem" + (e ? " had" : "");
+    b.innerHTML = `<span class="nr">${i + 1}</span><span class="qt">${Q.q}</span><span class="er">${e === 0 ? "✓ sofort richtig" : e === 1 ? "1 Fehler" : e + " Fehler"}</span>`;
+    b.addEventListener("click", () => reviewPro(i));
+    list.appendChild(b);
+  });
+  window.scrollTo({ top: 0 });
+}
+function reviewPro(i) {
+  pro.i = i; pro.review = true; renderPro();
+  const Q = PRO[i]; pro.answered = true;
+  $("proOpts").querySelectorAll(".opt").forEach(o => { if (+o.dataset.k === Q.ok) o.classList.add("right"); else o.disabled = true; });
+  const e = pro.errs[i] || 0;
+  $("proHead").textContent = `Rückblick: Frage ${i + 1} von ${PRO.length} · ${e === 0 ? "sofort richtig" : e === 1 ? "1 Fehler" : e + " Fehler"}`;
+  $("proEx").textContent = Q.ex; $("proEx").hidden = false;
+  if (proHasPic(Q, true)) $("cPro").hidden = false;
+  if (Q.afterCap) { $("proCap").textContent = Q.afterCap; $("proCap").hidden = false; }
+  $("proNext").hidden = false; $("proNext").textContent = "Zurück zur Übersicht";
+  window.scrollTo({ top: 0 }); requestAnimationFrame(drawPro);
+}
+function proHasPic(Q, answered) { return !!(Q.graph || Q.pts || Q.vlines || (answered && (Q.after || Q.afterPts))); }
+function drawPro() {
+  const Q = PRO[pro.i]; if (!Q) return;
+  const B = bPro;
+  if (!$("cPro").hidden) {
+    B.begin();
+    const items = [...(Q.graph || []), ...(pro.answered && Q.after ? Q.after : [])];
+    (Q.vlines || []).forEach(x => B.seg(x, -B.R, x, B.R, tok("--d"), 2.5, [8, 6]));
+    items.forEach(it => B.curve(it.f, tok(it.c || "--curve"), 3.5, it.dash ? [10, 7] : null));
+    const pts = [...(Q.pts || []), ...(pro.answered && Q.afterPts ? Q.afterPts : [])];
+    pts.forEach(([x, y, l]) => { B.dot(x, y, tok("--ink"), 6); if (l) B.tag([[l, tok("--ink")]], B.X(x) + 9, B.Y(y) - 4, { base: "bottom" }); });
+  }
+  pro.minis.forEach(m => { m.board.begin(); m.board.curve(m.f, tok("--curve"), 3); });
+}
+$("proNext").addEventListener("click", nextPro);
+$("proAgain").addEventListener("click", () => { pro = { i: 0, score: 0, answered: false, order: [], minis: [], errs: [] }; renderPro(); });
+window.addEventListener("hashchange", updProTab);
+
+/* =============================================================
+   Tabs + Zeichnen
+   ============================================================= */
+let current = "pq";
+const drawers = { pro: drawPro, train: drawTrain, pq: drawPq, forms: drawForms, sp: () => { fitVertex(); drawSp(); } };
+function show(tab) {
+  current = tab; if (window.__changed) window.__changed();
+  document.querySelectorAll("#mainTabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === tab));
+  document.querySelectorAll(".tab").forEach(s => s.hidden = s.id !== "tab-" + tab);
+  try { localStorage.setItem(KEY + "-tab", tab); } catch (_) {}
+  requestAnimationFrame(drawers[tab]);
+}
+document.querySelectorAll("#mainTabs button").forEach(b => b.addEventListener("click", () => show(b.dataset.tab)));
+const redraw = () => drawers[current]();
+["cTrain", "cPq", "cForms", "cSp", "cPro", "proOpts"].forEach(id => new ResizeObserver(redraw).observe($(id)));
+try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", redraw); } catch (_) {}
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { fitVertex(); redraw(); });
+
+renderLevels(); newTask(); updPq(); updForms(); updSp(); renderPro(); updProTab();
+$("winPro").addEventListener("click", () => { closeWin(); show("pro"); });
+let startTab = "pq"; try { startTab = localStorage.getItem(KEY + "-tab") || "pq"; } catch (_) {}
+show(drawers[startTab] && (startTab !== "pro" || proVisible()) ? startTab : "pq");
+window.__lab2 = { show, updProTab, current: () => current, prog: () => prog, pro: () => pro, PRO_N: PRO.length };
+window.__lab = { get task() { return task; }, prog: () => prog };
+};
+</script>
+</body>
+</html>

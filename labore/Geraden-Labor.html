@@ -1,0 +1,974 @@
+<!doctype html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%2317212b%22/%3E%3Cpath%20d%3D%22M4%2026H29M7%2029V3%22%20stroke%3D%22%2393a5b6%22%20stroke-width%3D%222%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22/%3E%3Cpath%20d%3D%22M4%2025L28%206%22%20stroke%3D%22%236b9bff%22%20stroke-width%3D%223.2%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22/%3E%3C/svg%3E">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Geraden-Labor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+:root{
+  --paper:#fbfcfd; --ink:#15212c; --muted:#58697a; --line:#d4dee8; --surface:#eef3f8;
+  --grid:#dbe6f0; --grid-strong:#b3c6d8;
+  --a:#8e44ad; --d:#e07a1f; --e:#2e9e4f; --z:#0e7c86; --curve:#1f5eff; --pencil:#d2452f; --focus:#1f5eff;
+  --ok-bg:#e3f4e8; --bad-bg:#fbe6e2;
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible",system-ui,-apple-system,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0f161d; --ink:#e5ecf3; --muted:#93a5b6; --line:#273543; --surface:#17212b;
+  --grid:#1c2834; --grid-strong:#2e3f50;
+  --a:#c387e0; --d:#f5a25a; --e:#5fcf82; --z:#4fc3cf; --curve:#6b9bff; --pencil:#ff7d60; --focus:#6b9bff;
+  --ok-bg:#16301f; --bad-bg:#3a1d17; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0f161d; --ink:#e5ecf3; --muted:#93a5b6; --line:#273543; --surface:#17212b;
+  --grid:#1c2834; --grid-strong:#2e3f50;
+  --a:#c387e0; --d:#f5a25a; --e:#5fcf82; --z:#4fc3cf; --curve:#6b9bff; --pencil:#ff7d60; --focus:#6b9bff;
+  --ok-bg:#16301f; --bad-bg:#3a1d17; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+.wrap{max-width:1240px;margin:0 auto;padding:20px max(16px,env(safe-area-inset-right,0px)) 32px max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 24px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,4vw,40px);line-height:1.05;margin:0}
+.seg{display:inline-flex;flex-wrap:wrap}
+.seg button{font:inherit;font-size:15px;padding:8px 14px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer;margin-left:-1.5px}
+.seg button:first-child{border-radius:8px 0 0 8px;margin-left:0}
+.seg button:last-child{border-radius:0 8px 8px 0}
+.seg button[aria-selected="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.lede{margin:0;color:var(--muted);max-width:75ch}
+.stage{display:grid;grid-template-columns:minmax(0,11fr) minmax(0,10fr);gap:18px;align-items:start}
+@media (max-width:860px){.stage{grid-template-columns:minmax(0,1fr)}}
+canvas{display:block;width:100%;aspect-ratio:1/1;max-height:640px;border:1px solid var(--line);border-radius:12px;background:var(--paper);touch-action:none}
+.side{display:flex;flex-direction:column;gap:14px;min-width:0}
+.card{background:var(--surface);border-radius:12px;padding:14px 16px;min-width:0}
+.label{font-size:13px;color:var(--muted);margin:0 0 4px}
+.formula{font-family:var(--display);font-weight:800;font-size:clamp(26px,3.4vw,40px);line-height:1.2;white-space:nowrap;overflow-x:auto}
+.formula.mid{font-size:clamp(20px,2.4vw,28px)}
+.formula.small{font-size:clamp(17px,2vw,22px);font-weight:600}
+.cm{color:var(--d)} .cb{color:var(--e)} .cz{color:var(--z)} .ca{color:var(--a)}
+.info{font-size:17px;font-weight:700;margin-top:6px;white-space:nowrap}
+@media (max-width:600px){.info{white-space:normal;font-size:15px}}
+.sl{display:grid;grid-template-columns:28px minmax(0,1fr) 72px;align-items:center;gap:10px;margin:8px 0}
+.sl b{font-family:var(--display);font-size:22px}
+.sl input{width:100%;min-width:0}
+.sl output{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
+input.rm{accent-color:var(--d)} input.rb{accent-color:var(--e)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button.btn{font:inherit;font-size:15px;padding:8px 14px;border-radius:8px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+button.btn.primary{background:var(--curve);border-color:var(--curve);color:#fff;font-weight:700}
+button.btn:disabled{opacity:.45;cursor:default}
+button.btn.small{font-size:13px;padding:4px 10px}
+button:focus-visible,input:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.feedback{font-family:var(--display);font-weight:800;font-size:21px;min-height:30px;margin-top:8px}
+.feedback.ok{color:var(--e)} .feedback.no{color:var(--pencil)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px;color:var(--muted);margin-top:8px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{display:inline-block;width:22px;height:3px;border-radius:2px}
+.hint{font-size:13px;color:var(--muted);margin:6px 0 0}
+table.wt{border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:18px;width:100%}
+table.wt td,table.wt th{border:1.5px solid var(--line);padding:4px 6px;text-align:center;min-width:2.6em}
+table.wt th{color:var(--muted);font-weight:700;background:var(--paper)}
+table.wt td{font-weight:700}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .15em;line-height:1.15}
+.frac>span:first-child{border-bottom:2px solid currentColor;padding:0 .2em}
+.frac>span:last-child{padding:0 .2em}
+.dq{font-family:var(--display);font-weight:700;font-size:clamp(18px,2.1vw,23px);line-height:1.6;white-space:nowrap;overflow-x:auto}
+.levels{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:860px){.levels{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.lvl{font:inherit;text-align:left;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+.lvl[aria-pressed="true"]{border-color:var(--curve);box-shadow:inset 0 0 0 1.5px var(--curve)}
+.lvl:disabled{cursor:not-allowed;opacity:.5}
+.lvl .t{font-weight:700;display:block}
+.lvl .s{font-size:13px;color:var(--muted);display:block}
+.dots{letter-spacing:3px;color:var(--e);font-size:14px}
+.answer{font-family:var(--display);font-weight:800;font-size:clamp(20px,2.4vw,28px);line-height:2.1;display:flex;flex-wrap:wrap;align-items:center;gap:2px 6px}
+.answer input.in{font:inherit;font-family:var(--body);font-weight:700;font-size:22px;width:4.2em;padding:2px 6px;text-align:center;border:2px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink)}
+.answer input.in.ok{border-color:var(--e);background:var(--ok-bg)}
+.answer input.in.bad{border-color:var(--pencil);background:var(--bad-bg)}
+.slots{display:grid;grid-template-columns:repeat(4,auto);justify-content:start;align-items:center;column-gap:6px;line-height:1.3;row-gap:6px}
+.slots .p{text-align:center;font-size:1.3em}
+.tgrid{display:grid;grid-auto-flow:column;grid-template-rows:auto auto;justify-content:start;align-items:center;gap:6px 6px;line-height:1.3}
+.tgrid .h{text-align:center;font-family:var(--body);font-size:18px;color:var(--muted)}
+.tgrid input.in{width:3.6em}
+.prog{display:grid;grid-template-columns:auto 1fr auto;gap:2px 12px;font-size:15px;font-variant-numeric:tabular-nums}
+.prog .muted{color:var(--muted)}
+.prowrap{max-width:860px;display:flex;flex-direction:column;gap:14px}
+.proq{font-family:var(--display);font-weight:800;font-size:clamp(21px,2.6vw,28px);line-height:1.25;margin:2px 0 12px}
+canvas.procan{max-width:400px;margin:0 0 14px}
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:600px){.opts:not(.graphs){grid-template-columns:minmax(0,1fr)}}
+.opt{font:inherit;font-size:18px;text-align:left;display:flex;align-items:center;gap:12px;padding:12px 14px;border:2px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--curve)}
+.opt:disabled{cursor:default;opacity:.55}
+.opt.right{border-color:var(--e);background:var(--ok-bg);opacity:1}
+.opt.wrong{border-color:var(--pencil);background:var(--bad-bg)}
+.opt .badge{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--surface);font-weight:700;font-size:15px}
+.opts.graphs{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:700px){.opts.graphs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.opts.graphs .opt{flex-direction:column;align-items:stretch;padding:8px;gap:6px}
+.opts.graphs .opt:disabled:not(.wrong){opacity:.8}
+.opts.graphs canvas{max-height:none;border:0}
+.optwrap{position:relative}
+.lock{position:absolute;inset:-6px;display:grid;place-items:center;text-align:center;padding:12px;border-radius:12px;border:2px solid var(--pencil);background:var(--bad-bg);color:var(--pencil);font-family:var(--display);font-size:clamp(20px,2.6vw,26px);line-height:1.3;z-index:2}
+.lock small{display:block;font-family:var(--body);font-size:15px;color:var(--muted);margin-top:4px}
+.lock .count{font-size:38px;font-weight:800;line-height:1.1;margin:2px 0}
+.revlist{display:flex;flex-direction:column;gap:6px;text-align:left}
+.revitem{font:inherit;font-size:15px;display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);cursor:pointer;text-align:left}
+.revitem:hover{border-color:var(--curve)}
+.revitem .nr{font-weight:700;color:var(--muted)}
+.revitem .er{font-weight:700;color:var(--e);white-space:nowrap}
+.revitem.had .er{color:var(--pencil)}
+.proex{margin:4px 0 0;padding:10px 12px;border-left:4px solid var(--e);background:var(--paper);border-radius:6px}
+.win{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:16px;background:rgb(10 16 24 / .55)}
+.win canvas{position:fixed;inset:0;width:100%;height:100%;aspect-ratio:auto;max-height:none;border:0;border-radius:0;background:transparent;pointer-events:none}
+.win .box{position:relative;background:var(--paper);color:var(--ink);border-radius:18px;padding:28px 28px 22px;max-width:520px;width:100%;text-align:center;box-shadow:0 20px 60px rgb(0 0 0 / .35);animation:pop .45s cubic-bezier(.2,1.4,.4,1)}
+.win h2{font-family:var(--display);font-weight:800;font-size:clamp(30px,5vw,44px);line-height:1.05;margin:4px 0 10px}
+.win .big{font-size:56px;line-height:1}
+.win p{margin:0 0 8px}
+.win .stats{color:var(--muted);font-size:15px;margin:10px 0 18px}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion: reduce){.win .box{animation:none}}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Geraden-Labor</h1>
+    <nav class="seg" role="tablist" id="mainTabs">
+      <button role="tab" data-tab="mb" aria-selected="true">1 Steigung &amp; y-Achsenabschnitt</button>
+      <button role="tab" data-tab="pts" aria-selected="false">2 Zwei Punkte</button>
+      <button role="tab" data-tab="train" aria-selected="false">3 Rechentrainer</button>
+      <button role="tab" data-tab="pro" aria-selected="false" hidden>4 Profi ★</button>
+    </nav>
+  </header>
+
+  <!-- ================= 1 STEIGUNG & ACHSENABSCHNITT ================= -->
+  <section id="tab-mb" class="tab">
+    <div class="row" style="margin-bottom:12px;justify-content:space-between">
+      <p class="lede">Regler bewegen oder die Punkte ziehen: den <span class="cb">grünen</span> auf der y-Achse und den <span class="cm">orangen</span> am Ende des Steigungsdreiecks.</p>
+      <div class="seg" id="mbTabs">
+        <button data-m="explore" aria-selected="true">Erkunden</button>
+        <button data-m="quiz" aria-selected="false">Quiz</button>
+      </div>
+    </div>
+    <div class="stage">
+      <section>
+        <canvas id="cMb" aria-label="Koordinatensystem mit Gerade"></canvas>
+        <div class="legend">
+          <span><i style="background:var(--curve)"></i><span id="mbLegMine">Gerade</span></span>
+          <span id="mbLegTarget" hidden><i style="background:var(--pencil)"></i>Gesuchte Gerade</span>
+          <span id="mbLegTri"><i style="background:var(--d)"></i>Steigungsdreieck</span>
+        </div>
+      </section>
+      <aside class="side">
+        <div class="card" id="mbQuizCard" hidden>
+          <p class="label">Quiz</p>
+          <p style="margin:0 0 10px">Stellt die Regler so ein, dass eure Gerade genau auf der <b style="color:var(--pencil)">roten</b> liegt. Wie lautet ihre Gleichung?</p>
+          <div class="row">
+            <button class="btn primary" id="mbCheck">Prüfen</button>
+            <button class="btn" id="mbSolve">Auflösen</button>
+            <button class="btn" id="mbNext">Neue Gerade</button>
+          </div>
+          <div class="feedback" id="mbFb" aria-live="polite"></div>
+          <p class="hint" id="mbScore">Treffer: 0 von 0</p>
+        </div>
+        <div class="card">
+          <p class="label">Normalform &nbsp; y = <span class="cm">m</span>·x + <span class="cb">b</span></p>
+          <div class="formula" id="mbForm"></div>
+          <div class="info" id="mbInfoM"></div>
+          <div class="info" id="mbInfoB" style="margin-top:0"></div>
+        </div>
+        <div class="card">
+          <div class="sl"><b class="cm">m</b><input type="range" id="mbM" class="rm" min="-4" max="4" step="0.05" value="0.5"><output id="mbMo" class="cm"></output></div>
+          <div class="sl"><b class="cb">b</b><input type="range" id="mbB" class="rb" min="-6" max="6" step="0.05" value="1"><output id="mbBo" class="cb"></output></div>
+          <div class="row" style="margin-top:4px"><button class="btn" id="mbReset">Zurücksetzen</button></div>
+        </div>
+        <div class="card" id="mbTableCard">
+          <p class="label">Wertetabelle</p>
+          <table class="wt" id="mbTable"></table>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= 2 ZWEI PUNKTE ================= -->
+  <section id="tab-pts" class="tab" hidden>
+    <p class="lede" style="margin-bottom:12px">Zieh die Punkte <span class="cz">P</span> und <span class="cz">Q</span>. Die Steigung kommt aus dem Steigungsdreieck zwischen ihnen: so viel geht es hoch (oder runter), geteilt durch so viel geht es nach rechts.</p>
+    <div class="stage">
+      <section>
+        <canvas id="cPts" aria-label="Gerade durch zwei ziehbare Punkte"></canvas>
+        <div class="legend">
+          <span><i style="background:var(--z)"></i>P und Q (ziehbar)</span>
+          <span><i style="background:var(--d)"></i>Steigungsdreieck</span>
+        </div>
+      </section>
+      <aside class="side">
+        <div class="card">
+          <p class="label">Punkte</p>
+          <div class="formula mid" id="ptsPQ"></div>
+        </div>
+        <div class="card">
+          <p class="label">Steigung &nbsp; m = <span class="frac" style="border-color:currentColor"><span>Δy</span><span>Δx</span></span> = <span class="frac" style="border-color:currentColor"><span>f(x₂) − f(x₁)</span><span>x₂ − x₁</span></span></p>
+          <div class="dq" id="ptsM"></div>
+        </div>
+        <div class="card">
+          <p class="label">y-Achsenabschnitt: P einsetzen &nbsp; f(x₁) = m · x₁ + b</p>
+          <div class="dq" id="ptsB"></div>
+        </div>
+        <div class="card">
+          <p class="label">Geradengleichung</p>
+          <div class="formula" id="ptsEq"></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= 3 RECHENTRAINER ================= -->
+  <section id="tab-train" class="tab" hidden>
+    <p class="lede" style="margin-bottom:12px">Rechne auf Papier, tippe das Ergebnis ein und prüfe. Die Skizze zeigt danach deine Gerade (blau) und die richtige (rot). 3 richtige Aufgaben schalten die nächste Stufe frei.</p>
+    <div class="levels" id="levels" style="margin-bottom:16px"></div>
+    <div class="stage">
+      <section>
+        <canvas id="cTrain" aria-label="Koordinatensystem zur Aufgabe"></canvas>
+        <div class="legend" id="legTrain"></div>
+      </section>
+      <aside class="side">
+        <div class="card">
+          <p class="label" id="trTitle"></p>
+          <div class="formula" id="trTask"></div>
+          <p class="hint" id="trHint"></p>
+        </div>
+        <div class="card">
+          <p class="label">Deine Antwort</p>
+          <div class="answer" id="trAnswer"></div>
+          <div class="row" style="margin-top:8px">
+            <button class="btn primary" id="trCheck">Prüfen</button>
+            <button class="btn" id="trShow">Lösung zeigen</button>
+            <button class="btn" id="trNext">Nächste Aufgabe</button>
+          </div>
+          <div class="feedback" id="trFb" aria-live="polite"></div>
+          <div class="formula small" id="trSol" hidden></div>
+        </div>
+        <div class="card">
+          <p class="label">Dein Fortschritt</p>
+          <div class="prog" id="trProg"></div>
+          <div class="row" style="margin-top:8px"><button class="btn small" id="trReset">Fortschritt zurücksetzen</button></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= 4 PROFI ================= -->
+  <section id="tab-pro" class="tab" hidden>
+    <div class="prowrap">
+      <p class="lede">Profi-Aufgaben für alle, die den Rechentrainer geschafft haben. Erst nachdenken, dann klicken.</p>
+      <div id="proQuiz" class="card">
+        <p class="label" id="proHead"></p>
+        <div class="proq" id="proQ"></div>
+        <div id="proTable" style="margin:0 0 14px;max-width:420px" hidden></div>
+        <canvas id="cPro" class="procan" aria-label="Skizze zur Frage"></canvas>
+        <p class="hint" id="proCap" style="margin:-8px 0 14px" hidden></p>
+        <div class="optwrap">
+          <div class="opts" id="proOpts"></div>
+          <div class="lock" id="proLock" hidden aria-live="assertive"><div><b>Leider nicht. Überleg nochmal …</b><small id="proPicked"></small><div class="count" id="proCount">3</div></div></div>
+        </div>
+        <div class="feedback" id="proFb" aria-live="polite"></div>
+        <p class="proex" id="proEx" hidden></p>
+        <div class="row" style="margin-top:10px"><button class="btn primary" id="proNext" hidden>Nächste Frage</button></div>
+      </div>
+      <div id="proDone" class="card" hidden style="text-align:center;padding:28px 16px">
+        <h2 class="proq" id="proDoneT" style="font-size:34px;margin:0 0 8px"></h2>
+        <p id="proDoneS" style="margin:0 0 16px"></p>
+        <button class="btn primary" id="proAgain">Nochmal von vorn</button>
+        <p class="label" style="text-align:left;margin:24px 0 8px">Alle Fragen zum Nachschauen (Fehler pro Frage):</p>
+        <div class="revlist" id="proList"></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="win" id="win" hidden role="dialog" aria-modal="true" aria-labelledby="winT">
+  <canvas id="confetti" aria-hidden="true"></canvas>
+  <div class="box">
+    <div class="big" aria-hidden="true">🏆</div>
+    <h2 id="winT">Glückwunsch!</h2>
+    <p><b>Du hast alle 4 Stufen geschafft.</b></p>
+    <p>Ablesen, Normalform, Wertetabelle und Gerade durch zwei Punkte: Lineare Funktionen hast du drauf. Richtig gut gemacht!</p>
+    <p><b>Neu freigeschaltet: Tab 4 mit Profi-Aufgaben</b> zum Knobeln.</p>
+    <div class="stats" id="winStats"></div>
+    <div class="row" style="justify-content:center">
+      <button class="btn" id="winClose">Weiter üben</button>
+      <button class="btn primary" id="winPro">Zu den Profi-Aufgaben ★</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+"use strict";
+const $ = id => document.getElementById(id);
+const tok = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const r6 = v => Math.round(v * 1e6) / 1e6;
+const num = v => { const r = r6(v); return (r < 0 ? "−" : "") + String(Math.abs(r)).replace(".", ","); };
+const sp = (cls, t) => cls ? `<span class="${cls}">${t}</span>` : t;
+const rnd = n => Math.floor(Math.random() * n);
+const pick = arr => arr[rnd(arr.length)];
+const near = (u, v, tol = 1e-6) => Math.abs(u - v) <= tol;
+const paren = v => r6(v) < 0 ? `(${num(v)})` : num(v);
+
+// y = m·x + b als HTML
+function lineHTML(m, b, col = true) {
+  m = r6(m); b = r6(b);
+  const cm = col ? "cm" : "", cb = col ? "cb" : "";
+  if (m === 0) return `y = ${sp(cb, num(b))}`;
+  const mx = m === 1 ? "x" : m === -1 ? sp(cm, "−") + "x" : sp(cm, num(m)) + "x";
+  const bp = b === 0 ? "" : b > 0 ? ` + ${sp(cb, num(b))}` : ` − ${sp(cb, num(-b))}`;
+  return `y = ${mx}${bp}`;
+}
+const frac = (a, b) => `<span class="frac"><span>${a}</span><span>${b}</span></span>`;
+
+// ---------- Koordinatensystem ----------
+class Board {
+  constructor(canvas, R = 8) { this.c = canvas; this.R = R; this.lab = 1; }
+  begin() {
+    const c = this.c, r = c.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+    const w = Math.max(1, Math.round(r.width * dpr)), h = Math.max(1, Math.round(r.height * dpr));
+    if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
+    const ctx = this.ctx = c.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    this.w = r.width; this.h = r.height;
+    const R = this.R, m = 14; this.u = (Math.min(this.w, this.h) - 2 * m) / (2 * R);
+    this.ox = this.w / 2; this.oy = this.h / 2;
+    const X = x => this.X(x), Y = y => this.Y(y);
+    ctx.clearRect(0, 0, this.w, this.h); ctx.setLineDash([]); ctx.lineWidth = 1;
+    for (let i = -R; i <= R; i++) {
+      ctx.strokeStyle = i % 5 ? tok("--grid") : tok("--grid-strong");
+      ctx.beginPath(); ctx.moveTo(X(i), Y(-R)); ctx.lineTo(X(i), Y(R)); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(X(-R), Y(i)); ctx.lineTo(X(R), Y(i)); ctx.stroke();
+    }
+    const ink = tok("--ink"), muted = tok("--muted");
+    ctx.strokeStyle = ink; ctx.fillStyle = ink; ctx.lineWidth = 1.6;
+    ctx.beginPath(); ctx.moveTo(X(-R), Y(0)); ctx.lineTo(X(R), Y(0)); ctx.moveTo(X(0), Y(-R)); ctx.lineTo(X(0), Y(R)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X(R) + 2, Y(0)); ctx.lineTo(X(R) - 7, Y(0) - 4); ctx.lineTo(X(R) - 7, Y(0) + 4); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(X(0), Y(R) - 2); ctx.lineTo(X(0) - 4, Y(R) + 7); ctx.lineTo(X(0) + 4, Y(R) + 7); ctx.fill();
+    ctx.font = `12px ${tok("--body")}`; ctx.fillStyle = muted;
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    for (let i = -R + 1; i < R; i++) if (i && i % this.lab === 0) ctx.fillText(num(i), X(i), Y(0) + 4);
+    ctx.textAlign = "right"; ctx.textBaseline = "middle";
+    for (let i = -R + 1; i < R; i++) if (i && i % this.lab === 0) ctx.fillText(num(i), X(0) - 5, Y(i));
+    ctx.fillStyle = ink; ctx.font = `700 14px ${tok("--body")}`;
+    ctx.textAlign = "right"; ctx.textBaseline = "bottom"; ctx.fillText("x", X(R) - 4, Y(0) - 6);
+    ctx.textAlign = "left"; ctx.textBaseline = "top"; ctx.fillText("y", X(0) + 8, Y(R) + 2);
+    return ctx;
+  }
+  X(x) { return this.ox + x * this.u; }
+  Y(y) { return this.oy - y * this.u; }
+  ix(px) { return (px - this.ox) / this.u; }
+  iy(py) { return (this.oy - py) / this.u; }
+  clip(fn) { const c = this.ctx, R = this.R; c.save(); c.beginPath(); c.rect(this.X(-R), this.Y(R), 2 * R * this.u, 2 * R * this.u); c.clip(); fn(c); c.restore(); }
+  curve(f, color, width, dash) {
+    const R = this.R;
+    this.clip(c => {
+      c.strokeStyle = color; c.lineWidth = width; c.setLineDash(dash || []); c.lineJoin = "round"; c.lineCap = "round";
+      c.beginPath(); let started = false; const N = 400;
+      for (let i = 0; i <= N; i++) {
+        const x = -R + 2 * R * i / N, y = f(x);
+        if (y > R + 40 || y < -R - 40) { if (started) { c.lineTo(this.X(x), this.Y(Math.max(-R - 40, Math.min(R + 40, y)))); c.stroke(); c.beginPath(); started = false; } continue; }
+        if (!started) { c.moveTo(this.X(x), this.Y(y)); started = true; } else c.lineTo(this.X(x), this.Y(y));
+      }
+      c.stroke();
+    });
+  }
+  seg(x1, y1, x2, y2, color, width = 1.5, dash = [5, 4]) {
+    this.clip(c => { c.strokeStyle = color; c.lineWidth = width; c.setLineDash(dash); c.beginPath(); c.moveTo(this.X(x1), this.Y(y1)); c.lineTo(this.X(x2), this.Y(y2)); c.stroke(); });
+  }
+  dot(x, y, color, r = 6, ring = true) {
+    if (Math.abs(x) > this.R || Math.abs(y) > this.R) return;
+    const c = this.ctx; c.setLineDash([]); c.fillStyle = color; c.strokeStyle = tok("--paper"); c.lineWidth = 2;
+    c.beginPath(); c.arc(this.X(x), this.Y(y), r, 0, 2 * Math.PI); c.fill(); if (ring) c.stroke();
+  }
+  tag(parts, px, py, { align = "left", base = "top", size = 15 } = {}) {
+    const c = this.ctx; c.font = `700 ${size}px ${tok("--body")}`; c.textBaseline = "alphabetic"; c.textAlign = "left";
+    const tw = parts.reduce((s, p) => s + c.measureText(p[0]).width, 0);
+    let x = align === "left" ? px : align === "right" ? px - tw : px - tw / 2;
+    x = Math.max(4, Math.min(this.w - tw - 4, x));
+    let y = base === "top" ? py + size : base === "bottom" ? py - 4 : py + size / 2 - 2;
+    y = Math.max(size + 2, Math.min(this.h - 6, y));
+    c.fillStyle = tok("--paper"); c.globalAlpha = .85; c.fillRect(x - 3, y - size, tw + 6, size + 6); c.globalAlpha = 1;
+    for (const [t, col] of parts) { c.fillStyle = col; c.fillText(t, x, y); x += c.measureText(t).width; }
+  }
+  pointer(e) { const r = this.c.getBoundingClientRect(); return [this.ix(e.clientX - r.left), this.iy(e.clientY - r.top), e.clientX - r.left, e.clientY - r.top]; }
+}
+function draggable(board, hit, move) {
+  const c = board.c; let grab = null;
+  c.addEventListener("pointerdown", e => { const [x, y, px, py] = board.pointer(e); grab = hit(x, y, px, py); if (grab) { c.setPointerCapture(e.pointerId); e.preventDefault(); } });
+  c.addEventListener("pointermove", e => {
+    const [x, y, px, py] = board.pointer(e);
+    if (grab) move(grab, x, y); else c.style.cursor = hit(x, y, px, py) ? "grab" : "default";
+  });
+  const end = () => { grab = null; };
+  c.addEventListener("pointerup", end); c.addEventListener("pointercancel", end);
+}
+const nearPx = (board, x, y, px, py, r = 16) => Math.hypot(board.X(x) - px, board.Y(y) - py) <= r;
+const snapTo = (v, s) => r6(Math.round(v / s) * s);
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+
+function parse(str) {
+  let s = String(str).trim().replace(/[−–—]/g, "-").replace(/\s/g, "").replace(",", ".");
+  if (s === "") return NaN;
+  if (s === "-") return -1;
+  if (s === "+") return 1;
+  const fr = s.match(/^([+-]?\d*\.?\d+)\/(\d*\.?\d+)$/);
+  if (fr) return Number(fr[1]) / Number(fr[2]);
+  if (!/^[+-]?(\d+\.?\d*|\.\d+)$/.test(s)) return NaN;
+  return Number(s);
+}
+
+/* =============================================================
+   1 STEIGUNG & Y-ACHSENABSCHNITT (Erkunden + Quiz)
+   ============================================================= */
+const bMb = new Board($("cMb"));
+const sM = $("mbM"), sB = $("mbB");
+let mbMode = "explore", target = null, solved = false, hits = 0, tries = 0;
+function updMb() {
+  const m = +sM.value, b = +sB.value;
+  $("mbMo").textContent = num(m); $("mbBo").textContent = num(b);
+  $("mbForm").innerHTML = lineHTML(m, b);
+  const dir = m > 0 ? "die Gerade steigt" : m < 0 ? "die Gerade fällt" : "die Gerade ist waagerecht";
+  $("mbInfoM").innerHTML = `Steigung ${sp("cm", "m = " + num(m))}: ${dir}`;
+  $("mbInfoB").innerHTML = `y-Achsenabschnitt ${sp("cb", "b = " + num(b))}: Schnitt mit der y-Achse bei (0 | ${sp("cb", num(b))})`;
+  const xs = [-2, -1, 0, 1, 2, 3];
+  $("mbTable").innerHTML = `<tr><th>x</th>${xs.map(x => `<th>${num(x)}</th>`).join("")}</tr><tr><th>y</th>${xs.map(x => `<td>${num(r6(m * x + b))}</td>`).join("")}</tr>`;
+  drawMb();
+}
+function drawMb() {
+  const B = bMb; B.begin();
+  const m = +sM.value, b = +sB.value, cd = tok("--d"), ce = tok("--e"), ink = tok("--ink");
+  if (mbMode === "quiz" && target) { B.curve(x => target.m * x + target.b, tok("--pencil"), 6); if (solved) B.dot(0, target.b, tok("--pencil"), 6); }
+  B.curve(x => m * x + b, tok("--curve"), 3.5);
+  if (mbMode === "explore") {
+    (/* Tabellenpunkte */[-2, -1, 2, 3]).forEach(x => B.dot(x, m * x + b, tok("--curve"), 4, false));
+    // Steigungsdreieck: 1 nach rechts, m hoch/runter
+    B.seg(0, b, 1, b, ink, 2.5, []);
+    B.seg(1, b, 1, b + m, cd, 3.5, []);
+    B.tag([["1", ink]], B.X(0.5), B.Y(b) + (m >= 0 ? 4 : -22), { align: "center", base: "top", size: 14 });
+    if (Math.abs(m) > 0.04) B.tag([["m = " + num(m), cd]], B.X(1) + 8, B.Y(b + m / 2), { align: "left", base: "middle", size: 15 });
+    B.dot(1, b + m, cd, 8);
+    B.dot(0, b, ce, 8);
+    B.tag([["b = " + num(b), ce]], B.X(0) - 10, B.Y(b), { align: "right", base: "middle", size: 15 });
+  } else {
+    B.dot(0, b, ce, 7); B.dot(1, b + m, cd, 7);
+  }
+}
+[sM, sB].forEach(s => s.addEventListener("input", () => { $("mbFb").textContent = ""; updMb(); }));
+$("mbReset").addEventListener("click", () => { sM.value = 0.5; sB.value = 1; updMb(); });
+draggable(bMb,
+  (x, y, px, py) => {
+    const m = +sM.value, b = +sB.value;
+    if (nearPx(bMb, 1, b + m, px, py, 18)) return { k: "m" };
+    if (nearPx(bMb, 0, b, px, py, 18)) return { k: "b" };
+    return null;
+  },
+  (g, x, y) => {
+    if (g.k === "b") sB.value = clamp(snapTo(y, 0.05), -6, 6);
+    else sM.value = clamp(snapTo(y - +sB.value, 0.05), -4, 4);
+    $("mbFb").textContent = ""; updMb();
+  });
+const M_CHOICES = [-3, -2, -1.5, -1, -0.5, 0.5, 1, 1.5, 2, 3];
+function newTarget() {
+  let t;
+  do t = { m: pick(M_CHOICES), b: rnd(11) - 5 }; while (target && t.m === target.m && t.b === target.b);
+  target = t; solved = false; $("mbFb").textContent = ""; $("mbFb").className = "feedback";
+  sM.value = 0; sB.value = 0; updMb();
+}
+$("mbCheck").addEventListener("click", () => {
+  if (solved) return;
+  const m = +sM.value, b = +sB.value; tries++;
+  const fb = $("mbFb");
+  const okM = Math.abs(m - target.m) <= 0.1, okB = Math.abs(b - target.b) <= 0.15;
+  if (okM && okB) { hits++; solved = true; fb.className = "feedback ok"; fb.innerHTML = "Treffer! Exakt: " + lineHTML(target.m, target.b); }
+  else {
+    fb.className = "feedback no"; const wrong = [];
+    if (!okM) wrong.push(Math.sign(m) !== Math.sign(target.m) ? "Richtung (steigt oder fällt?)" : "Steigung");
+    if (!okB) wrong.push("y-Achsenabschnitt");
+    fb.textContent = "Noch nicht: " + wrong.join(" und ") + " prüfen.";
+  }
+  $("mbScore").textContent = `Treffer: ${hits} von ${tries}`; drawMb();
+});
+$("mbSolve").addEventListener("click", () => {
+  solved = true; sM.value = target.m; sB.value = target.b; updMb();
+  const fb = $("mbFb"); fb.className = "feedback ok"; fb.innerHTML = lineHTML(target.m, target.b);
+});
+$("mbNext").addEventListener("click", newTarget);
+function setMbMode(m) {
+  mbMode = m;
+  $("mbTabs").querySelectorAll("button").forEach(b => b.setAttribute("aria-selected", b.dataset.m === m));
+  $("mbQuizCard").hidden = m !== "quiz"; $("mbLegTarget").hidden = m !== "quiz";
+  $("mbTableCard").hidden = m === "quiz"; $("mbLegTri").hidden = m === "quiz";
+  $("mbLegMine").textContent = m === "quiz" ? "Eure Gerade" : "Gerade";
+  if (m === "quiz") newTarget(); else updMb();
+}
+$("mbTabs").querySelectorAll("button").forEach(b => b.addEventListener("click", () => setMbMode(b.dataset.m)));
+
+/* =============================================================
+   2 ZWEI PUNKTE
+   ============================================================= */
+const bPts = new Board($("cPts"));
+let P = { x: -2, y: -1 }, Q = { x: 2, y: 1 };
+function updPts() {
+  const dx = r6(Q.x - P.x), dy = r6(Q.y - P.y);
+  $("ptsPQ").innerHTML = `${sp("cz", "P")}(${num(P.x)} | ${num(P.y)}) &nbsp; ${sp("cz", "Q")}(${num(Q.x)} | ${num(Q.y)})`;
+  if (dx === 0) {
+    $("ptsM").innerHTML = `m = ${frac("Δy", "Δx")} = ${frac(`${num(Q.y)} − ${paren(P.y)}`, `${num(Q.x)} − ${paren(P.x)}`)} = ${frac(sp("cm", num(dy)), "0")} &nbsp;<span style="color:var(--pencil)">geht nicht!</span>`;
+    $("ptsB").innerHTML = `<span style="color:var(--pencil)">Senkrechte Gerade: Zu x = ${num(P.x)} gehören viele y-Werte. Das ist keine Funktion.</span>`;
+    $("ptsEq").innerHTML = `<span style="color:var(--pencil);font-size:.7em">keine Funktion (x = ${num(P.x)})</span>`;
+  } else {
+    const m = dy / dx, mr = Math.round(m * 1000) / 1000, exact = near(m, mr, 1e-9);
+    const b = P.y - m * P.x, br = Math.round(b * 1000) / 1000;
+    const eq = exact ? "=" : "≈";
+    $("ptsM").innerHTML = `m = ${frac("Δy", "Δx")} = ${frac(`${num(Q.y)} − ${paren(P.y)}`, `${num(Q.x)} − ${paren(P.x)}`)} = ${frac(sp("cm", num(dy)), num(dx))} ${eq} ${sp("cm", num(mr))}`;
+    $("ptsB").innerHTML = `${num(P.y)} = ${sp("cm", paren(mr))} · ${paren(P.x)} + ${sp("cb", "b")} &nbsp;→&nbsp; ${sp("cb", "b")} ${near(b, br, 1e-9) && exact ? "=" : "≈"} ${sp("cb", num(br))}`;
+    $("ptsEq").innerHTML = (exact && near(b, br, 1e-9)) ? lineHTML(mr, br) : lineHTML(mr, br).replace(/^y = /, "y ≈ ");
+  }
+  drawPts();
+}
+function drawPts() {
+  const B = bPts; B.begin();
+  const dx = r6(Q.x - P.x), dy = r6(Q.y - P.y), cd = tok("--d"), ink = tok("--ink"), cz = tok("--z");
+  if (dx === 0) B.seg(P.x, -B.R, P.x, B.R, tok("--pencil"), 3.5, []);
+  else {
+    const m = dy / dx, b = P.y - m * P.x;
+    B.curve(x => m * x + b, tok("--curve"), 3.5);
+    B.seg(P.x, P.y, Q.x, P.y, ink, 2.5, []);
+    B.seg(Q.x, P.y, Q.x, Q.y, cd, 3.5, []);
+    if (Math.abs(dx) > 0.3) B.tag([["Δx = " + num(dx), ink]], B.X((P.x + Q.x) / 2), B.Y(P.y) + (dy >= 0 ? 6 : -24), { align: "center", base: "top", size: 14 });
+    if (Math.abs(dy) > 0.3) B.tag([["Δy = " + num(dy), cd]], B.X(Q.x) + (dx > 0 ? 8 : -8), B.Y((P.y + Q.y) / 2), { align: dx > 0 ? "left" : "right", base: "middle", size: 14 });
+    if (Math.abs(b) <= B.R) B.dot(0, b, tok("--e"), 6);
+  }
+  B.dot(P.x, P.y, cz, 9); B.dot(Q.x, Q.y, cz, 9);
+  B.tag([["P", cz]], B.X(P.x) - 12, B.Y(P.y) - 10, { align: "right", base: "bottom" });
+  B.tag([["Q", cz]], B.X(Q.x) + 12, B.Y(Q.y) - 10, { align: "left", base: "bottom" });
+}
+draggable(bPts,
+  (x, y, px, py) => nearPx(bPts, P.x, P.y, px, py, 18) ? P : nearPx(bPts, Q.x, Q.y, px, py, 18) ? Q : null,
+  (pt, x, y) => { pt.x = clamp(snapTo(x, 0.1), -7.5, 7.5); pt.y = clamp(snapTo(y, 0.1), -7.5, 7.5); updPts(); });
+
+/* =============================================================
+   3 RECHENTRAINER
+   ============================================================= */
+const LEVELS = [
+  { t: "Stufe 1", s: "Gleichung aus dem Graphen" },
+  { t: "Stufe 2", s: "In Normalform bringen" },
+  { t: "Stufe 3", s: "Wertetabelle ausfüllen" },
+  { t: "Stufe 4", s: "Gerade durch zwei Punkte" },
+];
+const NEED = 3, KEY = "geraden-labor-v1";
+let prog = { c: [0, 0, 0, 0], f: [0, 0, 0, 0], unl: 0, lvl: 0, won: false };
+try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && Array.isArray(s.c)) prog = Object.assign(prog, s); } catch (_) {}
+const allOpen = () => /alle/i.test(location.hash);
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(prog)); } catch (_) {} };
+const bTrain = new Board($("cTrain"));
+let task = null;
+const inp = k => `<input class="in" data-k="${k}" inputmode="decimal" autocomplete="off" spellcheck="false" aria-label="${k}">`;
+const mbSlots = `<div class="slots"><span>y =</span><span class="p cm">m</span><span>· x +</span><span class="p cb">b</span>
+  <span>y =</span>${inp("m")}<span>· x +</span>${inp("b")}</div>`;
+function nz(lo, hi) { let v; do v = lo + rnd(hi - lo + 1); while (v === 0); return v; }
+function termsHTML(terms) {
+  // terms: [{k, x:true/false}]
+  return "y = " + terms.map((t, i) => {
+    const neg = t.k < 0, a = Math.abs(t.k);
+    const body = t.x ? (a === 1 ? "x" : num(a) + "x") : num(a);
+    return i === 0 ? (neg ? "−" : "") + body : (neg ? " − " : " + ") + body;
+  }).join("");
+}
+function makeTask(l) {
+  if (l === 0) {
+    const m = pick([-3, -2, -1, -0.5, 0.5, 1, 2, 3, 1.5, -1.5]), b = rnd(11) - 5;
+    return { l, want: { m, b }, title: "Lies die Gleichung aus dem Graphen ab.", task: "",
+      hint: "b: Wo schneidet die Gerade die y-Achse? m: Von dort 1 nach rechts, wie viel geht es hoch oder runter? Bei halben Werten lieber 2 nach rechts gehen.",
+      answer: mbSlots, f: x => m * x + b, given: true, sol: () => lineHTML(m, b, false) };
+  }
+  if (l === 1) {
+    const m = nz(-4, 4), b = rnd(13) - 6;
+    let a1; do a1 = nz(-6, 6); while (a1 === m);
+    let c1; do c1 = nz(-7, 7); while (c1 === b);
+    const terms = [{ k: a1, x: true }, { k: m - a1, x: true }, { k: c1, x: false }, { k: b - c1, x: false }];
+    for (let i = terms.length - 1; i > 0; i--) { const j = rnd(i + 1); [terms[i], terms[j]] = [terms[j], terms[i]]; }
+    return { l, want: { m, b }, title: "Bringe die Gleichung in die Normalform y = m·x + b.", task: termsHTML(terms),
+      hint: "Erst alle x-Terme zusammenfassen, dann alle Zahlen ohne x. Negative Zahlen mit Minus eintippen.",
+      answer: mbSlots, f: x => m * x + b, sol: () => `${termsHTML(terms)} = ${lineHTML(m, b, false).replace("y = ", "")}` };
+  }
+  if (l === 2) {
+    const m = pick([-3, -2, -1, -0.5, 0.5, 1, 2, 3]), b = rnd(11) - 5;
+    const pool = [-3, -2, -1, 0, 1, 2, 3, 4]; for (let i = pool.length - 1; i > 0; i--) { const j = rnd(i + 1); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+    const xs = pool.slice(0, 4).sort((u, v) => u - v);
+    const want = {}; xs.forEach((x, i) => want["y" + i] = r6(m * x + b));
+    const head = `<span class="h">x</span><span class="h">y</span>` + xs.map((x, i) => `<span class="h">${num(x)}</span>${inp("y" + i)}`).join("");
+    return { l, want, xs, title: "Fülle die Wertetabelle aus.", task: lineHTML(m, b),
+      hint: "x einsetzen: y = m · x + b. Vorsicht bei negativen x-Werten.",
+      answer: `<div class="tgrid">${head}</div>`, f: x => m * x + b,
+      sol: () => xs.map(x => `x = ${num(x)}: y = ${num(r6(m * x + b))}`).join(" &nbsp; ") };
+  }
+  const m = pick([-3, -2, -1, -0.5, 0.5, 1, 2, 3]), b = rnd(9) - 4;
+  let x1, x2, y1, y2;
+  do {
+    x1 = rnd(7) - 4; const dx = Math.abs(m) === 0.5 ? pick([2, 4]) : pick([1, 2, 3]); x2 = x1 + dx;
+    y1 = m * x1 + b; y2 = m * x2 + b;
+  } while (Math.abs(y1) > 7 || Math.abs(y2) > 7 || x2 > 6);
+  return { l, want: { m, b }, P: [x1, y1], Q: [x2, y2], title: "Bestimme die Gerade durch die beiden Punkte.",
+    task: `P(${num(x1)} | ${num(y1)}), &nbsp; Q(${num(x2)} | ${num(y2)})`,
+    hint: "m = Δy : Δx = (f(x₂) − f(x₁)) : (x₂ − x₁). Dann einen Punkt in y = m · x + b einsetzen und nach b auflösen.",
+    answer: mbSlots, f: x => m * x + b, sol: () => `m = ${num(y2 - y1)} : ${num(x2 - x1)} = ${num(m)}, &nbsp; ${lineHTML(m, b, false)}` };
+}
+function renderLevels() {
+  const box = $("levels"); box.innerHTML = "";
+  LEVELS.forEach((L, i) => {
+    const b = document.createElement("button"); b.className = "lvl";
+    const open = allOpen() || i <= prog.unl;
+    b.disabled = !open; b.setAttribute("aria-pressed", i === prog.lvl);
+    const n = Math.min(prog.c[i], NEED);
+    b.innerHTML = `<span class="t">${open ? "" : "🔒 "}${L.t}</span><span class="s">${L.s}</span><span class="dots">${"●".repeat(n)}${"○".repeat(NEED - n)}</span>`;
+    b.addEventListener("click", () => { prog.lvl = i; save(); renderLevels(); newTask(); });
+    box.appendChild(b);
+  });
+  $("trProg").innerHTML = LEVELS.map((L, i) => `<span>${L.t}</span><span class="muted">${L.s}</span><span><b>${prog.c[i]}</b> richtig${prog.f[i] ? ` · ${prog.f[i]} ${prog.f[i] === 1 ? "Fehlversuch" : "Fehlversuche"}` : ""}</span>`).join("");
+  updProTab();
+}
+function newTask() {
+  task = makeTask(prog.lvl); task.state = "open"; task.guess = null;
+  $("trTitle").textContent = LEVELS[task.l].t + ": " + task.title;
+  $("trTask").innerHTML = task.task; $("trTask").hidden = !task.task; $("trHint").textContent = task.hint;
+  $("trAnswer").innerHTML = task.answer;
+  $("trFb").textContent = ""; $("trFb").className = "feedback"; $("trSol").hidden = true;
+  $("trCheck").disabled = false; $("trShow").disabled = false;
+  const first = $("trAnswer").querySelector("input.in"); if (first && window.matchMedia("(pointer:fine)").matches && current === "train") first.focus();
+  drawTrain();
+}
+function fields() { const o = {}; $("trAnswer").querySelectorAll("[data-k]").forEach(el => o[el.dataset.k] = el); return o; }
+function mark(el, ok) { el.classList.toggle("ok", ok); el.classList.toggle("bad", !ok); }
+function checkTask() {
+  if (!task || task.state !== "open") return;
+  const F = fields(), fb = $("trFb"), g = {};
+  for (const k in task.want) g[k] = parse(F[k].value);
+  if (Object.values(g).some(isNaN)) { fb.className = "feedback no"; fb.textContent = "Bitte alle Felder ausfüllen."; return; }
+  let ok = true;
+  for (const k in task.want) { const good = near(g[k], task.want[k], 0.001); mark(F[k], good); ok = ok && good; }
+  task.guess = g;
+  if (ok) {
+    task.state = "done"; prog.c[task.l]++;
+    let msg = pick(["Richtig!", "Stark!", "Genau!", "Sauber gerechnet!"]);
+    if (prog.c[task.l] === NEED && task.l < 3 && prog.unl <= task.l) { prog.unl = task.l + 1; msg = `Richtig! ${LEVELS[task.l + 1].t} ist jetzt frei.`; }
+    fb.className = "feedback ok"; fb.textContent = msg;
+    $("trCheck").disabled = true; $("trShow").disabled = true; $("trNext").focus();
+    if (!prog.won && prog.c.every(c => c >= NEED)) { prog.won = true; save(); setTimeout(showWin, 500); }
+  } else {
+    prog.f[task.l]++;
+    fb.className = "feedback no"; fb.textContent = "Noch nicht. Rot markierte Felder nochmal prüfen.";
+  }
+  save(); renderLevels(); drawTrain();
+}
+function showSolution() {
+  if (!task || task.state !== "open") return;
+  task.state = "shown"; $("trSol").innerHTML = task.sol(); $("trSol").hidden = false;
+  const fb = $("trFb"); fb.className = "feedback"; fb.textContent = "Lösung (zählt nicht):";
+  $("trCheck").disabled = true; $("trShow").disabled = true; drawTrain();
+}
+function drawTrain() {
+  const B = bTrain; B.begin(); if (!task) return;
+  const reveal = task.state !== "open" || task.guess, leg = [];
+  if (task.l === 0) { B.curve(task.f, tok("--pencil"), 5); leg.push(["--pencil", "Gegebene Gerade"]); }
+  else if (reveal) { B.curve(task.f, tok("--pencil"), 5); leg.push(["--pencil", "Richtige Gerade"]); }
+  if (task.l === 3) { B.dot(task.P[0], task.P[1], tok("--z"), 7); B.dot(task.Q[0], task.Q[1], tok("--z"), 7); leg.push(["--z", "P und Q"]); }
+  if (task.l === 2 && reveal) task.xs.forEach(x => B.dot(x, task.f(x), tok("--pencil"), 6));
+  const g = task.guess;
+  if (g && task.state !== "shown") {
+    if (task.l === 2) { task.xs.forEach((x, i) => B.dot(x, g["y" + i], tok("--curve"), 5)); leg.push(["--curve", "Deine Punkte"]); }
+    else { B.curve(x => g.m * x + g.b, tok("--curve"), 3); leg.push(["--curve", "Deine Gerade"]); }
+  }
+  if (!reveal && task.l !== 0 && task.l !== 3) B.tag([["Skizze erscheint nach dem Prüfen", tok("--muted")]], B.w / 2, B.Y(-6), { align: "center", base: "middle" });
+  $("legTrain").innerHTML = leg.map(([c, t]) => `<span><i style="background:var(${c})"></i>${t}</span>`).join("");
+}
+$("trCheck").addEventListener("click", checkTask);
+$("trShow").addEventListener("click", showSolution);
+$("trNext").addEventListener("click", newTask);
+$("trAnswer").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); task.state === "open" ? checkTask() : newTask(); } });
+$("trAnswer").addEventListener("input", () => { if (task && task.state === "open") $("trFb").textContent = ""; });
+let resetArmed = 0;
+$("trReset").addEventListener("click", () => {
+  const b = $("trReset");
+  if (Date.now() - resetArmed >= 4000) { resetArmed = Date.now(); b.textContent = "Wirklich? Nochmal klicken"; setTimeout(() => { b.textContent = "Fortschritt zurücksetzen"; }, 4000); return; }
+  resetArmed = 0; b.textContent = "Fortschritt zurücksetzen";
+  prog = { c: [0, 0, 0, 0], f: [0, 0, 0, 0], unl: 0, lvl: 0, won: false }; save(); renderLevels(); newTask();
+});
+window.addEventListener("hashchange", renderLevels);
+if (!allOpen() && prog.lvl > prog.unl) prog.lvl = prog.unl;
+
+// ---------- Glückwunsch ----------
+function showWin() {
+  const tot = prog.c.reduce((s, v) => s + v, 0), bad = prog.f.reduce((s, v) => s + v, 0);
+  $("winStats").textContent = `${tot} Aufgaben richtig gelöst${bad ? `, ${bad} ${bad === 1 ? "Fehlversuch" : "Fehlversuche"} unterwegs` : ", ohne einen einzigen Fehlversuch"}.`;
+  $("win").hidden = false; $("winPro").focus(); confetti();
+}
+function closeWin() { $("win").hidden = true; confettiOn = false; updProTab(); }
+$("winClose").addEventListener("click", closeWin);
+$("winPro").addEventListener("click", () => { closeWin(); show("pro"); });
+$("win").addEventListener("click", e => { if (e.target.id === "win") closeWin(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("win").hidden) closeWin(); });
+let confettiOn = false;
+function confetti() {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const c = $("confetti"), dpr = window.devicePixelRatio || 1, W = innerWidth, H = innerHeight;
+  c.width = W * dpr; c.height = H * dpr; const ctx = c.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const cols = ["--a", "--d", "--e", "--z", "--curve", "--pencil"].map(tok);
+  const Pp = Array.from({ length: 180 }, () => ({ x: Math.random() * W, y: -20 - Math.random() * H * .6, vx: (Math.random() - .5) * 3, vy: 2 + Math.random() * 3,
+    r: 5 + Math.random() * 6, a: Math.random() * 6.3, va: (Math.random() - .5) * .3, c: pick(cols) }));
+  confettiOn = true; const t0 = performance.now();
+  (function frame(t) {
+    ctx.clearRect(0, 0, W, H);
+    if (!confettiOn) return;
+    for (const p of Pp) { p.x += p.vx; p.y += p.vy; p.vy += 0.03; p.a += p.va;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.fillStyle = p.c; ctx.fillRect(-p.r / 2, -p.r / 4, p.r, p.r / 2); ctx.restore(); }
+    if (t - t0 < 6000) requestAnimationFrame(frame); else ctx.clearRect(0, 0, W, H);
+  })(t0);
+}
+
+/* =============================================================
+   4 PROFI-AUFGABEN (erst nach allen 4 Stufen sichtbar)
+   ============================================================= */
+const PRO = [
+  { q: "An der Geraden ist ein Steigungsdreieck mit Δx = 1 und Δy = 2 eingezeichnet. Jetzt zeichnet man ein größeres Steigungsdreieck mit Δx = 3. Was gilt dann für die Steigung m?",
+    graph: [{ f: x => 2 * x - 2 }], segs: [[0, -2, 1, -2, "--d"], [1, -2, 1, 0, "--d"]], cap: "Orange: Steigungsdreieck mit Δx = 1 und Δy = 2.",
+    opts: ["m bleibt 2.", "m wird 6.", "m wird 3-mal so klein.", "Das hängt davon ab, wo man das Dreieck zeichnet."], ok: 0,
+    afterSegs: [[1, 0, 4, 0, "--e"], [4, 0, 4, 6, "--e"]], afterCap: "Grün: das große Dreieck mit Δx = 3 und Δy = 6.",
+    ex: "Geht man 3 nach rechts, geht es 6 nach oben: m = Δy/Δx = 6 : 3 = 2. Bei einer Geraden ist jedes Steigungsdreieck gleich steil, egal wie groß oder wo." },
+  { q: "Bei y = 3x − 1 wird b von −1 auf 4 geändert. Was passiert mit der Geraden?",
+    graph: [{ f: x => 3 * x - 1 }], cap: "Das ist y = 3x − 1.",
+    opts: ["Sie wird um 5 nach oben verschoben.", "Sie wird steiler.", "Sie wird um 5 nach rechts verschoben.", "Sie dreht sich um den Punkt (0 | −1)."], ok: 0,
+    after: [{ f: x => 3 * x + 4, c: "--e", dash: true }], afterCap: "Gestrichelt: y = 3x + 4.",
+    ex: "b verschiebt die Gerade nur nach oben oder unten, die Steigung m = 3 bleibt gleich. Von −1 auf 4 sind es 5 nach oben." },
+  { q: "Was gilt für m und b bei dieser Geraden?", graph: [{ f: x => -0.8 * x - 2 }], noNums: true,
+    opts: ["m < 0 und b < 0", "m > 0 und b < 0", "m < 0 und b > 0", "m > 0 und b > 0"], ok: 0,
+    ex: "Die Gerade fällt von links nach rechts: m < 0. Sie schneidet die y-Achse unterhalb von 0: b < 0. Dafür braucht man keine einzige Zahl." },
+  { q: "Lena berechnet die Steigung der Geraden durch P(1 | 4) und Q(3 | 0) so: m = (3 − 1) : (0 − 4) = −0,5. Was ist falsch?",
+    pts: [[1, 4, "P"], [3, 0, "Q"]],
+    opts: ["Sie hat x- und y-Werte vertauscht.", "Sie hätte zuerst Q und dann P abziehen müssen.", "Nichts, m = −0,5 stimmt.", "Die Steigung darf nicht negativ sein."], ok: 0,
+    after: [{ f: x => -2 * x + 6 }], afterCap: "Die Gerade durch P und Q fällt steil: m = −2.",
+    ex: "Oben im Bruch steht Δy = f(x₂) − f(x₁) = 0 − 4 = −4, unten Δx = x₂ − x₁ = 3 − 1 = 2. Richtig ist m = −4 : 2 = −2." },
+  { q: "Ein Taxi kostet 3 € Grundgebühr und 2 € pro gefahrenem Kilometer. Welche Gleichung beschreibt den Preis y (in €) für x Kilometer?",
+    opts: ["y = 2x + 3", "y = 3x + 2", "y = 5x", "y = 2x − 3"], ok: 0,
+    after: [{ f: x => 2 * x + 3 }], afterPts: [[0, 3]], afterCap: "Die Gerade startet bei 3 € (b) und steigt pro km um 2 € (m).",
+    ex: "Die Grundgebühr zahlt man auch bei 0 km: Das ist der y-Achsenabschnitt b = 3. Pro Kilometer kommen 2 € dazu: Das ist die Steigung m = 2." },
+  { q: "Tarif A: 10 € im Monat plus 0,10 € pro Minute. Tarif B: keine Grundgebühr, aber 0,30 € pro Minute. Ab wie vielen Minuten im Monat ist Tarif A günstiger?",
+    opts: ["Ab mehr als 50 Minuten", "Ab mehr als 33 Minuten", "Ab mehr als 100 Minuten", "Tarif A ist nie günstiger."], ok: 0,
+    ex: "A: y = 0,1x + 10, B: y = 0,3x. Gleich teuer bei 0,3x = 0,1x + 10, also 0,2x = 10 und x = 50. Danach ist B teurer, weil seine Gerade steiler ist." },
+  { q: "Eine Kerze ist 20 cm lang und brennt pro Stunde 2,5 cm ab. Nach wie vielen Stunden ist sie ganz abgebrannt?",
+    opts: ["Nach 8 Stunden", "Nach 10 Stunden", "Nach 17,5 Stunden", "Nach 50 Stunden"], ok: 0,
+    ex: "Länge: y = −2,5x + 20. Abgebrannt heißt y = 0: 2,5x = 20, also x = 8. Kontrolle: 8 · 2,5 = 20." },
+  { q: "Ein Radfahrer hat nach x Stunden y Kilometer zurückgelegt: y = 18x. Was bedeutet m = 18?",
+    opts: ["Er fährt 18 km pro Stunde.", "Er ist nach 18 Stunden am Ziel.", "Er startet 18 km vom Start entfernt.", "Die ganze Strecke ist 18 km lang."], ok: 0,
+    ex: "m sagt, um wie viel y wächst, wenn x um 1 wächst: pro Stunde 18 km mehr, also 18 km/h. b = 0 heißt: Er startet bei 0 km." },
+  { q: "Bei welcher Geraden gilt: Geht man 2 nach rechts, geht es 3 nach unten?",
+    graph: [{ f: x => -1.5 * x + 2 }], hideGraphUntil: true,
+    opts: ["y = −1,5x + 2", "y = −3x + 2", "y = 1,5x + 2", "y = −2x + 3"], ok: 0,
+    ex: "m = (−3) : 2 = −1,5. Die Steigung sagt, wie viel es pro 1 nach rechts hoch oder runter geht." },
+  { q: "Bei y = m·x + 3 wird nur m verändert. Welcher Punkt liegt immer auf der Geraden, egal welches m?",
+    opts: ["(0 | 3)", "(3 | 0)", "(1 | 3)", "Keiner, die Gerade verschiebt sich."], ok: 0,
+    after: [{ f: x => -2 * x + 3, c: "--muted" }, { f: x => -0.5 * x + 3, c: "--muted" }, { f: x => 0.5 * x + 3, c: "--muted" }, { f: x => 1.5 * x + 3, c: "--muted" }],
+    afterPts: [[0, 3, "(0|3)"]], afterCap: "Alle Geraden y = m·x + 3 drehen sich um den Punkt (0 | 3).",
+    ex: "Bei x = 0 ist m · 0 = 0, also y = 3 für jedes m. Ändert man m, dreht sich die Gerade um (0 | 3)." },
+  { q: "Die Gerade y = 2x + 1 wird an der y-Achse gespiegelt. Welche Gleichung hat die gespiegelte Gerade?",
+    graph: [{ f: x => 2 * x + 1 }], cap: "Das ist y = 2x + 1.",
+    opts: ["y = −2x + 1", "y = −2x − 1", "y = 2x − 1", "y = 0,5x + 1"], ok: 0,
+    after: [{ f: x => -2 * x + 1, c: "--e", dash: true }], afterCap: "Gestrichelt: die gespiegelte Gerade y = −2x + 1.",
+    ex: "Der Punkt (0 | 1) liegt auf der y-Achse und bleibt beim Spiegeln liegen, also bleibt b = 1. Aus Steigen wird Fallen: m = −2." },
+  { q: "Was stimmt für die Geraden y = 2x + 1 und y = 2x − 3?",
+    opts: ["Sie sind parallel und schneiden sich nie.", "Sie schneiden sich im Punkt (0 | 1).", "Es ist dieselbe Gerade.", "Sie stehen senkrecht aufeinander."], ok: 0,
+    after: [{ f: x => 2 * x + 1 }, { f: x => 2 * x - 3, c: "--pencil" }],
+    ex: "Gleiche Steigung m = 2, aber verschiedene y-Achsenabschnitte: Die Geraden laufen parallel nebeneinander her und treffen sich nie." },
+  { q: "Die Wertetabelle gehört zu einer linearen Funktion. Welcher Wert fehlt?", table: [[-1, 1, 2, 4], [5, 1, "?", -5]],
+    opts: ["−1", "−3", "0", "−2"], ok: 0,
+    after: [{ f: x => -2 * x + 3 }], afterPts: [[-1, 5], [1, 1], [2, -1], [4, -5]],
+    ex: "Vorsicht, die x-Werte haben verschiedene Abstände! Von x = −1 bis x = 1 (2 nach rechts) fällt y um 4: m = −4 : 2 = −2. Von x = 1 bis x = 2 ist es 1 Schritt, also 2 weniger: 1 − 2 = −1. Kontrolle: Von 2 bis 4 sind es 2 Schritte: −1 − 4 = −5." },
+  { q: "Die Gerade y = m·x + 2 geht durch P(3 | −4). Wie groß ist m?",
+    pts: [[0, 2, "(0|2)"], [3, -4, "P"]], cap: "Eingezeichnet: der y-Achsenabschnitt und P.",
+    opts: ["m = −2", "m = 2", "m = −3", "m = −0,5"], ok: 0, after: [{ f: x => -2 * x + 2 }],
+    ex: "Von (0 | 2) nach P(3 | −4) geht es 3 nach rechts und 6 nach unten: m = −6 : 3 = −2. Oder einsetzen: −4 = m · 3 + 2, also 3m = −6." },
+  { q: "Welche Gerade ist am steilsten?",
+    opts: ["y = 0,5x + 4", "y = −3x + 1", "y = 2x − 5", "y = x"], ok: 1,
+    after: [{ f: x => 0.5 * x + 4, c: "--muted" }, { f: x => -3 * x + 1, c: "--pencil" }, { f: x => 2 * x - 5, c: "--muted" }, { f: x => x, c: "--muted" }],
+    afterCap: "Rot: y = −3x + 1, sie fällt am steilsten.",
+    ex: "Steil heißt: Die Zahl m ist weit weg von 0, egal ob positiv oder negativ. −3 ist weiter von 0 weg als 2, 1 oder 0,5. Die Gerade fällt also am steilsten." },
+  { q: "Welcher Punkt liegt auf der Geraden y = −0,5x + 1?",
+    opts: ["(4 | −1)", "(2 | 1)", "(−2 | 0)", "(1 | −0,5)"], ok: 0,
+    after: [{ f: x => -0.5 * x + 1 }], afterPts: [[4, -1]],
+    ex: "x einsetzen und vergleichen: −0,5 · 4 + 1 = −2 + 1 = −1. Passt! Bei (2 | 1) käme 0 heraus, bei (−2 | 0) käme 2 heraus, bei (1 | −0,5) käme 0,5 heraus." },
+  { q: "Wo schneidet die Gerade y = 2x − 6 die x-Achse?",
+    opts: ["Bei (3 | 0)", "Bei (−6 | 0)", "Bei (0 | −6)", "Bei (−3 | 0)"], ok: 0,
+    after: [{ f: x => 2 * x - 6 }], afterPts: [[3, 0], [0, -6]],
+    ex: "Auf der x-Achse ist y = 0: 0 = 2x − 6, also x = 3. Vorsicht: (0 | −6) ist der Schnitt mit der y-Achse." },
+  { q: "Zu welcher Gleichung passt diese Wertetabelle?", table: [[0, 1, 2, 3], [5, 3, 1, -1]],
+    opts: ["y = −2x + 5", "y = 2x + 5", "y = −2x + 1", "y = 5x − 2"], ok: 0,
+    after: [{ f: x => -2 * x + 5 }], afterPts: [[0, 5], [1, 3], [2, 1], [3, -1]],
+    ex: "Bei x = 0 steht y = 5, also b = 5. Pro Schritt nach rechts wird y um 2 kleiner, also m = −2." },
+  { q: "Welcher Graph gehört zu keiner Funktion?",
+    gopts: [{ v: 2 }, { f: x => 2 }, { f: x => 3 * x - 1 }, { f: x => -0.5 * x + 1 }], ok: 0,
+    ex: "Bei einer Funktion gehört zu jedem x genau ein y (Senkrechtentest: Eine senkrechte Linie darf den Graphen höchstens einmal treffen). Die senkrechte Gerade x = 2 hat zu x = 2 unendlich viele y-Werte. Die waagerechte Gerade y = 2 ist dagegen eine Funktion mit m = 0." },
+  { q: "Welche Gleichung gehört zu dieser Geraden?", graph: [{ f: x => 0.5 * x - 2 }],
+    opts: ["y = 0,5x − 2", "y = 2x − 2", "y = −0,5x − 2", "y = 0,5x + 2"], ok: 0,
+    ex: "Die Gerade schneidet die y-Achse bei −2, also b = −2. Geht man 2 nach rechts, geht es 1 nach oben: m = 1 : 2 = 0,5." },
+  { q: "Welcher Graph gehört zu y = −x + 2?",
+    gopts: [{ f: x => x + 2 }, { f: x => -x - 2 }, { f: x => -x + 2 }, { f: x => -2 * x + 1 }], ok: 2,
+    ex: "b = 2: Schnitt mit der y-Achse bei 2. m = −1: pro 1 nach rechts 1 nach unten, die Gerade fällt." },
+];
+const bPro = new Board($("cPro"), 7);
+let pro = { i: 0, score: 0, answered: false, order: [], minis: [], errs: [] };
+function shuffle(n) { const a = [...Array(n).keys()]; for (let i = n - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function proVisible() { return !!prog.won || allOpen(); }
+function updProTab() {
+  const b = document.querySelector('#mainTabs [data-tab="pro"]'); if (!b) return;
+  b.hidden = !proVisible();
+  if (!proVisible() && typeof current !== "undefined" && current === "pro") show("mb");
+}
+function proHasPic(Q, answered) { return !!((Q.graph && (!Q.hideGraphUntil || answered)) || Q.pts || Q.segs || (answered && (Q.after || Q.afterPts))); }
+function buildOpts(Q) {
+  let order; do order = shuffle(4); while (pro.order.length && order.every((k, i) => k === pro.order[i]));
+  pro.order = order;
+  const box = $("proOpts"); box.innerHTML = ""; box.classList.toggle("graphs", !!Q.gopts); pro.minis = [];
+  pro.order.forEach((k, pos) => {
+    const b = document.createElement("button"); b.className = "opt"; b.dataset.k = k;
+    const L = "ABCD"[pos];
+    if (Q.gopts) {
+      b.innerHTML = `<span class="badge">${L}</span><canvas aria-label="Graph ${L}"></canvas>`;
+      const board = new Board(b.querySelector("canvas"), 5); board.lab = 2;
+      pro.minis.push({ board, g: Q.gopts[k] });
+    } else b.innerHTML = `<span class="badge">${L}</span><span>${Q.opts[k]}</span>`;
+    b.addEventListener("click", () => answerPro(k, b));
+    box.appendChild(b);
+  });
+  requestAnimationFrame(drawPro);
+}
+function proHead() { $("proHead").textContent = `Frage ${pro.i + 1} von ${PRO.length} · ${pro.score} beim ersten Versuch richtig`; }
+function renderPro() {
+  const Q = PRO[pro.i]; pro.answered = false; pro.missed = false; pro.order = [];
+  clearInterval(pro.timer); $("proLock").hidden = true; pro.locked = false;
+  $("proDone").hidden = true; $("proQuiz").hidden = false;
+  proHead(); $("proQ").textContent = Q.q;
+  const tb = $("proTable");
+  if (Q.table) { tb.hidden = false; tb.innerHTML = `<table class="wt"><tr><th>x</th>${Q.table[0].map(v => `<th>${num(v)}</th>`).join("")}</tr><tr><th>y</th>${Q.table[1].map(v => `<td>${typeof v === "string" ? v : num(v)}</td>`).join("")}</tr></table>`; }
+  else tb.hidden = true;
+  $("cPro").hidden = !proHasPic(Q, false); $("proCap").textContent = Q.cap || ""; $("proCap").hidden = !Q.cap;
+  buildOpts(Q);
+  $("proFb").textContent = ""; $("proFb").className = "feedback"; $("proEx").hidden = true; $("proNext").hidden = true;
+}
+function revealPro(Q) {
+  $("proEx").textContent = Q.ex; $("proEx").hidden = false;
+  if (proHasPic(Q, true)) $("cPro").hidden = false;
+  if (Q.afterCap) { $("proCap").textContent = Q.afterCap; $("proCap").hidden = false; }
+}
+function answerPro(k, btn) {
+  const Q = PRO[pro.i];
+  if (pro.answered || pro.locked) return;
+  const fb = $("proFb");
+  if (k === Q.ok) {
+    if (!pro.missed) pro.score++;
+    pro.answered = true; btn.classList.add("right");
+    fb.className = "feedback ok"; fb.textContent = pro.missed ? "Jetzt stimmt’s." : pick(["Richtig!", "Genau!", "Stark!"]);
+    revealPro(Q);
+    $("proNext").hidden = false; $("proNext").textContent = pro.i < PRO.length - 1 ? "Nächste Frage" : "Auswertung";
+    $("proNext").focus();
+    $("proOpts").querySelectorAll(".opt").forEach(o => o.disabled = o !== btn);
+    drawPro();
+  } else {
+    pro.missed = true; pro.locked = true; btn.classList.add("wrong"); pro.errs[pro.i] = (pro.errs[pro.i] || 0) + 1;
+    $("proOpts").querySelectorAll(".opt").forEach(o => o.disabled = true);
+    let n = 3; $("proCount").textContent = n; $("proLock").hidden = false;
+    $("proPicked").textContent = Q.gopts ? `Du hattest Graph ${"ABCD"[pro.order.indexOf(k)]} gewählt.` : `Du hattest „${Q.opts[k]}“ gewählt.`;
+    clearInterval(pro.timer);
+    pro.timer = setInterval(() => {
+      n--;
+      if (n > 0) { $("proCount").textContent = n; return; }
+      clearInterval(pro.timer); pro.locked = false; $("proLock").hidden = true; buildOpts(Q);
+    }, 1000);
+  }
+  proHead();
+}
+function nextPro() {
+  if (pro.review) { showProDone(); return; }
+  if (pro.i < PRO.length - 1) { pro.i++; renderPro(); return; }
+  showProDone();
+}
+function showProDone() {
+  pro.review = false;
+  $("proQuiz").hidden = true; $("proDone").hidden = false;
+  const s = pro.score, n = PRO.length;
+  $("proDoneT").textContent = s >= n - 2 ? "Geraden-Profi! 🏅" : s >= n / 2 ? "Stark gemacht!" : "Geschafft!";
+  $("proDoneS").textContent = `${s} von ${n} Fragen beim ersten Versuch richtig.` + (s < n / 2 ? " Lies dir die Erklärungen in Ruhe nochmal durch, dann klappt es beim zweiten Durchgang besser." : "");
+  const list = $("proList"); list.innerHTML = "";
+  PRO.forEach((Q, i) => {
+    const e = pro.errs[i] || 0;
+    const b = document.createElement("button"); b.className = "revitem" + (e ? " had" : "");
+    b.innerHTML = `<span class="nr">${i + 1}</span><span class="qt">${Q.q}</span><span class="er">${e === 0 ? "✓ sofort richtig" : e === 1 ? "1 Fehler" : e + " Fehler"}</span>`;
+    b.addEventListener("click", () => reviewPro(i));
+    list.appendChild(b);
+  });
+  window.scrollTo({ top: 0 });
+}
+function reviewPro(i) {
+  pro.i = i; pro.review = true; renderPro();
+  const Q = PRO[i]; pro.answered = true;
+  $("proOpts").querySelectorAll(".opt").forEach(o => { if (+o.dataset.k === Q.ok) o.classList.add("right"); else o.disabled = true; });
+  const e = pro.errs[i] || 0;
+  $("proHead").textContent = `Rückblick: Frage ${i + 1} von ${PRO.length} · ${e === 0 ? "sofort richtig" : e === 1 ? "1 Fehler" : e + " Fehler"}`;
+  revealPro(Q);
+  $("proNext").hidden = false; $("proNext").textContent = "Zurück zur Übersicht";
+  window.scrollTo({ top: 0 }); requestAnimationFrame(drawPro);
+}
+function drawPro() {
+  const Q = PRO[pro.i]; if (!Q) return;
+  const B = bPro;
+  if (!$("cPro").hidden) {
+    B.lab = Q.noNums ? 99 : 1; B.begin();
+    const items = [...((Q.graph && (!Q.hideGraphUntil || pro.answered)) ? Q.graph : []), ...(pro.answered && Q.after ? Q.after : [])];
+    items.forEach(it => B.curve(it.f, tok(it.c || "--curve"), 3.5, it.dash ? [10, 7] : null));
+    const pts = [...(Q.pts || []), ...(pro.answered && Q.afterPts ? Q.afterPts : [])];
+    [...(Q.segs || []), ...(pro.answered && Q.afterSegs ? Q.afterSegs : [])].forEach(([x1, y1, x2, y2, c]) => B.seg(x1, y1, x2, y2, tok(c), 3.5, []));
+    pts.forEach(([x, y, l]) => { B.dot(x, y, tok("--ink"), 6); if (l) B.tag([[l, tok("--ink")]], B.X(x) + 9, B.Y(y) - 4, { base: "bottom" }); });
+  }
+  pro.minis.forEach(m => {
+    m.board.begin();
+    if (m.g.v !== undefined) m.board.seg(m.g.v, -m.board.R, m.g.v, m.board.R, tok("--curve"), 3, []);
+    else m.board.curve(m.g.f, tok("--curve"), 3);
+  });
+}
+$("proNext").addEventListener("click", nextPro);
+$("proAgain").addEventListener("click", () => { pro = { i: 0, score: 0, answered: false, order: [], minis: [], errs: [] }; renderPro(); });
+window.addEventListener("hashchange", updProTab);
+
+/* =============================================================
+   Tabs + Zeichnen
+   ============================================================= */
+let current = "mb";
+const drawers = { mb: drawMb, pts: drawPts, train: drawTrain, pro: drawPro };
+function show(tab) {
+  current = tab;
+  document.querySelectorAll("#mainTabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === tab));
+  document.querySelectorAll(".tab").forEach(s => s.hidden = s.id !== "tab-" + tab);
+  try { localStorage.setItem(KEY + "-tab", tab); } catch (_) {}
+  requestAnimationFrame(drawers[tab]);
+}
+document.querySelectorAll("#mainTabs button").forEach(b => b.addEventListener("click", () => show(b.dataset.tab)));
+const redraw = () => drawers[current]();
+["cMb", "cPts", "cTrain", "cPro", "proOpts"].forEach(id => new ResizeObserver(redraw).observe($(id)));
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(redraw);
+
+renderLevels(); newTask(); updMb(); updPts(); renderPro(); updProTab();
+let startTab = "mb"; try { startTab = localStorage.getItem(KEY + "-tab") || "mb"; } catch (_) {}
+show(drawers[startTab] && (startTab !== "pro" || proVisible()) ? startTab : "mb");
+window.__lab = { get task() { return task; }, prog: () => prog };
+})();
+</script>
+</body>
+</html>

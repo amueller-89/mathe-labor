@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Labor-Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+:root{
+  --paper:#0f161d; --ink:#e5ecf3; --muted:#93a5b6; --line:#273543; --surface:#17212b;
+  --a:#c387e0; --d:#f5a25a; --e:#5fcf82; --z:#4fc3cf; --curve:#6b9bff; --pencil:#ff7d60; --focus:#6b9bff;
+  --ok-bg:#16301f; --bad-bg:#3a1d17;
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible",system-ui,-apple-system,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+.wrap{max-width:1240px;margin:0 auto;padding:20px 16px 40px;display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 24px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,4vw,40px);line-height:1.05;margin:0}
+h2{font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 10px}
+.seg{display:inline-flex;flex-wrap:wrap}
+.seg button{font:inherit;font-size:15px;padding:8px 14px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer;margin-left:-1.5px}
+.seg button:first-child{border-radius:8px 0 0 8px;margin-left:0}
+.seg button:last-child{border-radius:0 8px 8px 0}
+.seg button[aria-selected="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.card{background:var(--surface);border-radius:12px;padding:16px;min-width:0}
+.grid2{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:16px}
+@media (max-width:860px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.muted{color:var(--muted)}
+.hint{font-size:14px;color:var(--muted);margin:10px 0 0}
+.toggles{display:flex;flex-wrap:wrap;gap:8px}
+.tg{font:inherit;font-size:15px;display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--paper);color:var(--muted);cursor:pointer}
+.tg::before{content:"🔒";font-size:13px}
+.tg[aria-pressed="true"]{border-color:var(--e);background:var(--ok-bg);color:var(--ink)}
+.tg[aria-pressed="true"]::before{content:"✓";color:var(--e);font-weight:700}
+.tg:disabled{opacity:.6;cursor:wait}
+.btn{font:inherit;font-size:14px;padding:6px 12px;border-radius:8px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+.link{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.link code{font-size:14px;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:6px 8px;word-break:break-all;flex:1;min-width:0}
+.stats{display:flex;gap:24px;flex-wrap:wrap;align-items:baseline}
+.stat b{font-family:var(--display);font-size:32px;font-weight:800;margin-right:6px}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:15px;font-variant-numeric:tabular-nums}
+th{text-align:left;font-size:13px;font-weight:700;color:var(--muted);padding:6px 10px;border-bottom:1.5px solid var(--line);white-space:nowrap}
+td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+td.name{font-weight:700;white-space:nowrap}
+.on{color:var(--e);white-space:nowrap} .off{color:var(--muted);white-space:nowrap}
+.lv{display:inline-flex;align-items:baseline;gap:4px;margin-right:12px;white-space:nowrap}
+.lv .n{font-size:12px;color:var(--muted)}
+.lv .dots{color:var(--e);letter-spacing:2px}
+.lv.locked{opacity:.35}
+.lv .f{font-size:12px;color:var(--pencil)}
+.won{color:var(--e);font-weight:700}
+.del{font:inherit;font-size:13px;padding:2px 8px;border-radius:6px;border:1px solid var(--line);background:none;color:var(--muted);cursor:pointer;white-space:nowrap}
+.del.armed{border-color:var(--pencil);color:var(--pencil)}
+.err{color:var(--pencil);font-weight:700}
+.empty{color:var(--muted);padding:16px 0}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Labor-Admin</h1>
+    <nav class="seg" id="labTabs"></nav>
+  </header>
+  <p class="err" id="err" hidden></p>
+  <div id="main" hidden>
+    <div class="grid2">
+      <div class="card">
+        <h2>Freigaben</h2>
+        <div class="toggles" id="toggles"></div>
+        <p class="hint">Gilt sofort für die ganze Klasse (spätestens nach 20 Sekunden). Den Profi-Tab sieht ein Kind erst, wenn er hier frei ist <b>und</b> es alle Stufen im Rechentrainer geschafft hat.</p>
+      </div>
+      <div class="card">
+        <h2>Link für die Klasse</h2>
+        <div class="link"><code id="kidUrl"></code><button class="btn" id="copy">Kopieren</button></div>
+        <p class="hint">Kinder tippen beim ersten Aufruf ihren Vornamen ein. Gleicher Name = gleicher Fortschritt, auch an einem anderen Rechner.</p>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <div class="stats">
+        <span class="stat"><b id="sOnline">0</b>gerade online</span>
+        <span class="stat"><b id="sAll">0</b>angemeldet</span>
+        <span class="stat"><b id="sWon">0</b>Rechentrainer geschafft</span>
+        <span class="muted" id="stamp" style="margin-left:auto;font-size:14px"></span>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Name</th><th>Online</th><th>Gerade in</th><th>Rechentrainer (3 richtige je Stufe)</th><th>Profi ★</th><th></th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <p class="empty" id="empty" hidden>Noch niemand angemeldet.</p>
+    </div>
+  </div>
+</div>
+<script>
+(() => {
+"use strict";
+const $ = id => document.getElementById(id);
+const NEED = 3;
+const call = (fn, ...args) => new Promise((res, rej) => google.script.run.withSuccessHandler(res).withFailureHandler(rej)[fn](...args));
+let KEY = "", LAB = "geraden", data = null, busy = false, timer = null;
+
+function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+function ago(s) {
+  if (s < 60) return "gerade eben";
+  if (s < 3600) return "vor " + Math.round(s / 60) + " min";
+  if (s < 86400) return "vor " + Math.round(s / 3600) + " h";
+  return "vor " + Math.round(s / 86400) + " Tagen";
+}
+function showErr(e) {
+  const m = e && e.message ? String(e.message).replace(/^(Exception|Error):\s*/, "") : String(e);
+  $("err").textContent = m; $("err").hidden = false;
+}
+
+async function load() {
+  if (busy) return; busy = true;
+  try {
+    data = await call("adminDaten", KEY, LAB);
+    $("err").hidden = true; $("main").hidden = false;
+    render();
+  } catch (e) { showErr(e); }
+  finally { busy = false; }
+}
+
+function render() {
+  const d = data;
+  // Labor-Umschalter
+  const nav = $("labTabs"); nav.innerHTML = "";
+  d.labs.forEach(l => {
+    const b = el("button", "", l.title + " · " + l.klasse);
+    b.setAttribute("aria-selected", l.id === LAB);
+    b.addEventListener("click", () => { if (l.id !== LAB) { LAB = l.id; $("rows").innerHTML = ""; load(); } });
+    nav.appendChild(b);
+  });
+  // Freigaben
+  const tg = $("toggles"); tg.innerHTML = "";
+  d.tabs.forEach(t => {
+    const b = el("button", "tg", t.label); b.setAttribute("aria-pressed", t.on);
+    b.addEventListener("click", () => toggle(t.id));
+    tg.appendChild(b);
+  });
+  $("kidUrl").textContent = d.url ? d.url + "?lab=" + LAB : "(erscheint nach dem Bereitstellen)";
+  // Statistik
+  const kids = d.kids.slice().sort((a, b) => a.name.localeCompare(b.name, "de"));
+  $("sAll").textContent = kids.length;
+  $("sOnline").textContent = kids.filter(k => k.vorSek < 60).length;
+  $("sWon").textContent = kids.filter(k => k.state && k.state.prog && k.state.prog.won).length;
+  $("stamp").textContent = "Stand " + new Date().toLocaleTimeString("de-DE") + " · aktualisiert sich alle 10 s";
+  const label = {}; d.tabs.forEach(t => label[t.id] = t.label.replace(/^\d+\s*/, ""));
+  // Tabelle
+  const body = $("rows"); body.innerHTML = "";
+  $("empty").hidden = kids.length > 0;
+  kids.forEach(k => {
+    const tr = el("tr");
+    tr.appendChild(el("td", "name", k.name));
+    const on = k.vorSek < 60;
+    tr.appendChild(el("td", on ? "on" : "off", on ? "● online" : ago(k.vorSek)));
+    const st = k.state || {};
+    tr.appendChild(el("td", "", st.tab ? (label[st.tab] || st.tab) : "–"));
+    // Rechentrainer
+    const tdT = el("td");
+    const p = st.prog;
+    if (p && Array.isArray(p.c)) {
+      p.c.forEach((c, i) => {
+        const n = Math.min(c, NEED);
+        const s = el("span", "lv" + (i > (p.unl || 0) ? " locked" : ""));
+        s.appendChild(el("span", "n", "S" + (i + 1)));
+        s.appendChild(el("span", "dots", "●".repeat(n) + "○".repeat(NEED - n)));
+        if (c > NEED) s.appendChild(el("span", "n", "+" + (c - NEED)));
+        if (p.f && p.f[i]) s.appendChild(el("span", "f", p.f[i] + "✗"));
+        tdT.appendChild(s);
+      });
+      if (p.won) tdT.appendChild(el("span", "won", "🏆"));
+    } else tdT.textContent = "–";
+    tr.appendChild(tdT);
+    // Profi
+    const q = st.pro, tdP = el("td");
+    const errs = q && q.errs ? q.errs.reduce((s, v) => s + (v || 0), 0) : 0;
+    if (!q || (!q.done && q.i === 0 && !errs && !q.answered)) tdP.textContent = "–";
+    else if (q.done) { tdP.appendChild(el("span", "won", "fertig ")); tdP.appendChild(document.createTextNode(q.score + "/" + q.n + " beim 1. Versuch · " + errs + " Fehler")); }
+    else tdP.textContent = "Frage " + (q.i + 1) + "/" + q.n + " · " + q.score + " beim 1. Versuch · " + errs + " Fehler";
+    tr.appendChild(tdP);
+    // Löschen
+    const tdD = el("td"); const del = el("button", "del", "entfernen");
+    let armed = 0;
+    del.addEventListener("click", async () => {
+      if (Date.now() - armed > 4000) { armed = Date.now(); del.textContent = "wirklich?"; del.classList.add("armed"); setTimeout(() => { del.textContent = "entfernen"; del.classList.remove("armed"); }, 4000); return; }
+      del.disabled = true;
+      try { await call("adminLoeschen", KEY, LAB, k.id); load(); } catch (e) { showErr(e); }
+    });
+    tdD.appendChild(del); tr.appendChild(tdD);
+    body.appendChild(tr);
+  });
+}
+
+async function toggle(id) {
+  const on = data.tabs.filter(t => t.on).map(t => t.id);
+  const next = on.indexOf(id) >= 0 ? on.filter(t => t !== id) : on.concat(id);
+  document.querySelectorAll(".tg").forEach(b => b.disabled = true);
+  try { await call("adminFreigabe", KEY, LAB, next); } catch (e) { showErr(e); }
+  await load();
+}
+
+$("copy").addEventListener("click", () => {
+  const t = $("kidUrl").textContent;
+  try { navigator.clipboard.writeText(t).then(() => { $("copy").textContent = "Kopiert ✓"; setTimeout(() => $("copy").textContent = "Kopieren", 1500); }); }
+  catch (_) {}
+});
+
+function init(params) {
+  KEY = params.admin || ""; if (params.lab) LAB = params.lab;
+  load(); timer = setInterval(load, 10000);
+}
+try { google.script.url.getLocation(loc => init(loc.parameter || {})); }
+catch (e) { showErr(e); }
+})();
+</script>
+</body>
+</html>
