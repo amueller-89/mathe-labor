@@ -45,6 +45,9 @@ await kc2.close();
 // unlock pro, win trainer
 await admin.click('.tg:nth-child(4)');await admin.waitForTimeout(600);await kid.waitForTimeout(2500);
 console.log('pro tab before win (expect visible):',await kid.isVisible('#mainTabs [data-tab=pro]'));
+await kid.click('#mainTabs [data-tab=pro]');await kid.waitForTimeout(300);
+console.log('pro locked: tab shown',await kid.isVisible('#tab-pro'),'toast',await kid.isVisible('.proToast'),'class',await kid.getAttribute('#mainTabs [data-tab=pro]','class'));
+await kid.click('#mainTabs [data-tab=train]');
 for(let lv=1;lv<4;lv++){ await kid.click(`#levels button:nth-child(${lv+1})`); for(let i=0;i<3;i++){
   const t=await kid.evaluate(()=>window.__lab.task.want); for(const k in t) await kid.fill(`[data-k=${k}]`,fmt(t[k]));
   await kid.click('#trCheck'); if(!(lv===3&&i===2)) await kid.click('#trNext'); }}

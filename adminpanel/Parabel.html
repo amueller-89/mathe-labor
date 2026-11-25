@@ -132,6 +132,9 @@ canvas.procan{max-width:400px;margin:0 0 14px}
 @media (prefers-reduced-motion: reduce){.win .box{animation:none}}
 footer{font-size:13px;color:var(--muted)}
 
+#mainTabs button.locked{opacity:.55}
+#mainTabs button.locked::before{content:"\1F512\00A0"}
+.proToast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:70;background:var(--surface);color:var(--ink);border:2px solid var(--line);border-radius:12px;padding:12px 18px;box-shadow:0 12px 40px rgb(0 0 0 / .4);max-width:calc(100vw - 32px);text-align:center}
 .gate{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:16px;background:var(--paper)}
 .gate .box{background:var(--surface);border-radius:16px;padding:28px 24px;max-width:460px;width:100%;box-shadow:0 20px 60px rgb(0 0 0 / .35)}
 .gate h2{font-family:var(--display);font-weight:800;font-size:clamp(28px,5vw,38px);line-height:1.05;margin:0 0 14px}
@@ -328,9 +331,9 @@ footer{font-size:13px;color:var(--muted)}
           <div class="vertex probe" id="spProbe" aria-hidden="true"></div>
         </div>
         <div class="card">
-          <div class="sl"><b class="ca">a</b><input type="range" id="spA" class="ra" min="-3" max="3" step="0.05" value="1"><output id="spAo"></output></div>
           <div class="sl"><b class="cd">d</b><input type="range" id="spD" class="rd" min="-6" max="6" step="0.05" value="0"><output id="spDo"></output></div>
           <div class="sl"><b class="ce">e</b><input type="range" id="spE" class="re" min="-6" max="6" step="0.05" value="0"><output id="spEo"></output></div>
+          <div class="sl"><b class="ca">a</b><input type="range" id="spA" class="ra" min="-3" max="3" step="0.05" value="1"><output id="spAo"></output></div>
           <div class="row" style="margin-top:4px">
             <button class="btn" id="spReset">Zurück auf y = x²</button>
             <label class="chk"><input type="checkbox" id="spNorm" checked> Normalparabel</label>
@@ -405,6 +408,13 @@ const errMsg = e => {
 };
 let me = null, allowed = [], started = false, pingTimer = null, debounce = null, online = true;
 window.__tabOk = t => allowed.indexOf(t) >= 0;
+let toastT = null;
+window.__proLocked = () => {
+  let t = document.querySelector(".proToast");
+  if (!t) { t = document.createElement("div"); t.className = "proToast"; t.setAttribute("role", "status"); document.body.appendChild(t); }
+  t.textContent = "Der Profi-Tab öffnet sich, sobald du alle Stufen im Rechentrainer geschafft hast.";
+  t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 3500);
+};
 
 function gate(which) {
   $("gate").hidden = !which;
@@ -461,7 +471,7 @@ function apply() {
   const L = window.__lab2; if (!L) return;
   document.querySelectorAll("#mainTabs button").forEach(b => { if (b.dataset.tab !== "pro") b.hidden = !window.__tabOk(b.dataset.tab); });
   L.updProTab();
-  $("winPro").hidden = !window.__tabOk("pro"); $("winProTxt").hidden = true;
+  $("winPro").hidden = !window.__tabOk("pro"); $("winProTxt").hidden = !window.__tabOk("pro");
   const vis = [...document.querySelectorAll("#mainTabs button")].filter(b => !b.hidden);
   if (!vis.length) { gate("gWait"); return; }
   if (!$("gWait").hidden || !$("gLogin").hidden || !$("gAgain").hidden) gate(null);
@@ -748,7 +758,7 @@ function checkTask() {
     fb.className = "feedback ok"; fb.textContent = msg;
     $("trCheck").disabled = true; $("trShow").disabled = true;
     $("trNext").focus();
-    if (!prog.won && prog.c.every(c => c >= NEED)) { prog.won = true; save(); setTimeout(showWin, 500); }
+    if (!prog.won && prog.c.every(c => c >= NEED)) { prog.won = true; save(); updProTab(); setTimeout(showWin, 500); }
   } else {
     prog.f[task.l]++;
     fb.className = "feedback no"; fb.textContent = "Noch nicht. Rot markierte Felder nochmal prüfen.";
@@ -1124,6 +1134,7 @@ let pro = { i: 0, score: 0, answered: false, order: [], minis: [], errs: [] };
 function shuffle(n) { const a = [...Array(n).keys()]; for (let i = n - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 function proVisible() { return window.__tabOk("pro"); }
 function updProTab() {
+  { const pb = document.querySelector('#mainTabs [data-tab="pro"]'); if (pb) { pb.classList.toggle("locked", !prog.won); pb.title = prog.won ? "" : "Erst den Rechentrainer schaffen"; } }
   const vis = proVisible(), b = document.querySelector('#mainTabs [data-tab="pro"]');
   b.hidden = !vis;
   if (!vis && typeof current !== "undefined" && current === "pro") show("sp");
@@ -1244,13 +1255,14 @@ window.addEventListener("hashchange", updProTab);
 let current = "sp";
 const drawers = { pro: drawPro, train: drawTrain, pq: drawPq, forms: drawForms, sp: () => { fitVertex(); drawSp(); } };
 function show(tab) {
+  if (tab === "pro" && !prog.won) { const f = [...document.querySelectorAll("#mainTabs button")].find(b => !b.hidden && b.dataset.tab !== "pro"); if (!f) return; tab = f.dataset.tab; }
   current = tab; if (window.__changed) window.__changed();
   document.querySelectorAll("#mainTabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === tab));
   document.querySelectorAll(".tab").forEach(s => s.hidden = s.id !== "tab-" + tab);
   try { localStorage.setItem(KEY + "-tab", tab); } catch (_) {}
   requestAnimationFrame(drawers[tab]);
 }
-document.querySelectorAll("#mainTabs button").forEach(b => b.addEventListener("click", () => show(b.dataset.tab)));
+document.querySelectorAll("#mainTabs button").forEach(b => b.addEventListener("click", () => { if (b.dataset.tab === "pro" && !prog.won) { window.__proLocked(); return; } show(b.dataset.tab); }));
 const redraw = () => drawers[current]();
 ["cTrain", "cPq", "cForms", "cSp", "cPro", "proOpts"].forEach(id => new ResizeObserver(redraw).observe($(id)));
 try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", redraw); } catch (_) {}

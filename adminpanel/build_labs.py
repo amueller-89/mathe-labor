@@ -5,6 +5,9 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 VIZ = os.path.join(HERE, '..', 'labore')
 
 GATE_CSS = """
+#mainTabs button.locked{opacity:.55}
+#mainTabs button.locked::before{content:"\\1F512\\00A0"}
+.proToast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:70;background:var(--surface);color:var(--ink);border:2px solid var(--line);border-radius:12px;padding:12px 18px;box-shadow:0 12px 40px rgb(0 0 0 / .4);max-width:calc(100vw - 32px);text-align:center}
 .gate{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:16px;background:var(--paper)}
 .gate .box{background:var(--surface);border-radius:16px;padding:28px 24px;max-width:460px;width:100%;box-shadow:0 20px 60px rgb(0 0 0 / .35)}
 .gate h2{font-family:var(--display);font-weight:800;font-size:clamp(28px,5vw,38px);line-height:1.05;margin:0 0 14px}
@@ -64,6 +67,13 @@ const errMsg = e => {
 };
 let me = null, allowed = [], started = false, pingTimer = null, debounce = null, online = true;
 window.__tabOk = t => allowed.indexOf(t) >= 0;
+let toastT = null;
+window.__proLocked = () => {
+  let t = document.querySelector(".proToast");
+  if (!t) { t = document.createElement("div"); t.className = "proToast"; t.setAttribute("role", "status"); document.body.appendChild(t); }
+  t.textContent = "Der Profi-Tab öffnet sich, sobald du alle Stufen im Rechentrainer geschafft hast.";
+  t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 3500);
+};
 
 function gate(which) {
   $("gate").hidden = !which;
@@ -120,7 +130,7 @@ function apply() {
   const L = window.__lab2; if (!L) return;
   document.querySelectorAll("#mainTabs button").forEach(b => { if (b.dataset.tab !== "pro") b.hidden = !window.__tabOk(b.dataset.tab); });
   L.updProTab();
-  $("winPro").hidden = !window.__tabOk("pro"); $("winProTxt").hidden = true;
+  $("winPro").hidden = !window.__tabOk("pro"); $("winProTxt").hidden = !window.__tabOk("pro");
   const vis = [...document.querySelectorAll("#mainTabs button")].filter(b => !b.hidden);
   if (!vis.length) { gate("gWait"); return; }
   if (!$("gWait").hidden || !$("gLogin").hidden || !$("gAgain").hidden) gate(null);
@@ -156,7 +166,10 @@ def build(src_name, out_name, lab, title, first_tab_comment):
         ('function proVisible() { return !!prog.won || allOpen(); }', 'function proVisible() { return window.__tabOk("pro"); }'),
         ('function answerPro(k, btn) {', 'function answerPro(k, btn) {\n  if (window.__changed) window.__changed();'),
         ('function nextPro() {', 'function nextPro() {\n  if (window.__changed) window.__changed();'),
-        ('function show(tab) {\n  current = tab;', 'function show(tab) {\n  current = tab; if (window.__changed) window.__changed();'),
+        ('function show(tab) {\n  current = tab;', 'function show(tab) {\n  if (tab === "pro" && !prog.won) { const f = [...document.querySelectorAll("#mainTabs button")].find(b => !b.hidden && b.dataset.tab !== "pro"); if (!f) return; tab = f.dataset.tab; }\n  current = tab; if (window.__changed) window.__changed();'),
+        ('b.addEventListener("click", () => show(b.dataset.tab))', 'b.addEventListener("click", () => { if (b.dataset.tab === "pro" && !prog.won) { window.__proLocked(); return; } show(b.dataset.tab); })'),
+        ('prog.won = true; save();', 'prog.won = true; save(); updProTab();'),
+        ('function updProTab() {\n', 'function updProTab() {\n  { const pb = document.querySelector(\'#mainTabs [data-tab="pro"]\'); if (pb) { pb.classList.toggle("locked", !prog.won); pb.title = prog.won ? "" : "Erst den Rechentrainer schaffen"; } }\n'),
         ('window.__lab = {', 'window.__lab2 = { show, updProTab, current: () => current, prog: () => prog, pro: () => pro, PRO_N: PRO.length };\nwindow.__lab = {'),
         ('<button class="btn small" id="trReset">', '<button class="btn small" id="trReset" hidden>'),
         ('<p><b>Neu freigeschaltet:', '<p id="winProTxt"><b>Neu freigeschaltet:'),
