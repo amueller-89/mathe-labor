@@ -139,7 +139,7 @@ canvas.procan{max-width:400px;margin:0 0 14px}
 .gate p{margin:0 0 14px}
 .gate input{font:inherit;font-size:20px;font-weight:700;padding:8px 12px;border:2px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);flex:1;min-width:0}
 .gate input:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
-.gate form{display:flex;gap:10px;flex-wrap:wrap}
+.gate .gform{display:flex;gap:10px;flex-wrap:wrap}
 .gate .small{font-size:14px;color:var(--muted);margin:12px 0 0}
 .who{font-size:14px;color:var(--muted);margin-top:4px}
 .who b{color:var(--ink)}
@@ -327,7 +327,7 @@ canvas.procan{max-width:400px;margin:0 0 14px}
     <h2>Geraden-Labor</h2>
     <div id="gLogin">
       <p>Wie heißt du? Nimm deinen Vornamen und immer genau denselben, dann geht es an jedem Rechner da weiter, wo du aufgehört hast.</p>
-      <form id="gForm"><input id="gName" maxlength="30" autocomplete="off" spellcheck="false" placeholder="Vorname" aria-label="Vorname"><button class="btn primary" id="gGo">Los geht’s</button></form>
+      <div class="gform"><input id="gWer" type="text" maxlength="30" autocomplete="nickname" autocapitalize="words" spellcheck="false" data-lpignore="true" data-1p-ignore placeholder="z. B. Mia" aria-label="Wie heißt du?"><button class="btn primary" id="gGo" type="button">Los geht’s</button></div>
     </div>
     <div id="gAgain" hidden>
       <p>Bist du <b id="gWho"></b>?</p>
@@ -368,7 +368,7 @@ function gate(which) {
   $("gate").hidden = !which;
   ["gLogin", "gAgain", "gWait", "gBye"].forEach(id => $(id).hidden = id !== which);
   $("gErr").textContent = ""; $("gLoad").hidden = true;
-  if (which === "gLogin") setTimeout(() => $("gName").focus(), 50);
+  if (which === "gLogin") setTimeout(() => $("gWer").focus(), 50);
 }
 async function login(name) {
   $("gErr").textContent = ""; $("gLoad").hidden = false;
@@ -426,7 +426,8 @@ function apply() {
   if (!vis.some(b => b.dataset.tab === L.current())) L.show(vis[0].dataset.tab);
 }
 
-$("gForm").addEventListener("submit", e => { e.preventDefault(); login($("gName").value); });
+$("gGo").addEventListener("click", () => login($("gWer").value));
+$("gWer").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); login($("gWer").value); } });
 $("gYes").addEventListener("click", () => login(store.get(IDKEY)));
 $("gNo").addEventListener("click", () => { store.del(IDKEY); gate("gLogin"); });
 $("whoSwitch").addEventListener("click", () => { clearInterval(pingTimer); me = null; store.del(IDKEY); gate("gBye"); });

@@ -18,9 +18,9 @@ console.log('admin main visible',await admin.isVisible('#main'),'url',await admi
 const [kc,kid]=await mk();
 await kid.goto(U('?lab=geraden'));await kid.waitForTimeout(500);
 await kid.screenshot({path:__dirname+'/a_login.png'});
-await kid.fill('#gName','x');await kid.click('#gGo');await kid.waitForTimeout(400);
+await kid.fill('#gWer','x');await kid.click('#gGo');await kid.waitForTimeout(400);
 console.log('short name err:',await kid.textContent('#gErr'));
-await kid.fill('#gName','  Mia  ');await kid.click('#gGo');await kid.waitForTimeout(800);
+await kid.fill('#gWer','  Mia  ');await kid.click('#gGo');await kid.waitForTimeout(800);
 console.log('gate hidden',await kid.isHidden('#gate'),'who',await kid.textContent('#who'));
 const vis=async()=>kid.$$eval('#mainTabs button',bs=>bs.filter(b=>!b.hidden).map(b=>b.dataset.tab).join(','));
 console.log('tabs',await vis());
@@ -39,7 +39,7 @@ console.log('admin row:',await admin.textContent('#rows'));
 // second device, same name
 const [kc2,kid2]=await mk();
 await kid2.goto(U('?lab=geraden'));await kid2.waitForTimeout(500);
-await kid2.fill('#gName','mia');await kid2.click('#gGo');await kid2.waitForTimeout(800);
+await kid2.fill('#gWer','mia');await kid2.click('#gGo');await kid2.waitForTimeout(800);
 console.log('device2 prog',JSON.stringify(await kid2.evaluate(()=>window.__lab.prog())), 'name', await kid2.textContent('#whoName'));
 await kc2.close();
 // unlock pro, win trainer
@@ -68,7 +68,7 @@ console.log('kid bye',await kid.isVisible('#gBye'));
 await kid.reload();await kid.waitForTimeout(500);
 console.log('again visible',await kid.isVisible('#gAgain'),'(name removed so expect login):',await kid.isVisible('#gLogin'));
 // new kid, then reload -> "Bist du"
-await kid.fill('#gName','Ben');await kid.click('#gGo');await kid.waitForTimeout(800);
+await kid.fill('#gWer','Ben');await kid.click('#gGo');await kid.waitForTimeout(800);
 await kid.reload();await kid.waitForTimeout(500);
 console.log('gAgain',await kid.isVisible('#gAgain'),await kid.textContent('#gWho'));
 await kid.screenshot({path:__dirname+'/a_again.png'});
@@ -82,7 +82,7 @@ await admin.click('.tg:nth-child(1)');await admin.waitForTimeout(500);await kid.
 console.log('after reopen gate hidden',await kid.isHidden('#gate'),'tabs',await vis());
 // parabel lab quick
 const [pc,par]=await mk();await par.goto(U('?lab=parabel'));await par.waitForTimeout(400);
-await par.fill('#gName','Lena');await par.click('#gGo');await par.waitForTimeout(800);
+await par.fill('#gWer','Lena');await par.click('#gGo');await par.waitForTimeout(800);
 console.log('parabel tabs',await par.$$eval('#mainTabs button',bs=>bs.filter(b=>!b.hidden).map(b=>b.dataset.tab).join(',')));
 await par.setViewportSize({width:390,height:844});console.log('parabel width',await par.evaluate(()=>document.documentElement.scrollWidth));
 await admin.setViewportSize({width:390,height:844});console.log('admin width',await admin.evaluate(()=>document.documentElement.scrollWidth));
