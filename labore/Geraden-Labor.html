@@ -72,6 +72,9 @@ table.wt{border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:18
 table.wt td,table.wt th{border:1.5px solid var(--line);padding:4px 6px;text-align:center;min-width:2.6em}
 table.wt th{color:var(--muted);font-weight:700;background:var(--paper)}
 table.wt td{font-weight:700}
+#mbTable{table-layout:fixed;font-size:clamp(14px,2.2vw,18px)}
+#mbTable th:first-child{width:2.4em}
+#mbTable td,#mbTable th{min-width:0;padding:4px 2px;white-space:nowrap}
 .frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .15em;line-height:1.15}
 .frac>span:first-child{border-bottom:2px solid currentColor;padding:0 .2em}
 .frac>span:last-child{padding:0 .2em}
@@ -449,9 +452,9 @@ function drawMb() {
   const m = +sM.value, b = +sB.value, cd = tok("--d"), ce = tok("--e"), ink = tok("--ink");
   if (mbMode === "quiz" && target) { B.curve(x => target.m * x + target.b, tok("--pencil"), 6); if (solved) B.dot(0, target.b, tok("--pencil"), 6); }
   B.curve(x => m * x + b, tok("--curve"), 3.5);
-  if (mbMode === "explore") {
-    (/* Tabellenpunkte */[-2, -1, 2, 3]).forEach(x => B.dot(x, m * x + b, tok("--curve"), 4, false));
-    // Steigungsdreieck: 1 nach rechts, m hoch/runter
+  if (mbMode === "explore") (/* Tabellenpunkte */[-2, -1, 2, 3]).forEach(x => B.dot(x, m * x + b, tok("--curve"), 4, false));
+  {
+    // Steigungsdreieck: 1 nach rechts, m hoch/runter (auch im Quiz, an der eigenen Geraden)
     B.seg(0, b, 1, b, ink, 2.5, []);
     B.seg(1, b, 1, b + m, cd, 3.5, []);
     B.tag([["1", ink]], B.X(0.5), B.Y(b) + (m >= 0 ? 4 : -22), { align: "center", base: "top", size: 14 });
@@ -459,8 +462,6 @@ function drawMb() {
     B.dot(1, b + m, cd, 8);
     B.dot(0, b, ce, 8);
     B.tag([["b = " + num(b), ce]], B.X(0) - 10, B.Y(b), { align: "right", base: "middle", size: 15 });
-  } else {
-    B.dot(0, b, ce, 7); B.dot(1, b + m, cd, 7);
   }
 }
 [sM, sB].forEach(s => s.addEventListener("input", () => { $("mbFb").textContent = ""; updMb(); }));
@@ -507,7 +508,7 @@ function setMbMode(m) {
   mbMode = m;
   $("mbTabs").querySelectorAll("button").forEach(b => b.setAttribute("aria-selected", b.dataset.m === m));
   $("mbQuizCard").hidden = m !== "quiz"; $("mbLegTarget").hidden = m !== "quiz";
-  $("mbTableCard").hidden = m === "quiz"; $("mbLegTri").hidden = m === "quiz";
+  $("mbTableCard").hidden = m === "quiz"; $("mbLegTri").hidden = false;
   $("mbLegMine").textContent = m === "quiz" ? "Eure Gerade" : "Gerade";
   if (m === "quiz") newTarget(); else updMb();
 }
