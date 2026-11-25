@@ -34,7 +34,7 @@ const ctx = {
 };
 function out(html) { const o = { html, setTitle: () => o, addMetaTag: () => o }; return o; }
 let code = fs.readFileSync(path.join(DIR, 'Code.gs'), 'utf8').replace("const ADMIN_SCHLUESSEL = 'bitte-aendern';", "const ADMIN_SCHLUESSEL = 'test123';");
-vm.createContext(ctx); vm.runInContext(code + '\nthis.__api = {doGet, doPost, anmelden, ping, adminDaten, adminFreigabe, adminLoeschen};', ctx);
+vm.createContext(ctx); vm.runInContext(code + '\nthis.__api = {doGet, doPost, anmelden, ping, adminDaten, adminFreigabe, adminLoeschen, adminAlles};', ctx);
 const api = ctx.__api;
 
 const SHIM = `<script>

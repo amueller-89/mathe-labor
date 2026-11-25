@@ -66,7 +66,7 @@ function doGet(e) {
 }
 
 // Schnittstelle für die Version auf GitHub Pages: POST {fn, args} → {result} oder {error}
-const API = { anmelden: anmelden, ping: ping, adminDaten: adminDaten, adminFreigabe: adminFreigabe, adminLoeschen: adminLoeschen };
+const API = { anmelden: anmelden, ping: ping, adminDaten: adminDaten, adminFreigabe: adminFreigabe, adminLoeschen: adminLoeschen, adminAlles: adminAlles };
 function doPost(e) {
   let out;
   try {
@@ -121,6 +121,16 @@ function freigaben_(lab) {
   return [LABS[lab].tabs[0][0]];   // Standard: nur der erste Tab
 }
 
+// Kinder, für die alles freigeschaltet ist (alle Tabs, alle Stufen, Profi offen)
+function alle_(lab) {
+  const list = parseJson_(PropertiesService.getScriptProperties().getProperty('alle_' + lab));
+  return Array.isArray(list) ? list : [];
+}
+
+function tabsFuer_(lab, id) {
+  return alle_(lab).indexOf(String(id)) >= 0 ? LABS[lab].tabs.map(t => t[0]) : freigaben_(lab);
+}
+
 /* ---------------- Aufrufe aus den Laboren ---------------- */
 
 function cleanName_(name) {
@@ -143,7 +153,7 @@ function anmelden(lab, name) {
       sheet_().getRange(r.row, 5).setValue(now);
     }
     const st = parseJson_(r.fortschritt) || {};
-    return { id: r.id, name: r.name, prog: st.prog || null, tabs: freigaben_(lab) };
+    return { id: r.id, name: r.name, prog: st.prog || null, tabs: tabsFuer_(lab, r.id), alle: alle_(lab).indexOf(String(r.id)) >= 0 };
   });
 }
 
@@ -163,7 +173,7 @@ function ping(lab, id, state) {
       return true;
     });
   }
-  return { known, tabs: freigaben_(lab) };
+  return { known, tabs: tabsFuer_(lab, id), alle: alle_(lab).indexOf(id) >= 0 };
 }
 
 /* ---------------- Admin ---------------- */
@@ -180,8 +190,9 @@ function adminDaten(key, lab) {
   const now = Date.now();
   const list = rows_().filter(x => x.labor === lab);
   const seen = list.length ? CacheService.getScriptCache().getAll(list.map(x => 'seen_' + x.id)) : {};
+  const alle = alle_(lab);
   const kids = list.map(x => ({
-    id: x.id, name: x.name, tab: x.tab,
+    id: x.id, name: x.name, tab: x.tab, alle: alle.indexOf(x.id) >= 0,
     vorSek: Math.round((now - Math.max(time_(x.zuletzt), Number(seen['seen_' + x.id]) || 0)) / 1000),
     state: parseJson_(x.fortschritt),
   }));
@@ -201,6 +212,18 @@ function adminFreigabe(key, lab, tabs) {
   const list = (tabs || []).map(String).filter(t => valid.indexOf(t) >= 0);
   PropertiesService.getScriptProperties().setProperty('tabs_' + lab, JSON.stringify(list));
   return list;
+}
+
+function adminAlles(key, lab, id, an) {
+  checkKey_(key);
+  if (!LABS[lab]) throw new Error('Unbekanntes Labor');
+  return withLock_(() => {
+    id = String(id);
+    const list = alle_(lab).filter(x => x !== id);
+    if (an) list.push(id);
+    PropertiesService.getScriptProperties().setProperty('alle_' + lab, JSON.stringify(list));
+    return !!an;
+  });
 }
 
 function adminLoeschen(key, lab, id) {

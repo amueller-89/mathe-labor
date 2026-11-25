@@ -64,6 +64,8 @@ td.name{font-weight:700;white-space:nowrap}
 .won{color:var(--e);font-weight:700}
 .del{font:inherit;font-size:13px;padding:2px 8px;border-radius:6px;border:1px solid var(--line);background:none;color:var(--muted);cursor:pointer;white-space:nowrap}
 .del.armed{border-color:var(--pencil);color:var(--pencil)}
+.alle{font:inherit;font-size:13px;padding:2px 8px;border-radius:6px;border:1px solid var(--line);background:none;color:var(--muted);cursor:pointer;white-space:nowrap;margin-right:6px}
+.alle.on{border-color:#5fcf80;color:#5fcf80}
 .err{color:var(--pencil);font-weight:700}
 .empty{color:var(--muted);padding:16px 0}
 [hidden]{display:none!important}
@@ -251,7 +253,15 @@ function render() {
     else tdP.textContent = "Frage " + (q.i + 1) + "/" + q.n + " · " + q.score + " beim 1. Versuch · " + errs + " Fehler";
     tr.appendChild(tdP);
     // Löschen
-    const tdD = el("td"); const del = el("button", "del", "entfernen");
+    const tdD = el("td");
+    const all = el("button", "alle" + (k.alle ? " on" : ""), k.alle ? "✓ alles frei" : "alles freischalten");
+    all.title = k.alle ? "Klicken, um wieder die normalen Freigaben zu nutzen" : "Alle Tabs, alle Stufen und Profi nur für dieses Kind";
+    all.addEventListener("click", async () => {
+      all.disabled = true;
+      try { await call("adminAlles", KEY, LAB, k.id, !k.alle); load(); } catch (e) { all.disabled = false; showErr(e); }
+    });
+    tdD.appendChild(all);
+    const del = el("button", "del", "entfernen");
     let armed = 0;
     del.addEventListener("click", async () => {
       if (Date.now() - armed > 4000) { armed = Date.now(); del.textContent = "wirklich?"; del.classList.add("armed"); setTimeout(() => { del.textContent = "entfernen"; del.classList.remove("armed"); }, 4000); return; }

@@ -428,7 +428,7 @@ async function login(name) {
   document.querySelectorAll("#gate button").forEach(b => b.disabled = true);
   try {
     const r = await call("anmelden", LAB, name);
-    me = { id: r.id, name: r.name }; store.set(IDKEY, r.name); allowed = r.tabs || [];
+    me = { id: r.id, name: r.name }; store.set(IDKEY, r.name); allowed = r.tabs || []; window.__alle = !!r.alle;
     start(r.prog);
   } catch (e) {
     $("gLoad").hidden = true; $("gErr").textContent = errMsg(e);
@@ -463,7 +463,7 @@ async function ping() {
     lastSent = js;
     setOnline(true);
     if (!r.known) { clearInterval(pingTimer); me = null; store.del(IDKEY); gate("gBye"); return; }
-    if (JSON.stringify(r.tabs) !== JSON.stringify(allowed)) { allowed = r.tabs || []; apply(); }
+    if (JSON.stringify(r.tabs) !== JSON.stringify(allowed) || !!r.alle !== !!window.__alle) { allowed = r.tabs || []; window.__alle = !!r.alle; apply(); }
   } catch (e) { setOnline(false); }
 }
 function setOnline(v) { online = v; $("whoDot").classList.toggle("off", !v); $("whoDot").title = v ? "verbunden" : "keine Verbindung"; }
@@ -471,7 +471,7 @@ window.__changed = () => { clearTimeout(debounce); debounce = setTimeout(ping, 2
 function apply() {
   const L = window.__lab2; if (!L) return;
   document.querySelectorAll("#mainTabs button").forEach(b => { if (b.dataset.tab !== "pro") b.hidden = !window.__tabOk(b.dataset.tab); });
-  L.updProTab();
+  L.updProTab(); L.renderLevels();
   $("winPro").hidden = !window.__tabOk("pro"); $("winProTxt").hidden = !window.__tabOk("pro");
   const vis = [...document.querySelectorAll("#mainTabs button")].filter(b => !b.hidden);
   if (!vis.length) { gate("gWait"); return; }
@@ -648,7 +648,7 @@ const LEVELS = [
 const NEED = 3, KEY = "parabel-labor-v1";
 let prog = { c: [0, 0, 0, 0], f: [0, 0, 0, 0], unl: 0, lvl: 0 };
 try { const s = window.__initProg; if (s && Array.isArray(s.c)) prog = Object.assign(prog, s); } catch (_) {}
-const allOpen = () => false;
+const allOpen = () => !!window.__alle;
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(prog)); } catch (_) {} if (window.__changed) window.__changed(); };
 const bTrain = new Board($("cTrain"));
 let task = null;
@@ -1136,7 +1136,7 @@ let pro = { i: 0, score: 0, answered: false, order: [], minis: [], errs: [] };
 function shuffle(n) { const a = [...Array(n).keys()]; for (let i = n - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 function proVisible() { return window.__tabOk("pro"); }
 function updProTab() {
-  { const pb = document.querySelector('#mainTabs [data-tab="pro"]'); if (pb) { pb.classList.toggle("locked", !prog.won); pb.title = prog.won ? "" : "Erst den Rechentrainer schaffen"; } }
+  { const pb = document.querySelector('#mainTabs [data-tab="pro"]'); if (pb) { const lk = !prog.won && !allOpen(); pb.classList.toggle("locked", lk); pb.title = lk ? "Erst den Rechentrainer schaffen" : ""; } }
   const vis = proVisible(), b = document.querySelector('#mainTabs [data-tab="pro"]');
   b.hidden = !vis;
   if (!vis && typeof current !== "undefined" && current === "pro") show("sp");
@@ -1257,14 +1257,14 @@ window.addEventListener("hashchange", updProTab);
 let current = "sp";
 const drawers = { pro: drawPro, train: drawTrain, pq: drawPq, forms: drawForms, sp: () => { fitVertex(); drawSp(); } };
 function show(tab) {
-  if (tab === "pro" && !prog.won) { const f = [...document.querySelectorAll("#mainTabs button")].find(b => !b.hidden && b.dataset.tab !== "pro"); if (!f) return; tab = f.dataset.tab; }
+  if (tab === "pro" && !prog.won && !allOpen()) { const f = [...document.querySelectorAll("#mainTabs button")].find(b => !b.hidden && b.dataset.tab !== "pro"); if (!f) return; tab = f.dataset.tab; }
   current = tab; if (window.__changed) window.__changed();
   document.querySelectorAll("#mainTabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === tab));
   document.querySelectorAll(".tab").forEach(s => s.hidden = s.id !== "tab-" + tab);
   try { localStorage.setItem(KEY + "-tab", tab); } catch (_) {}
   requestAnimationFrame(drawers[tab]);
 }
-document.querySelectorAll("#mainTabs button").forEach(b => b.addEventListener("click", () => { if (b.dataset.tab === "pro" && !prog.won) { window.__proLocked(); return; } show(b.dataset.tab); }));
+document.querySelectorAll("#mainTabs button").forEach(b => b.addEventListener("click", () => { if (b.dataset.tab === "pro" && !prog.won && !allOpen()) { window.__proLocked(); return; } show(b.dataset.tab); }));
 const redraw = () => drawers[current]();
 ["cTrain", "cPq", "cForms", "cSp", "cPro", "proOpts"].forEach(id => new ResizeObserver(redraw).observe($(id)));
 try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", redraw); } catch (_) {}
@@ -1274,7 +1274,7 @@ renderLevels(); newTask(); updPq(); updForms(); updSp(); renderPro(); updProTab(
 $("winPro").addEventListener("click", () => { closeWin(); show("pro"); });
 let startTab = "sp"; try { startTab = localStorage.getItem(KEY + "-tab") || "sp"; } catch (_) {}
 show(drawers[startTab] && (startTab !== "pro" || proVisible()) ? startTab : "sp");
-window.__lab2 = { show, updProTab, current: () => current, prog: () => prog, pro: () => pro, PRO_N: PRO.length };
+window.__lab2 = { show, updProTab, renderLevels, current: () => current, prog: () => prog, pro: () => pro, PRO_N: PRO.length };
 window.__lab = { get task() { return task; }, prog: () => prog };
 };
 </script>

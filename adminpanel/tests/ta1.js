@@ -88,6 +88,15 @@ console.log('after reopen gate hidden',await kid.isHidden('#gate'),'tabs',await 
 const [pc,par]=await mk();await par.goto(U('?lab=parabel'));await par.waitForTimeout(400);
 await par.fill('#gWer','Lena');await par.click('#gGo');await par.waitForTimeout(800);
 console.log('parabel tabs',await par.$$eval('#mainTabs button',bs=>bs.filter(b=>!b.hidden).map(b=>b.dataset.tab).join(',')));
+// alles freischalten fuer Lena
+await admin.click('#labTabs button:nth-child(2)');await admin.waitForTimeout(1200);
+await admin.click('.alle');await admin.waitForTimeout(1200);
+console.log('admin alle btn',await admin.textContent('.alle'));
+await par.waitForTimeout(2500);
+console.log('alle: tabs',await par.$$eval('#mainTabs button',bs=>bs.filter(b=>!b.hidden).map(b=>b.dataset.tab).join(',')),'pro locked',await par.getAttribute('#mainTabs [data-tab=pro]','class'),'levels open',await par.$$eval('#levels button',bs=>bs.filter(b=>!b.disabled).length));
+await par.click('#mainTabs [data-tab=pro]');await par.waitForTimeout(300);console.log('pro shown',await par.isVisible('#tab-pro'));
+await admin.click('.alle');await admin.waitForTimeout(1200);await par.waitForTimeout(2500);
+console.log('alle off: tabs',await par.$$eval('#mainTabs button',bs=>bs.filter(b=>!b.hidden).map(b=>b.dataset.tab).join(',')),'btn',await admin.textContent('.alle'));
 await par.setViewportSize({width:390,height:844});console.log('parabel width',await par.evaluate(()=>document.documentElement.scrollWidth));
 await admin.setViewportSize({width:390,height:844});console.log('admin width',await admin.evaluate(()=>document.documentElement.scrollWidth));
 console.log('errs',errs);await b.close();})();

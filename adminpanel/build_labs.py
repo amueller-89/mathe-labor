@@ -86,7 +86,7 @@ async function login(name) {
   document.querySelectorAll("#gate button").forEach(b => b.disabled = true);
   try {
     const r = await call("anmelden", LAB, name);
-    me = { id: r.id, name: r.name }; store.set(IDKEY, r.name); allowed = r.tabs || [];
+    me = { id: r.id, name: r.name }; store.set(IDKEY, r.name); allowed = r.tabs || []; window.__alle = !!r.alle;
     start(r.prog);
   } catch (e) {
     $("gLoad").hidden = true; $("gErr").textContent = errMsg(e);
@@ -121,7 +121,7 @@ async function ping() {
     lastSent = js;
     setOnline(true);
     if (!r.known) { clearInterval(pingTimer); me = null; store.del(IDKEY); gate("gBye"); return; }
-    if (JSON.stringify(r.tabs) !== JSON.stringify(allowed)) { allowed = r.tabs || []; apply(); }
+    if (JSON.stringify(r.tabs) !== JSON.stringify(allowed) || !!r.alle !== !!window.__alle) { allowed = r.tabs || []; window.__alle = !!r.alle; apply(); }
   } catch (e) { setOnline(false); }
 }
 function setOnline(v) { online = v; $("whoDot").classList.toggle("off", !v); $("whoDot").title = v ? "verbunden" : "keine Verbindung"; }
@@ -129,7 +129,7 @@ window.__changed = () => { clearTimeout(debounce); debounce = setTimeout(ping, 2
 function apply() {
   const L = window.__lab2; if (!L) return;
   document.querySelectorAll("#mainTabs button").forEach(b => { if (b.dataset.tab !== "pro") b.hidden = !window.__tabOk(b.dataset.tab); });
-  L.updProTab();
+  L.updProTab(); L.renderLevels();
   $("winPro").hidden = !window.__tabOk("pro"); $("winProTxt").hidden = !window.__tabOk("pro");
   const vis = [...document.querySelectorAll("#mainTabs button")].filter(b => !b.hidden);
   if (!vis.length) { gate("gWait"); return; }
@@ -159,18 +159,18 @@ def build(src_name, out_name, lab, title, first_tab_comment):
          '<div><h1>' + title + '</h1><div class="who" id="who" hidden><span class="dot" id="whoDot"></span>Angemeldet als <b id="whoName"></b> · <button class="linkbtn" id="whoSwitch">abmelden</button></div></div>'),
         # Lab-Code erst nach der Anmeldung starten
         ('<script>\n(() => {\n"use strict";', GATE_HTML.replace('__TITLE__', title) + BRIDGE.replace('__LAB__', lab) + '<script>\nwindow.__startLab = () => {\n"use strict";'),
-        ('const allOpen = () => /alle/i.test(location.hash);', 'const allOpen = () => false;'),
+        ('const allOpen = () => /alle/i.test(location.hash);', 'const allOpen = () => !!window.__alle;'),
         ('try { const s = JSON.parse(localStorage.getItem(KEY));', 'try { const s = window.__initProg;'),
         ('const save = () => { try { localStorage.setItem(KEY, JSON.stringify(prog)); } catch (_) {} };',
          'const save = () => { try { localStorage.setItem(KEY, JSON.stringify(prog)); } catch (_) {} if (window.__changed) window.__changed(); };'),
         ('function proVisible() { return !!prog.won || allOpen(); }', 'function proVisible() { return window.__tabOk("pro"); }'),
         ('function answerPro(k, btn) {', 'function answerPro(k, btn) {\n  if (window.__changed) window.__changed();'),
         ('function nextPro() {', 'function nextPro() {\n  if (window.__changed) window.__changed();'),
-        ('function show(tab) {\n  current = tab;', 'function show(tab) {\n  if (tab === "pro" && !prog.won) { const f = [...document.querySelectorAll("#mainTabs button")].find(b => !b.hidden && b.dataset.tab !== "pro"); if (!f) return; tab = f.dataset.tab; }\n  current = tab; if (window.__changed) window.__changed();'),
-        ('b.addEventListener("click", () => show(b.dataset.tab))', 'b.addEventListener("click", () => { if (b.dataset.tab === "pro" && !prog.won) { window.__proLocked(); return; } show(b.dataset.tab); })'),
+        ('function show(tab) {\n  current = tab;', 'function show(tab) {\n  if (tab === "pro" && !prog.won && !allOpen()) { const f = [...document.querySelectorAll("#mainTabs button")].find(b => !b.hidden && b.dataset.tab !== "pro"); if (!f) return; tab = f.dataset.tab; }\n  current = tab; if (window.__changed) window.__changed();'),
+        ('b.addEventListener("click", () => show(b.dataset.tab))', 'b.addEventListener("click", () => { if (b.dataset.tab === "pro" && !prog.won && !allOpen()) { window.__proLocked(); return; } show(b.dataset.tab); })'),
         ('prog.won = true; save();', 'prog.won = true; save(); updProTab();'),
-        ('function updProTab() {\n', 'function updProTab() {\n  { const pb = document.querySelector(\'#mainTabs [data-tab="pro"]\'); if (pb) { pb.classList.toggle("locked", !prog.won); pb.title = prog.won ? "" : "Erst den Rechentrainer schaffen"; } }\n'),
-        ('window.__lab = {', 'window.__lab2 = { show, updProTab, current: () => current, prog: () => prog, pro: () => pro, PRO_N: PRO.length };\nwindow.__lab = {'),
+        ('function updProTab() {\n', 'function updProTab() {\n  { const pb = document.querySelector(\'#mainTabs [data-tab="pro"]\'); if (pb) { const lk = !prog.won && !allOpen(); pb.classList.toggle("locked", lk); pb.title = lk ? "Erst den Rechentrainer schaffen" : ""; } }\n'),
+        ('window.__lab = {', 'window.__lab2 = { show, updProTab, renderLevels, current: () => current, prog: () => prog, pro: () => pro, PRO_N: PRO.length };\nwindow.__lab = {'),
         ('<button class="btn small" id="trReset">', '<button class="btn small" id="trReset" hidden>'),
         ('<p><b>Neu freigeschaltet:', '<p id="winProTxt"><b>Neu freigeschaltet:'),
     ]
