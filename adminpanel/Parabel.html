@@ -392,10 +392,13 @@ const store = {
   set(k, v) { try { localStorage.setItem(k, v); } catch (_) {} },
   del(k) { try { localStorage.removeItem(k); } catch (_) {} },
 };
-const call = (fn, ...args) => new Promise((res, rej) => {
-  try { google.script.run.withSuccessHandler(res).withFailureHandler(rej)[fn](...args); }
-  catch (e) { rej(e); }
-});
+const call = (fn, ...args) => window.LABOR_API
+  ? fetch(window.LABOR_API, { method: "POST", body: JSON.stringify({ fn, args }) })
+      .then(r => r.json()).then(j => { if (j.error) throw new Error(j.error); return j.result; })
+  : new Promise((res, rej) => {
+      try { google.script.run.withSuccessHandler(res).withFailureHandler(rej)[fn](...args); }
+      catch (e) { rej(e); }
+    });
 const errMsg = e => {
   const m = e && e.message ? String(e.message).replace(/^(Exception|Error):\s*/, "") : "";
   return /Namen|Labor/.test(m) ? m : "Die Verbindung klappt gerade nicht. Versuch es gleich nochmal.";

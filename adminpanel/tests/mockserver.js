@@ -22,6 +22,7 @@ const ctx = {
   PropertiesService: { getScriptProperties: () => ({ getProperty: k => props[k] ?? null, setProperty: (k, v) => { props[k] = v; } }) },
   CacheService: { getScriptCache: () => ({ put: (k, v) => { props['cache:' + k] = v; }, getAll: ks => { const o = {}; ks.forEach(k => { if (props['cache:' + k] !== undefined) o[k] = props['cache:' + k]; }); return o; } }) },
   Number,
+  ContentService: { MimeType: { JSON: 'json' }, createTextOutput: t => ({ t, setMimeType() { return this; } }) },
   DriveApp: { getFolderById: () => ({ getFilesByName: n => { const fs2 = [{ isTrashed: () => false, getLastUpdated: () => new Date(), getBlob: () => ({ getDataAsString: () => fs.readFileSync(path.join(DIR, n), 'utf8') }) }]; let i = 0; return { hasNext: () => i < fs2.length, next: () => fs2[i++] }; } }) },
   Utilities: { getUuid: () => crypto.randomUUID() },
   ScriptApp: { getService: () => ({ getUrl: () => `http://localhost:${PORT}/exec` }) },
@@ -33,7 +34,7 @@ const ctx = {
 };
 function out(html) { const o = { html, setTitle: () => o, addMetaTag: () => o }; return o; }
 let code = fs.readFileSync(path.join(DIR, 'Code.gs'), 'utf8').replace("const ADMIN_SCHLUESSEL = 'bitte-aendern';", "const ADMIN_SCHLUESSEL = 'test123';");
-vm.createContext(ctx); vm.runInContext(code + '\nthis.__api = {doGet, anmelden, ping, adminDaten, adminFreigabe, adminLoeschen};', ctx);
+vm.createContext(ctx); vm.runInContext(code + '\nthis.__api = {doGet, doPost, anmelden, ping, adminDaten, adminFreigabe, adminLoeschen};', ctx);
 const api = ctx.__api;
 
 const SHIM = `<script>
@@ -53,6 +54,17 @@ http.createServer((req, res) => {
       try { r = { result: JSON.parse(JSON.stringify(api[fn](...args) ?? null)) }; } catch (e) { r = { error: e.message }; }
       res.setHeader('content-type', 'application/json'); res.end(JSON.stringify(r));
     }); return;
+  }
+  if (u.pathname === '/exec' && req.method === 'POST') {
+    let b = ''; req.on('data', d => b += d); req.on('end', () => {
+      const o = api.doPost({ postData: { contents: b } });
+      res.setHeader('content-type', 'application/json'); res.end(o.t);
+    }); return;
+  }
+  if (u.pathname === '/site/config.js') { res.setHeader('content-type', 'text/javascript'); res.end('window.LABOR_API = "/exec";'); return; }
+  if (u.pathname.startsWith('/site/')) {
+    let f = path.join(DIR, '..', 'docs', u.pathname.slice(6)); if (f.endsWith('/')) f += 'index.html';
+    if (fs.existsSync(f)) { res.setHeader('content-type', f.endsWith('.js') ? 'text/javascript' : 'text/html; charset=utf-8'); res.end(fs.readFileSync(f)); return; }
   }
   if (u.pathname === '/exec') {
     const p = {}; u.searchParams.forEach((v, k) => p[k] = v);

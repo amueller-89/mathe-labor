@@ -1,5 +1,7 @@
 const {chromium}=require('playwright');
+const PAGES=process.env.MODE==='pages';
 const B='http://localhost:8765/exec';
+const U=(q)=>{ if(!PAGES) return B+q; const p=new URLSearchParams(q.slice(1)); if(p.has('admin')) return 'http://localhost:8765/site/admin/?admin='+p.get('admin'); return 'http://localhost:8765/site/'+p.get('lab')+'/'; };
 const fmt=v=>String(v).replace('.',',').replace('-','−');
 (async()=>{const b=await chromium.launch();
 const errs=[];
@@ -8,13 +10,13 @@ const mk=async(fast=true)=>{const c=await b.newContext({viewport:{width:1366,hei
   if(fast) await p.addInitScript(()=>{const si=window.setInterval;window.setInterval=(f,t)=>si(f,Math.min(t,1500));});
   return [c,p];};
 const [ac,admin]=await mk(false);
-await admin.goto(B+'?admin=falsch');await admin.waitForTimeout(800);
+await admin.goto(U('?admin=falsch'));await admin.waitForTimeout(800);
 console.log('wrong key:',await admin.textContent('#err'));
-await admin.goto(B+'?admin=test123');await admin.waitForTimeout(800);
+await admin.goto(U('?admin=test123'));await admin.waitForTimeout(800);
 console.log('admin main visible',await admin.isVisible('#main'),'url',await admin.textContent('#kidUrl'));
 
 const [kc,kid]=await mk();
-await kid.goto(B+'?lab=geraden');await kid.waitForTimeout(500);
+await kid.goto(U('?lab=geraden'));await kid.waitForTimeout(500);
 await kid.screenshot({path:__dirname+'/a_login.png'});
 await kid.fill('#gName','x');await kid.click('#gGo');await kid.waitForTimeout(400);
 console.log('short name err:',await kid.textContent('#gErr'));
@@ -36,7 +38,7 @@ await admin.reload();await admin.waitForTimeout(1200);
 console.log('admin row:',await admin.textContent('#rows'));
 // second device, same name
 const [kc2,kid2]=await mk();
-await kid2.goto(B+'?lab=geraden');await kid2.waitForTimeout(500);
+await kid2.goto(U('?lab=geraden'));await kid2.waitForTimeout(500);
 await kid2.fill('#gName','mia');await kid2.click('#gGo');await kid2.waitForTimeout(800);
 console.log('device2 prog',JSON.stringify(await kid2.evaluate(()=>window.__lab.prog())), 'name', await kid2.textContent('#whoName'));
 await kc2.close();
@@ -79,7 +81,7 @@ await kid.waitForTimeout(2500);console.log('wait gate',await kid.isVisible('#gWa
 await admin.click('.tg:nth-child(1)');await admin.waitForTimeout(500);await kid.waitForTimeout(2500);
 console.log('after reopen gate hidden',await kid.isHidden('#gate'),'tabs',await vis());
 // parabel lab quick
-const [pc,par]=await mk();await par.goto(B+'?lab=parabel');await par.waitForTimeout(400);
+const [pc,par]=await mk();await par.goto(U('?lab=parabel'));await par.waitForTimeout(400);
 await par.fill('#gName','Lena');await par.click('#gGo');await par.waitForTimeout(800);
 console.log('parabel tabs',await par.$$eval('#mainTabs button',bs=>bs.filter(b=>!b.hidden).map(b=>b.dataset.tab).join(',')));
 await par.setViewportSize({width:390,height:844});console.log('parabel width',await par.evaluate(()=>document.documentElement.scrollWidth));

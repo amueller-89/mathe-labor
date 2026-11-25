@@ -25,13 +25,18 @@ Dateien in diesem Ordner:
    Kommt „Google hat diese App nicht überprüft“: *Erweitert → Zu Labor wechseln (unsicher)* → *Zulassen*. Das ist normal bei eigenen Scripts.
 6. **Web-App-URL kopieren** (endet auf `/exec`). Das ist die Grundadresse für alle Links.
 
-## Die Links
+## Die Links (GitHub Pages, ohne Google-Banner)
 
-- Kinder UIIIb: `WEB-APP-URL?lab=geraden`
-- Kinder OIIIa: `WEB-APP-URL?lab=parabel`
-- Du (Admin): `WEB-APP-URL?admin=DEIN-SCHLUESSEL` (z. B. als Lesezeichen speichern)
+Die Seiten liegen auf GitHub Pages und holen sich die Daten im Hintergrund vom Apps Script.
 
-Der Link für die Kinder steht auch im Adminpanel zum Kopieren. Die Adresse ist lang. Am einfachsten verteilst du sie im Computerraum über eine Datei oder eine Nachricht, die die Kinder anklicken.
+- Startseite: `https://amueller-89.github.io/mathe-labore/`
+- Kinder UIIIb: `https://amueller-89.github.io/mathe-labore/geraden`
+- Kinder OIIIa: `https://amueller-89.github.io/mathe-labore/parabel`
+- Du (Admin): `https://amueller-89.github.io/mathe-labore/admin`: fragt einmal nach dem Admin-Schlüssel und merkt ihn sich in diesem Browser.
+
+Die Adresse des Scripts steht in `docs/config.js` im GitHub-Repo. Sie ändert sich nicht, solange du bei Updates *Bereitstellungen verwalten → Bearbeiten → Neue Version* benutzt.
+
+Die alten Google-Links (`WEB-APP-URL?lab=geraden` usw.) funktionieren weiterhin, aber mit Banner.
 
 ## So funktioniert es im Unterricht
 

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mathe-Labore</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%2317212b%22/%3E%3Cpath%20d%3D%22M4%2026H29M7%2029V3%22%20stroke%3D%22%2393a5b6%22%20stroke-width%3D%222%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22/%3E%3Cpath%20d%3D%22M4%2025L28%206%22%20stroke%3D%22%236b9bff%22%20stroke-width%3D%223.2%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap">
+<style>
+:root{--paper:#0f161d;--ink:#e5ecf3;--muted:#93a5b6;--line:#273543;--surface:#17212b;--curve:#6b9bff;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--paper);color:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,sans-serif;padding:16px}
+main{max-width:640px;width:100%}
+h1{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:800;font-size:clamp(34px,6vw,52px);margin:0 0 24px}
+.labs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media (max-width:560px){.labs{grid-template-columns:minmax(0,1fr)}}
+a.lab{display:flex;flex-direction:column;gap:10px;padding:20px;border-radius:14px;background:var(--surface);border:2px solid var(--line);color:var(--ink);text-decoration:none}
+a.lab:hover,a.lab:focus-visible{border-color:var(--curve);outline:none}
+a.lab b{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:26px;font-weight:800}
+a.lab span{color:var(--muted)}
+svg{width:56px;height:56px}
+</style>
+</head>
+<body>
+<main>
+  <h1>Mathe-Labore</h1>
+  <div class="labs">
+    <a class="lab" href="geraden/">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 26H29M7 29V3" stroke="#93a5b6" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M4 25L28 6" stroke="#6b9bff" stroke-width="3.2" stroke-linecap="round" fill="none"/></svg>
+      <b>Geraden-Labor</b><span>Lineare Funktionen</span>
+    </a>
+    <a class="lab" href="parabel/">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 26H29M7 29V3" stroke="#93a5b6" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M8 4Q17 34 26 4" stroke="#6b9bff" stroke-width="3.2" stroke-linecap="round" fill="none"/></svg>
+      <b>Parabel-Labor</b><span>Quadratische Funktionen</span>
+    </a>
+  </div>
+</main>
+</body>
+</html>

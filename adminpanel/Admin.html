@@ -69,6 +69,13 @@ td.name{font-weight:700;white-space:nowrap}
     <nav class="seg" id="labTabs"></nav>
   </header>
   <p class="err" id="err" hidden></p>
+  <form class="card" id="keyForm" hidden style="max-width:460px">
+    <h2>Admin-Schlüssel</h2>
+    <div class="link"><input id="keyIn" type="password" autocomplete="current-password" aria-label="Admin-Schlüssel"
+      style="font:inherit;font-size:18px;padding:6px 10px;border:1.5px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);flex:1;min-width:0">
+      <button class="btn">Öffnen</button></div>
+    <p class="hint">Das Wort, das in Code.gs bei ADMIN_SCHLUESSEL steht. Dieser Browser merkt es sich.</p>
+  </form>
   <div id="main" hidden>
     <div class="grid2">
       <div class="card">
@@ -106,7 +113,13 @@ td.name{font-weight:700;white-space:nowrap}
 "use strict";
 const $ = id => document.getElementById(id);
 const NEED = 3;
-const call = (fn, ...args) => new Promise((res, rej) => google.script.run.withSuccessHandler(res).withFailureHandler(rej)[fn](...args));
+const call = (fn, ...args) => window.LABOR_API
+  ? fetch(window.LABOR_API, { method: "POST", body: JSON.stringify({ fn, args }) })
+      .then(r => r.json()).then(j => { if (j.error) throw new Error(j.error); return j.result; })
+  : new Promise((res, rej) => {
+      try { google.script.run.withSuccessHandler(res).withFailureHandler(rej)[fn](...args); }
+      catch (e) { rej(e); }
+    });
 let KEY = "", LAB = "geraden", data = null, busy = false, timer = null;
 
 function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
@@ -119,13 +132,15 @@ function ago(s) {
 function showErr(e) {
   const m = e && e.message ? String(e.message).replace(/^(Exception|Error):\s*/, "") : String(e);
   $("err").textContent = m; $("err").hidden = false;
+  if (window.LABOR_API && /Schlüssel/.test(m)) { try { localStorage.removeItem("labor-admin-key"); } catch (_) {} $("keyForm").hidden = false; $("main").hidden = true; }
 }
 
 async function load() {
   if (busy) return; busy = true;
   try {
     data = await call("adminDaten", KEY, LAB);
-    $("err").hidden = true; $("main").hidden = false;
+    $("err").hidden = true; $("main").hidden = false; $("keyForm").hidden = true;
+    if (window.LABOR_API) { try { localStorage.setItem("labor-admin-key", KEY); } catch (_) {} }
     render();
   } catch (e) { showErr(e); }
   finally { busy = false; }
@@ -148,7 +163,8 @@ function render() {
     b.addEventListener("click", () => toggle(t.id));
     tg.appendChild(b);
   });
-  $("kidUrl").textContent = d.url ? d.url + "?lab=" + LAB : "(erscheint nach dem Bereitstellen)";
+  $("kidUrl").textContent = window.LABOR_API ? new URL("../" + LAB + "/", location.href).href
+    : d.url ? d.url + "?lab=" + LAB : "(erscheint nach dem Bereitstellen)";
   // Statistik
   const kids = d.kids.slice().sort((a, b) => a.name.localeCompare(b.name, "de"));
   $("sAll").textContent = kids.length;
@@ -218,10 +234,18 @@ $("copy").addEventListener("click", () => {
 
 function init(params) {
   KEY = params.admin || ""; if (params.lab) LAB = params.lab;
-  load(); timer = setInterval(load, 10000);
+  if (!KEY) { $("keyForm").hidden = false; return; }
+  load(); if (!timer) timer = setInterval(load, 10000);
 }
-try { google.script.url.getLocation(loc => init(loc.parameter || {})); }
-catch (e) { showErr(e); }
+$("keyForm").addEventListener("submit", e => { e.preventDefault(); init({ admin: $("keyIn").value.trim(), lab: LAB }); });
+if (window.LABOR_API) {
+  const p = {}; new URLSearchParams(location.search).forEach((v, k) => p[k] = v);
+  if (!p.admin) { try { p.admin = localStorage.getItem("labor-admin-key") || ""; } catch (_) {} }
+  init(p);
+} else {
+  try { google.script.url.getLocation(loc => init(loc.parameter || {})); }
+  catch (e) { showErr(e); }
+}
 })();
 </script>
 </body>

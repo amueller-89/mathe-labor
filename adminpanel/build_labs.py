@@ -51,10 +51,13 @@ const store = {
   set(k, v) { try { localStorage.setItem(k, v); } catch (_) {} },
   del(k) { try { localStorage.removeItem(k); } catch (_) {} },
 };
-const call = (fn, ...args) => new Promise((res, rej) => {
-  try { google.script.run.withSuccessHandler(res).withFailureHandler(rej)[fn](...args); }
-  catch (e) { rej(e); }
-});
+const call = (fn, ...args) => window.LABOR_API
+  ? fetch(window.LABOR_API, { method: "POST", body: JSON.stringify({ fn, args }) })
+      .then(r => r.json()).then(j => { if (j.error) throw new Error(j.error); return j.result; })
+  : new Promise((res, rej) => {
+      try { google.script.run.withSuccessHandler(res).withFailureHandler(rej)[fn](...args); }
+      catch (e) { rej(e); }
+    });
 const errMsg = e => {
   const m = e && e.message ? String(e.message).replace(/^(Exception|Error):\s*/, "") : "";
   return /Namen|Labor/.test(m) ? m : "Die Verbindung klappt gerade nicht. Versuch es gleich nochmal.";
@@ -165,6 +168,20 @@ def build(src_name, out_name, lab, title, first_tab_comment):
     s = s[:i] + '};\n</script>' + s[i + len('})();\n</script>'):]
     open(os.path.join(HERE, out_name), 'w').write(s)
     print(out_name, len(s))
+    # GitHub-Pages-Version: gleiche Datei, holt die Script-Adresse aus docs/config.js
+    d = os.path.join(HERE, '..', 'docs', lab)
+    os.makedirs(d, exist_ok=True)
+    a = '<head>\n'
+    assert s.count(a) == 1
+    open(os.path.join(d, 'index.html'), 'w').write(s.replace(a, a + '<script src="../config.js"></script>\n'))
+    print('docs/' + lab + '/index.html')
 
 build('Geraden-Labor.html', 'Geraden.html', 'geraden', 'Geraden-Labor', '')
 build('Parabel-Labor.html', 'Parabel.html', 'parabel', 'Parabel-Labor', '')
+
+# Admin-Seite für GitHub Pages
+_s = open(os.path.join(HERE, 'Admin.html')).read()
+os.makedirs(os.path.join(HERE, '..', 'docs', 'admin'), exist_ok=True)
+assert _s.count('<head>\n') == 1
+open(os.path.join(HERE, '..', 'docs', 'admin', 'index.html'), 'w').write(_s.replace('<head>\n', '<head>\n<script src="../config.js"></script>\n'))
+print('docs/admin/index.html')

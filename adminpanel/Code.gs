@@ -65,6 +65,21 @@ function doGet(e) {
     .addMetaTag('viewport', 'width=device-width, initial-scale=1');
 }
 
+// Schnittstelle für die Version auf GitHub Pages: POST {fn, args} → {result} oder {error}
+const API = { anmelden: anmelden, ping: ping, adminDaten: adminDaten, adminFreigabe: adminFreigabe, adminLoeschen: adminLoeschen };
+function doPost(e) {
+  let out;
+  try {
+    const req = JSON.parse(e.postData.contents);
+    const fn = API[req.fn];
+    if (!fn) throw new Error('Unbekannte Funktion');
+    out = { result: fn.apply(null, req.args || []) };
+  } catch (err) {
+    out = { error: String(err && err.message || err) };
+  }
+  return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
+}
+
 /* ---------------- Tabelle ---------------- */
 
 function sheet_() {

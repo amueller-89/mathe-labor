@@ -24,6 +24,11 @@ Version der beiden Labore mit Anmeldung und Lehrer-Oberfläche, als Google-Apps-
 
 Einrichtung: siehe [`adminpanel/ANLEITUNG.md`](adminpanel/ANLEITUNG.md).
 
+Die Seiten für die Kinder und das Adminpanel laufen über GitHub Pages aus `docs/`:
+[amueller-89.github.io/mathe-labore](https://amueller-89.github.io/mathe-labore/) (`/geraden`, `/parabel`, `/admin`).
+Sie sprechen das Apps Script über `doPost` an. Dessen Adresse steht in `docs/config.js`.
+`docs/` wird von `build_labs.py` erzeugt.
+
 - `Code.gs`: Server (Google Apps Script, Daten in einer Google-Tabelle)
 - `Admin.html`: Lehrer-Oberfläche
 - `Geraden.html`, `Parabel.html`: werden von `build_labs.py` aus den Dateien in `labore/` erzeugt. Nicht von Hand ändern, sondern das Original ändern und neu bauen:
@@ -38,5 +43,6 @@ python3 adminpanel/build_labs.py
 
 ```sh
 node adminpanel/tests/mockserver.js 8765 &
-node adminpanel/tests/ta1.js
+node adminpanel/tests/ta1.js              # Apps-Script-Modus
+MODE=pages node adminpanel/tests/ta1.js   # GitHub-Pages-Modus
 ```
