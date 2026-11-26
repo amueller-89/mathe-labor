@@ -45,15 +45,17 @@ Die alten Google-Links (`WEB-APP-URL?lab=geraden` usw.) funktionieren weiterhin,
 - **Anmelden:** Beim ersten Aufruf tippen die Kinder ihren Vornamen ein. Mit genau demselben Namen geht es an jedem Rechner weiter (Groß/Kleinschreibung egal). Sitzt am selben Rechner später ein anderes Kind, fragt die Seite „Bist du …?“, und es kann „Nein, ich bin jemand anderes“ wählen.
 - **Freischalten:** Am Anfang ist nur Tab 1 frei. Im Adminpanel tippst du auf einen Tab, um ihn freizugeben oder wieder zu sperren. Bei den Kindern ändert sich das spätestens nach 20 Sekunden, ohne Neuladen. Ist gar nichts frei, sehen die Kinder „Gleich geht’s los“.
 - **Profi ★:** Diesen Tab sieht ein Kind nur, wenn du ihn freigegeben hast **und** es alle 4 Stufen im Rechentrainer geschafft hat (3 richtige je Stufe).
-- **Überwachen:** Das Adminpanel aktualisiert sich alle 10 Sekunden. Es zeigt, wer online ist, in welchem Tab das Kind gerade ist, die Punkte je Stufe mit Fehlversuchen (✗), 🏆 bei geschafftem Rechentrainer, und den Stand im Profi-Teil.
+- **Überwachen:** Das Adminpanel aktualisiert sich alle 5 Sekunden. Es zeigt, wer online ist, in welchem Tab das Kind gerade ist, die Punkte je Stufe mit Fehlversuchen (✗), 🏆 bei geschafftem Rechentrainer, und den Stand im Profi-Teil.
+- **Sammelknöpfe:** *Alle Tabs freischalten* / *Alle Tabs verstecken*. *Alle zurücksetzen*: alle behalten ihren Namen, fangen aber bei null an (die Labore laden sich dafür kurz neu). *Alle löschen*: alle Namen und Fortschritte dieses Labors weg. Die beiden letzten brauchen einen zweiten Klick zur Bestätigung.
+- **Neu laden:** Die Adresse merkt sich den Tab (z. B. `…/geraden#rechentrainer`). Nach F5 landen die Kinder ohne Nachfrage wieder dort.
 - **Entfernen:** Löscht ein Kind samt Fortschritt, z. B. bei einem Tippfehler im Namen. Meldet es sich wieder an, fängt es von vorn an.
-- **Was gespeichert wird:** Der Rechentrainer-Fortschritt kommt beim Rechnerwechsel mit. Der Profi-Teil fängt an einem neuen Rechner wieder bei Frage 1 an, das Adminpanel zeigt aber den letzten Stand. Die Rohdaten stehen im Blatt „Schueler“ der Tabelle.
+- **Was gespeichert wird:** Der Rechentrainer-Fortschritt kommt beim Rechnerwechsel mit. Der Profi-Teil fängt an einem neuen Rechner wieder bei Frage 1 an, das Adminpanel zeigt aber den letzten Stand. Die Daten liegen in den Skripteigenschaften des Scripts (schnell und ohne Stau bei vielen gleichzeitigen Anmeldungen). Das Blatt „Schueler“ der Tabelle stammt aus der alten Version und wird nicht mehr benutzt.
 - Die Kinder sehen oben einen grauen Google-Balken („Diese Anwendung wurde von einem Google Apps Script-Nutzer erstellt“). Das lässt sich bei privaten Konten nicht abschalten.
 
 ## Datenschutz
 
 Die eingetippten Namen liegen in deinem Google-Konto. Lass die Kinder deshalb nur Vornamen oder Spitznamen eintippen und prüfe, ob deine Schule dafür Vorgaben hat.
-Zum Aufräumen nach der Einheit: im Adminpanel alle entfernen oder in der Tabelle das Blatt „Schueler“ leeren.
+Zum Aufräumen nach der Einheit: im Adminpanel *Alle löschen*.
 
 ## Wenn sich etwas ändern soll
 

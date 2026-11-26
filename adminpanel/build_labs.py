@@ -47,12 +47,18 @@ BRIDGE = r"""
 <script>
 (() => {
 "use strict";
-const LAB = "__LAB__", IDKEY = "labor-" + LAB + "-name";
+const LAB = "__LAB__", IDKEY = "labor-" + LAB + "-name", SESS = "labor-" + LAB + "-sitzung";
 const $ = id => document.getElementById(id);
 const store = {
   get(k) { try { return localStorage.getItem(k); } catch (_) { return null; } },
   set(k, v) { try { localStorage.setItem(k, v); } catch (_) {} },
   del(k) { try { localStorage.removeItem(k); } catch (_) {} },
+};
+// Sitzung in diesem Browser-Tab: beim Neuladen (F5) ohne Nachfrage wieder anmelden
+const sess = {
+  get() { try { return sessionStorage.getItem(SESS); } catch (_) { return null; } },
+  set(v) { try { sessionStorage.setItem(SESS, v); } catch (_) {} },
+  del() { try { sessionStorage.removeItem(SESS); } catch (_) {} },
 };
 const call = (fn, ...args) => window.LABOR_API
   ? fetch(window.LABOR_API, { method: "POST", body: JSON.stringify({ fn, args }) })
@@ -65,7 +71,7 @@ const errMsg = e => {
   const m = e && e.message ? String(e.message).replace(/^(Exception|Error):\s*/, "") : "";
   return /Namen|Labor/.test(m) ? m : "Die Verbindung klappt gerade nicht. Versuch es gleich nochmal.";
 };
-let me = null, allowed = [], started = false, pingTimer = null, debounce = null, online = true;
+let me = null, allowed = [], started = false, pingTimer = null, debounce = null, online = true, epoch = 0;
 window.__tabOk = t => allowed.indexOf(t) >= 0;
 let toastT = null;
 window.__proLocked = () => {
@@ -95,7 +101,7 @@ async function login(name) {
         await new Promise(ok => setTimeout(ok, 1500 + Math.random() * 2500 * (i + 1)));
       }
     }
-    me = { id: r.id, name: r.name }; store.set(IDKEY, r.name); allowed = r.tabs || []; window.__alle = !!r.alle;
+    me = { id: r.id, name: r.name }; store.set(IDKEY, r.name); sess.set(r.name); allowed = r.tabs || []; window.__alle = !!r.alle; epoch = r.epoch || 0;
     start(r.prog);
   } catch (e) {
     $("gLoad").hidden = true; $("gErr").textContent = errMsg(e);
@@ -126,10 +132,12 @@ async function ping() {
   if (!me) return;
   const s = snap(), js = JSON.stringify(s);
   try {
-    const r = await call("ping", LAB, me.id, js !== lastSent ? s : null);
+    const r = await call("ping", LAB, me.id, js !== lastSent ? s : null, epoch);
     lastSent = js;
     setOnline(true);
-    if (!r.known) { clearInterval(pingTimer); me = null; store.del(IDKEY); gate("gBye"); return; }
+    if (!r.known) { clearInterval(pingTimer); me = null; store.del(IDKEY); sess.del(); gate("gBye"); return; }
+    // Lehrkraft hat alle zurückgesetzt: neu laden, dann startet alles bei null (Anmeldung bleibt)
+    if (r.epoch && epoch && r.epoch !== epoch) { clearInterval(pingTimer); location.reload(); return; }
     if (JSON.stringify(r.tabs) !== JSON.stringify(allowed) || !!r.alle !== !!window.__alle) { allowed = r.tabs || []; window.__alle = !!r.alle; apply(); }
   } catch (e) { setOnline(false); }
 }
@@ -150,10 +158,12 @@ $("gGo").addEventListener("click", () => login($("gWer").value));
 $("gWer").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); login($("gWer").value); } });
 $("gYes").addEventListener("click", () => login(store.get(IDKEY)));
 $("gNo").addEventListener("click", () => { store.del(IDKEY); gate("gLogin"); });
-$("whoSwitch").addEventListener("click", () => { clearInterval(pingTimer); me = null; store.del(IDKEY); gate("gBye"); });
+$("whoSwitch").addEventListener("click", () => { clearInterval(pingTimer); me = null; store.del(IDKEY); sess.del(); gate("gBye"); });
+$("gNo").addEventListener("click", () => sess.del());
 document.addEventListener("DOMContentLoaded", () => {
   const known = store.get(IDKEY);
-  if (known) { $("gWho").textContent = known; gate("gAgain"); } else gate("gLogin");
+  if (known && sess.get() === known) { $("gWho").textContent = known; gate("gAgain"); login(known); }
+  else if (known) { $("gWho").textContent = known; gate("gAgain"); } else gate("gLogin");
 });
 })();
 </script>

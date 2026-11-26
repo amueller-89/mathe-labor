@@ -66,14 +66,19 @@ await admin.click('.tg:nth-child(2)');await admin.waitForTimeout(600);await kid.
 console.log('tabs after lock pts',await vis());
 // delete kid
 await admin.click('.del');await admin.click('.del');await admin.waitForTimeout(800);
-await kid.click('#mainTabs [data-tab=mb]');await kid.waitForTimeout(3500);
+await kid.waitForTimeout(3500);
 console.log('kid bye',await kid.isVisible('#gBye'));
 // reload same browser -> asks "Bist du"
 await kid.reload();await kid.waitForTimeout(500);
 console.log('again visible',await kid.isVisible('#gAgain'),'(name removed so expect login):',await kid.isVisible('#gLogin'));
-// new kid, then reload -> "Bist du"
+// new kid, reload (F5) -> automatisch wieder drin, gleicher Tab
 await kid.fill('#gWer','Ben');await kid.click('#gGo');await kid.waitForTimeout(800);
-await kid.reload();await kid.waitForTimeout(500);
+await kid.click('#mainTabs [data-tab=train]');await kid.waitForTimeout(200);
+console.log('hash',await kid.evaluate(()=>location.hash));
+await kid.reload();await kid.waitForTimeout(1500);
+console.log('F5: gate hidden',await kid.isHidden('#gate'),'who',await kid.textContent('#whoName'),'tab',await kid.evaluate(()=>window.__lab2.current()));
+// neuer Besuch (Sitzung weg) -> "Bist du"
+await kid.evaluate(()=>sessionStorage.clear());await kid.reload();await kid.waitForTimeout(500);
 console.log('gAgain',await kid.isVisible('#gAgain'),await kid.textContent('#gWho'));
 await kid.screenshot({path:__dirname+'/a_again.png'});
 await kid.click('#gYes');await kid.waitForTimeout(800);console.log('after yes gate hidden',await kid.isHidden('#gate'));
@@ -99,4 +104,32 @@ await admin.click('.alle');await admin.waitForTimeout(1200);await par.waitForTim
 console.log('alle off: tabs',await par.$$eval('#mainTabs button',bs=>bs.filter(b=>!b.hidden).map(b=>b.dataset.tab).join(',')),'btn',await admin.textContent('.alle'));
 await par.setViewportSize({width:390,height:844});console.log('parabel width',await par.evaluate(()=>document.documentElement.scrollWidth));
 await admin.setViewportSize({width:390,height:844});console.log('admin width',await admin.evaluate(()=>document.documentElement.scrollWidth));
+// Admin: optimistische Freigabe + Sammelknöpfe
+await admin.setViewportSize({width:1366,height:950});
+await admin.click('#labTabs button:nth-child(1)');await admin.waitForTimeout(1500);
+const t0=Date.now();await admin.click('#bOpen');const pr=await admin.$$eval('.tg',bs=>bs.map(b=>b.getAttribute('aria-pressed')).join(','));
+console.log('bOpen sofort:',pr,'ms',Date.now()-t0);
+await admin.waitForTimeout(1200);await kid.waitForTimeout(2500);
+await kid.click('#gYes').catch(()=>{});await kid.waitForTimeout(1500);
+console.log('kid tabs after bOpen',await vis());
+await admin.click('#bHide');await admin.waitForTimeout(1200);await kid.waitForTimeout(2500);
+console.log('kid after bHide wait',await kid.isVisible('#gWait'));
+await admin.click('#bOpen');await admin.waitForTimeout(1200);await kid.waitForTimeout(2500);
+// Ben macht Fortschritt, dann alle zurücksetzen
+await kid.click('#mainTabs [data-tab=train]');await kid.click('#levels button:nth-child(1)');
+{const t=await kid.evaluate(()=>window.__lab.task.want);for(const k in t) await kid.fill(`[data-k=${k}]`,fmt(t[k]));await kid.click('#trCheck');}
+await kid.waitForTimeout(3500);
+console.log('Ben prog before reset',JSON.stringify(await kid.evaluate(()=>window.__lab.prog().c)));
+await admin.click('#bReset');console.log('armed text',await admin.textContent('#bReset'));await admin.click('#bReset');await admin.waitForTimeout(1200);
+console.log('admin after reset',await admin.textContent('#rows'));
+await kid.waitForTimeout(4000);
+console.log('Ben after reset: gate hidden',await kid.isHidden('#gate'),'prog',JSON.stringify(await kid.evaluate(()=>window.__lab.prog().c)),'who',await kid.textContent('#whoName'));
+await admin.reload();await admin.waitForTimeout(1500);console.log('admin after reset+ping',await admin.textContent('#rows'));
+// alle löschen
+await admin.click('#bDel');await admin.click('#bDel');await admin.waitForTimeout(1200);
+console.log('admin after delete all: empty',await admin.isVisible('#empty'));
+await kid.waitForTimeout(3500);console.log('Ben after delete all: bye',await kid.isVisible('#gBye'));
+// Musterbeispiel in der Admin-Version
+const [mc,mk2]=await mk();await mk2.goto(U('?lab=geraden'));await mk2.waitForTimeout(400);await mk2.fill('#gWer','Zoe');await mk2.click('#gGo');await mk2.waitForTimeout(1200);
+await mk2.click('#mainTabs [data-tab=train]');await mk2.click('#trEx');await mk2.waitForTimeout(200);console.log('example open',await mk2.isVisible('#exWin'),await mk2.textContent('#exLvl'));
 console.log('errs',errs);await b.close();})();

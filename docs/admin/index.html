@@ -68,6 +68,11 @@ td.name{font-weight:700;white-space:nowrap}
 .alle{font:inherit;font-size:13px;padding:2px 8px;border-radius:6px;border:1px solid var(--line);background:none;color:var(--muted);cursor:pointer;white-space:nowrap;margin-right:6px}
 .alle.on{border-color:#5fcf80;color:#5fcf80}
 .err{color:var(--pencil);font-weight:700}
+.bulk{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.bulk .btn.danger{color:var(--pencil)}
+.bulk .btn.armed{border-color:var(--pencil);background:var(--bad-bg);color:var(--ink)}
+.btn:disabled{opacity:.6;cursor:wait}
+.saving{font-size:13px;color:var(--muted);margin-left:8px}
 .empty{color:var(--muted);padding:16px 0}
 [hidden]{display:none!important}
 </style>
@@ -88,8 +93,14 @@ td.name{font-weight:700;white-space:nowrap}
   <div id="main" hidden>
     <div class="grid2">
       <div class="card">
-        <h2>Freigaben</h2>
+        <h2>Freigaben<span class="saving" id="saving" hidden>speichert …</span></h2>
         <div class="toggles" id="toggles"></div>
+        <div class="bulk">
+          <button class="btn" id="bOpen" type="button">Alle Tabs freischalten</button>
+          <button class="btn" id="bHide" type="button">Alle Tabs verstecken</button>
+          <button class="btn danger" id="bReset" type="button" data-label="Alle zurücksetzen" title="Alle behalten ihren Namen, der Fortschritt fängt bei null an">Alle zurücksetzen</button>
+          <button class="btn danger" id="bDel" type="button" data-label="Alle löschen" title="Alle Namen und Fortschritte in diesem Labor löschen">Alle löschen</button>
+        </div>
         <p class="hint">Gilt sofort für die ganze Klasse (spätestens nach 20 Sekunden). Den freigegebenen Profi-Tab sehen alle, er bleibt aber mit Schloss zu, bis ein Kind den Rechentrainer geschafft hat.</p>
       </div>
       <div class="card">
@@ -129,7 +140,7 @@ const call = (fn, ...args) => window.LABOR_API
       try { google.script.run.withSuccessHandler(res).withFailureHandler(rej)[fn](...args); }
       catch (e) { rej(e); }
     });
-let KEY = "", LAB = "geraden", data = null, busy = false, timer = null;
+let KEY = "", LAB = "geraden", data = null, busy = false, timer = null, rev = 0, pending = 0;
 const PAGES = "https://amueller-89.github.io/mathe-labore/";
 const TAB_ORDER = { parabel: ["sp", "forms", "pq", "train", "pro"] };
 const TAB_LABEL = { "sp@parabel": "1 Scheitelpunktform", "forms@parabel": "2 Drei Formen", "pq@parabel": "3 pq-Formel" };
@@ -181,15 +192,29 @@ function showErr(e) {
   if (window.LABOR_API && /Schlüssel/.test(m)) { try { localStorage.removeItem("labor-admin-key"); } catch (_) {} $("keyForm").hidden = false; $("main").hidden = true; }
 }
 
+function ok(d) {
+  data = d;
+  $("err").hidden = true; $("main").hidden = false; $("keyForm").hidden = true;
+  if (window.LABOR_API) { try { localStorage.setItem("labor-admin-key", KEY); } catch (_) {} }
+  render();
+}
 async function load() {
-  if (busy) return; busy = true;
+  if (busy || pending) return; busy = true;
+  const r0 = rev, lab = LAB;
   try {
-    data = await call("adminDaten", KEY, LAB);
-    $("err").hidden = true; $("main").hidden = false; $("keyForm").hidden = true;
-    if (window.LABOR_API) { try { localStorage.setItem("labor-admin-key", KEY); } catch (_) {} }
-    render();
+    const d = await call("adminDaten", KEY, LAB, linksDone);
+    if (r0 === rev && lab === LAB && !pending && !document.querySelector(".armed")) ok(d);   // veraltete Antworten verwerfen; nicht mitten in „wirklich?“ neu zeichnen
   } catch (e) { showErr(e); }
   finally { busy = false; }
+}
+// Änderung sofort anzeigen (optimistisch), dann an den Server schicken; dessen Antwort enthält gleich die neuen Daten.
+async function mutate(fn, args, optimistic) {
+  rev++; pending++; $("saving").hidden = false;
+  if (optimistic && data) { optimistic(data); render(); }
+  const lab = LAB;
+  try { const d = await call(fn, KEY, LAB, ...args); pending--; if (lab === LAB && !pending) ok(d); }
+  catch (e) { pending--; showErr(e); load(); }
+  finally { if (!pending) $("saving").hidden = true; }
 }
 
 function render() {
@@ -199,7 +224,7 @@ function render() {
   d.labs.forEach(l => {
     const b = el("button", "", l.title + " · " + l.klasse);
     b.setAttribute("aria-selected", l.id === LAB);
-    b.addEventListener("click", () => { if (l.id !== LAB) { LAB = l.id; $("rows").innerHTML = ""; load(); } });
+    b.addEventListener("click", () => { if (l.id !== LAB) { LAB = l.id; rev++; nav.querySelectorAll("button").forEach(x => x.setAttribute("aria-selected", x === b)); $("rows").innerHTML = ""; $("toggles").innerHTML = '<span class="muted">lädt …</span>'; busy = false; load(); } });
     nav.appendChild(b);
   });
   // Freigaben
@@ -218,7 +243,7 @@ function render() {
   $("sAll").textContent = kids.length;
   $("sOnline").textContent = kids.filter(k => k.vorSek < 60).length;
   $("sWon").textContent = kids.filter(k => k.state && k.state.prog && k.state.prog.won).length;
-  $("stamp").textContent = "Stand " + new Date().toLocaleTimeString("de-DE") + " · aktualisiert sich alle 10 s";
+  $("stamp").textContent = "Stand " + new Date().toLocaleTimeString("de-DE") + " · aktualisiert sich alle 5 s";
   const label = {}; d.tabs.forEach(t => label[t.id] = t.label.replace(/^\d+\s*/, ""));
   // Tabelle
   const body = $("rows"); body.innerHTML = "";
@@ -257,37 +282,50 @@ function render() {
     const tdD = el("td");
     const all = el("button", "alle" + (k.alle ? " on" : ""), k.alle ? "✓ alles frei" : "alles freischalten");
     all.title = k.alle ? "Klicken, um wieder die normalen Freigaben zu nutzen" : "Alle Tabs, alle Stufen und Profi nur für dieses Kind";
-    all.addEventListener("click", async () => {
-      all.disabled = true;
-      try { await call("adminAlles", KEY, LAB, k.id, !k.alle); load(); } catch (e) { all.disabled = false; showErr(e); }
-    });
+    all.addEventListener("click", () => mutate("adminAlles", [k.id, !k.alle], d => { const x = d.kids.find(y => y.id === k.id); if (x) x.alle = !k.alle; }));
     tdD.appendChild(all);
     const del = el("button", "del", "entfernen");
     let armed = 0;
     del.addEventListener("click", async () => {
       if (Date.now() - armed > 4000) { armed = Date.now(); del.textContent = "wirklich?"; del.classList.add("armed"); setTimeout(() => { del.textContent = "entfernen"; del.classList.remove("armed"); }, 4000); return; }
-      del.disabled = true;
-      try { await call("adminLoeschen", KEY, LAB, k.id); load(); } catch (e) { showErr(e); }
+      mutate("adminLoeschen", [k.id], d => { d.kids = d.kids.filter(y => y.id !== k.id); });
     });
     tdD.appendChild(del); tr.appendChild(tdD);
     body.appendChild(tr);
   });
 }
 
-async function toggle(id) {
-  const on = data.tabs.filter(t => t.on).map(t => t.id);
-  const next = on.indexOf(id) >= 0 ? on.filter(t => t !== id) : on.concat(id);
-  document.querySelectorAll(".tg").forEach(b => b.disabled = true);
-  try { await call("adminFreigabe", KEY, LAB, next); } catch (e) { showErr(e); }
-  await load();
+function setTabs(next) {
+  mutate("adminFreigabe", [next], d => d.tabs.forEach(t => t.on = next.indexOf(t.id) >= 0));
 }
+function toggle(id) {
+  const on = data.tabs.filter(t => t.on).map(t => t.id);
+  setTabs(on.indexOf(id) >= 0 ? on.filter(t => t !== id) : on.concat(id));
+}
+$("bOpen").addEventListener("click", () => data && setTabs(data.tabs.map(t => t.id)));
+$("bHide").addEventListener("click", () => setTabs([]));
+// Gefährliche Knöpfe: erst „wirklich?“, zweiter Klick innerhalb von 4 s führt aus
+function armed(btn, run) {
+  let t0 = 0, timer2 = null;
+  btn.addEventListener("click", () => {
+    if (Date.now() - t0 > 4000) {
+      t0 = Date.now(); btn.textContent = "Wirklich? Nochmal klicken"; btn.classList.add("armed");
+      clearTimeout(timer2); timer2 = setTimeout(() => { btn.textContent = btn.dataset.label; btn.classList.remove("armed"); }, 4000);
+      return;
+    }
+    t0 = 0; clearTimeout(timer2); btn.textContent = btn.dataset.label; btn.classList.remove("armed");
+    run();
+  });
+}
+armed($("bReset"), () => mutate("adminReset", [], d => d.kids.forEach(k => { k.state = null; k.alle = false; k.tab = ""; })));
+armed($("bDel"), () => mutate("adminAlleLoeschen", [], d => { d.kids = []; }));
 
 
 
 function init(params) {
   KEY = params.admin || ""; if (params.lab) LAB = params.lab;
   if (!KEY) { $("keyForm").hidden = false; return; }
-  load(); if (!timer) timer = setInterval(load, 10000);
+  load(); if (!timer) timer = setInterval(load, 5000);
 }
 $("keyForm").addEventListener("submit", e => { e.preventDefault(); init({ admin: $("keyIn").value.trim(), lab: LAB }); });
 if (window.LABOR_API) {

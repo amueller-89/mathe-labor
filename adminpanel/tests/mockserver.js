@@ -2,6 +2,7 @@
 const http = require('http'), fs = require('fs'), vm = require('vm'), path = require('path'), crypto = require('crypto');
 const DIR = require('path').join(__dirname, '..'), PORT = +process.argv[2] || 8765;
 const rows = []; // sheet rows incl. header
+let created = false;
 const sheet = {
   getLastRow: () => rows.length,
   getRange: (r, c, nr = 1, nc = 1) => ({
@@ -14,13 +15,14 @@ const sheet = {
   deleteRow: r => rows.splice(r - 1, 1),
   setFrozenRows() {},
 };
-let created = false;
-const props = { ADMIN_SCHLUESSEL: 'test123' };
+const props = { ADMIN_SCHLUESSEL: 'test123' }, cache = {};
+// Altbestand zum Testen der Übernahme: ein Kind in der alten Tabelle
+if (process.env.ALT) { created = true; rows.push(['id','labor','name','angemeldet','zuletzt_online','tab','fortschritt'], ['alt-1','geraden','Altkind',new Date(),new Date(),'train',JSON.stringify({tab:'train',prog:{c:[2,0,0,0],f:[0,0,0,0],unl:0,lvl:0,won:false}})]); }
 const ctx = {
   SpreadsheetApp: { getActive: () => ({ getSheetByName: () => created ? sheet : null, insertSheet: () => { created = true; return sheet; } }) },
   LockService: { getScriptLock: () => ({ waitLock() {}, releaseLock() {} }) },
-  PropertiesService: { getScriptProperties: () => ({ getProperty: k => props[k] ?? null, setProperty: (k, v) => { props[k] = v; } }) },
-  CacheService: { getScriptCache: () => ({ put: (k, v) => { props['cache:' + k] = v; }, getAll: ks => { const o = {}; ks.forEach(k => { if (props['cache:' + k] !== undefined) o[k] = props['cache:' + k]; }); return o; } }) },
+  PropertiesService: { getScriptProperties: () => ({ getProperty: k => props[k] ?? null, setProperty: (k, v) => { props[k] = String(v); }, setProperties: o => { for (const k in o) props[k] = String(o[k]); }, deleteProperty: k => { delete props[k]; }, getProperties: () => Object.assign({}, props) }) },
+  CacheService: { getScriptCache: () => ({ get: k => cache[k] ?? null, put: (k, v) => { cache[k] = String(v); }, getAll: ks => { const o = {}; ks.forEach(k => { if (cache[k] !== undefined) o[k] = cache[k]; }); return o; } }) },
   Number,
   ContentService: { MimeType: { JSON: 'json' }, createTextOutput: t => ({ t, setMimeType() { return this; } }) },
   DriveApp: { getFolderById: () => ({ getFilesByName: n => { const fs2 = [{ isTrashed: () => false, getLastUpdated: () => new Date(), getBlob: () => ({ getDataAsString: () => fs.readFileSync(path.join(DIR, n), 'utf8') }) }]; let i = 0; return { hasNext: () => i < fs2.length, next: () => fs2[i++] }; } }) },
@@ -34,7 +36,7 @@ const ctx = {
 };
 function out(html) { const o = { html, setTitle: () => o, addMetaTag: () => o }; return o; }
 let code = fs.readFileSync(path.join(DIR, 'Code.gs'), 'utf8');
-vm.createContext(ctx); vm.runInContext(code + '\nthis.__api = {doGet, doPost, anmelden, ping, adminDaten, adminFreigabe, adminLoeschen, adminAlles};', ctx);
+vm.createContext(ctx); vm.runInContext(code + '\nthis.__api = {doGet, doPost, anmelden, ping, adminDaten, adminFreigabe, adminLoeschen, adminAlles, adminReset, adminAlleLoeschen};', ctx);
 const api = ctx.__api;
 
 const SHIM = `<script>
@@ -56,10 +58,10 @@ http.createServer((req, res) => {
     }); return;
   }
   if (u.pathname === '/exec' && req.method === 'POST') {
-    let b = ''; req.on('data', d => b += d); req.on('end', () => {
+    let b = ''; req.on('data', d => b += d); req.on('end', () => setTimeout(() => {
       const o = api.doPost({ postData: { contents: b } });
       res.setHeader('content-type', 'application/json'); res.end(o.t);
-    }); return;
+    }, +(process.env.LAT || 0))); return;
   }
   if (u.pathname === '/site/config.js') { res.setHeader('content-type', 'text/javascript'); res.end('window.LABOR_API = "/exec";'); return; }
   if (u.pathname.startsWith('/site/')) {
@@ -72,6 +74,6 @@ http.createServer((req, res) => {
     res.setHeader('content-type', 'text/html; charset=utf-8');
     res.end(o.html.replace(/<head>/i, '<head>' + SHIM)); return;
   }
-  if (u.pathname === '/dump') { res.end(JSON.stringify({ rows, props })); return; }
+  if (u.pathname === '/dump') { res.end(JSON.stringify({ rows, props, cache })); return; }
   res.statusCode = 404; res.end();
 }).listen(PORT, () => console.log('mock on', PORT));
