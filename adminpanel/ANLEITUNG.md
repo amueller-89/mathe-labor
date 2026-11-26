@@ -15,8 +15,10 @@ Dateien in diesem Ordner:
 1. **Tabelle anlegen:** In Google Drive in diesem Ordner auf *Neu → Google Tabellen* klicken und die Tabelle z. B. „Labor-Daten“ nennen.
 2. **Script öffnen:** In der Tabelle *Erweiterungen → Apps Script*. Oben links das Projekt z. B. „Labor“ nennen.
 3. **Code.gs:** Den ganzen Inhalt der vorhandenen Datei `Code.gs` löschen und den Inhalt von `Code.gs` aus diesem Ordner einfügen.
-   Ganz oben bei `ADMIN_SCHLUESSEL` statt `bitte-aendern` ein eigenes Wort eintragen (nur Buchstaben und Ziffern, z. B. `Kreide42Mond`).
 4. Speichern (Strg+S / Cmd+S). HTML-Dateien musst du im Editor **nicht** anlegen.
+   **Admin-Schlüssel:** Links das Zahnrad *Projekteinstellungen* → ganz unten *Skripteigenschaften* → *Skripteigenschaft hinzufügen*:
+   Name `ADMIN_SCHLUESSEL`, Wert ein eigenes Wort (nur Buchstaben und Ziffern, z. B. `Kreide42Mond`). Speichern.
+   Der Schlüssel steht damit nicht im Code und bleibt bei jedem Update erhalten.
 5. **Bereitstellen:** Oben rechts *Bereitstellen → Neue Bereitstellung*. Beim Zahnrad „Typ auswählen“ **Web-App** wählen.
    - Ausführen als: **Ich**
    - Zugriff: **Jeder**
@@ -56,5 +58,31 @@ Zum Aufräumen nach der Einheit: im Adminpanel alle entfernen oder in der Tabell
 ## Wenn sich etwas ändern soll
 
 - **Neue Version einer HTML-Datei** (z. B. neue Profi-Fragen): Sie wird einfach hier im Ordner ersetzt und ist sofort aktiv. Du musst nichts tun.
-- **Neue Version von Code.gs:** Inhalt im Editor ersetzen, speichern, dann *Bereitstellen → Bereitstellungen verwalten → Stift (Bearbeiten) → Version: Neue Version → Bereitstellen*.
+- **Neue Version von Code.gs:** passiert automatisch, sobald die automatische Bereitstellung (unten) eingerichtet ist.
+  Von Hand: Inhalt im Editor ersetzen, speichern, dann *Bereitstellen → Bereitstellungen verwalten → Stift (Bearbeiten) → Version: Neue Version → Bereitstellen*.
   So bleibt die Adresse gleich. Eine *neue* Bereitstellung würde eine neue Adresse erzeugen.
+
+## Automatisch bereitstellen (einmalig einrichten, ca. 10 Minuten)
+
+Danach landet jede Änderung an `Code.gs` im GitHub-Repo von selbst im Apps Script, als neue Version der bestehenden Bereitstellung (gleiche Adresse).
+Das erledigt der GitHub-Workflow `.github/workflows/apps-script.yml` mit Googles Werkzeug *clasp*.
+
+1. **Apps Script API einschalten:** https://script.google.com/home/usersettings öffnen, *Google Apps Script API* auf **An**.
+2. **Script-ID notieren:** Im Apps-Script-Editor *Projekteinstellungen* (Zahnrad) → *IDs* → *Script-ID* kopieren.
+3. **Bei clasp anmelden (auf dem Laptop, Terminal):**
+   ```sh
+   npx @google/clasp@2.4.2 login
+   ```
+   Es öffnet sich der Browser, dein Google-Konto wählen, *Zulassen*. Danach liegt in deinem Home-Ordner die Datei `~/.clasprc.json`.
+   Wichtig: genau Version 2.4.2 nehmen, der Workflow erwartet deren Dateiformat.
+4. **Zwei Secrets im GitHub-Repo anlegen:** github.com/amueller-89/mathe-labore → *Settings → Secrets and variables → Actions → New repository secret*:
+   - `CLASPRC_JSON`: kompletter Inhalt von `~/.clasprc.json` (z. B. `cat ~/.clasprc.json | pbcopy`, dann einfügen)
+   - `SCRIPT_ID`: die Script-ID aus Schritt 2
+5. **Testen:** Repo → *Actions → Apps Script bereitstellen → Run workflow*. Grüner Haken = fertig.
+   Im Apps-Script-Editor unter *Bereitstellungen verwalten* steht dann eine neue Version „GitHub …“.
+
+Hinweis: `CLASPRC_JSON` ist ein Zugangsschlüssel zu deinen Scripts und deinem Drive. GitHub zeigt Secrets niemandem an, auch nicht im öffentlichen Repo.
+Zum Widerrufen: https://myaccount.google.com/permissions → *clasp* → Zugriff entfernen.
+
+**Ohne GitHub-Secret (Laptop-Variante):** Schritte 1 bis 3, dann im Ordner `adminpanel/` eine Datei `.clasp.json` mit `{"scriptId":"DEINE-SCRIPT-ID","rootDir":"."}` anlegen (ist in `.gitignore`).
+Danach genügt nach jeder Änderung `sh adminpanel/deploy.sh`.

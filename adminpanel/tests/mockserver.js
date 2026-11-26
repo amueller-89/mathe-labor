@@ -15,7 +15,7 @@ const sheet = {
   setFrozenRows() {},
 };
 let created = false;
-const props = {};
+const props = { ADMIN_SCHLUESSEL: 'test123' };
 const ctx = {
   SpreadsheetApp: { getActive: () => ({ getSheetByName: () => created ? sheet : null, insertSheet: () => { created = true; return sheet; } }) },
   LockService: { getScriptLock: () => ({ waitLock() {}, releaseLock() {} }) },
@@ -33,7 +33,7 @@ const ctx = {
   JSON, Date, Math, String, Object, Array, Error, console,
 };
 function out(html) { const o = { html, setTitle: () => o, addMetaTag: () => o }; return o; }
-let code = fs.readFileSync(path.join(DIR, 'Code.gs'), 'utf8').replace("const ADMIN_SCHLUESSEL = 'bitte-aendern';", "const ADMIN_SCHLUESSEL = 'test123';");
+let code = fs.readFileSync(path.join(DIR, 'Code.gs'), 'utf8');
 vm.createContext(ctx); vm.runInContext(code + '\nthis.__api = {doGet, doPost, anmelden, ping, adminDaten, adminFreigabe, adminLoeschen, adminAlles};', ctx);
 const api = ctx.__api;
 

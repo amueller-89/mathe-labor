@@ -4,7 +4,7 @@
  * Einrichtung: siehe ANLEITUNG.md. Die HTML-Dateien liegen im Drive-Ordner und werden von dort gelesen. Kurz:
  *   1. Neue Google-Tabelle anlegen, Erweiterungen → Apps Script.
  *   2. Diese Datei als Code.gs einfügen (sonst nichts).
- *   3. Unten ADMIN_SCHLUESSEL ändern.
+ *   3. Projekteinstellungen → Skripteigenschaften: ADMIN_SCHLUESSEL = eigenes Wort.
  *   4. Bereitstellen → Neue Bereitstellung → Web-App,
  *      „Ausführen als: Ich“, „Zugriff: Jeder“.
  *
@@ -14,8 +14,9 @@
  *   Admin:         WEBAPP?admin=DEIN-SCHLUESSEL
  */
 
-// >>> Hier ein eigenes Wort eintragen (nur Buchstaben/Ziffern), das niemand errät. <<<
-const ADMIN_SCHLUESSEL = 'bitte-aendern';
+// Der Admin-Schlüssel steht NICHT im Code, sondern in den Skripteigenschaften
+// (Apps-Script-Editor → Projekteinstellungen → Skripteigenschaften → ADMIN_SCHLUESSEL).
+// So bleibt er bei jedem Code-Update erhalten und landet nie auf GitHub.
 
 const LABS = {
   geraden: {
@@ -93,6 +94,14 @@ function sheet_() {
   return sh;
 }
 
+// Nur id/labor/name lesen (klein), für schnelles Suchen beim Login.
+function kurz_() {
+  const sh = sheet_();
+  const n = sh.getLastRow() - 1;
+  if (n < 1) return [];
+  return sh.getRange(2, 1, n, 3).getValues().map((r, i) => ({ row: i + 2, id: String(r[0]), labor: String(r[1]), name: String(r[2]) }));
+}
+
 function rows_() {
   const sh = sheet_();
   const n = sh.getLastRow() - 1;
@@ -105,7 +114,7 @@ function rows_() {
 
 function withLock_(fn) {
   const lock = LockService.getScriptLock();
-  lock.waitLock(15000);
+  lock.waitLock(28000);
   try { return fn(); } finally { lock.releaseLock(); }
 }
 
@@ -141,20 +150,29 @@ function anmelden(lab, name) {
   if (!LABS[lab]) throw new Error('Unbekanntes Labor');
   name = cleanName_(name);
   if (name.length < 2) throw new Error('Bitte gib deinen Namen ein.');
-  return withLock_(() => {
-    const now = new Date();
-    const key = name.toLowerCase();
-    let r = rows_().find(x => x.labor === lab && x.name.toLowerCase() === key);
-    if (!r) {
-      const id = Utilities.getUuid();
+  const key = name.toLowerCase();
+  const find = () => kurz_().find(x => x.labor === lab && x.name.toLowerCase() === key);
+  // Bekannte Kinder: ohne Lock und ohne Schreiben (online-Zeit nur im Cache),
+  // damit eine ganze Klasse gleichzeitig nicht im Lock-Stau landet.
+  let r = find(), neu = false;
+  if (!r) {
+    r = withLock_(() => {
+      const again = find();
+      if (again) return again;
+      const now = new Date(), id = Utilities.getUuid();
       sheet_().appendRow([id, lab, name, now, now, '', '']);
-      r = { id, name, fortschritt: '' };
-    } else {
-      sheet_().getRange(r.row, 5).setValue(now);
-    }
-    const st = parseJson_(r.fortschritt) || {};
-    return { id: r.id, name: r.name, prog: st.prog || null, tabs: tabsFuer_(lab, r.id), alle: alle_(lab).indexOf(String(r.id)) >= 0 };
-  });
+      neu = true;
+      return { id, name };
+    });
+  }
+  CacheService.getScriptCache().put('seen_' + r.id, String(Date.now()), 21600);
+  let st = {};
+  if (!neu) {
+    const v = sheet_().getRange(r.row, 1, 1, HEAD.length).getValues()[0];
+    if (String(v[0]) === r.id) st = parseJson_(String(v[6] || '')) || {};
+    else st = parseJson_((rows_().find(x => x.id === r.id) || {}).fortschritt) || {};  // Zeile hat sich verschoben
+  }
+  return { id: r.id, name: r.name, prog: st.prog || null, tabs: tabsFuer_(lab, r.id), alle: alle_(lab).indexOf(String(r.id)) >= 0 };
 }
 
 // Wird alle 20 s vom Labor aufgerufen. state = neuer Fortschritt, oder null, wenn sich nichts geändert hat.
@@ -167,7 +185,7 @@ function ping(lab, id, state) {
   if (state && typeof state === 'object') {
     const json = JSON.stringify(state);
     known = withLock_(() => {
-      const r = rows_().find(x => x.id === id && x.labor === lab);
+      const r = kurz_().find(x => x.id === id && x.labor === lab);
       if (!r) return false;
       if (json.length < 20000) sheet_().getRange(r.row, 5, 1, 3).setValues([[new Date(), String(state.tab || ''), json]]);
       return true;
@@ -179,8 +197,9 @@ function ping(lab, id, state) {
 /* ---------------- Admin ---------------- */
 
 function checkKey_(key) {
-  if (ADMIN_SCHLUESSEL === 'bitte-aendern') throw new Error('Bitte zuerst in Code.gs den ADMIN_SCHLUESSEL ändern und neu bereitstellen.');
-  if (String(key) !== ADMIN_SCHLUESSEL) throw new Error('Falscher Admin-Schlüssel.');
+  const soll = PropertiesService.getScriptProperties().getProperty('ADMIN_SCHLUESSEL');
+  if (!soll) throw new Error('Bitte zuerst im Apps-Script-Editor unter Projekteinstellungen → Skripteigenschaften den ADMIN_SCHLUESSEL anlegen.');
+  if (String(key) !== soll) throw new Error('Falscher Admin-Schlüssel.');
 }
 
 function adminDaten(key, lab) {
@@ -229,7 +248,7 @@ function adminAlles(key, lab, id, an) {
 function adminLoeschen(key, lab, id) {
   checkKey_(key);
   return withLock_(() => {
-    const r = rows_().find(x => x.id === String(id) && x.labor === lab);
+    const r = kurz_().find(x => x.id === String(id) && x.labor === lab);
     if (r) sheet_().deleteRow(r.row);
     return !!r;
   });

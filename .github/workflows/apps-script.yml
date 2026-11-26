@@ -1,0 +1,37 @@
+# Schiebt Code.gs ins Apps-Script-Projekt und aktualisiert die bestehende Bereitstellung.
+# Die /exec-Adresse bleibt gleich (Deployment-ID wird aus docs/config.js gelesen).
+# Benötigte Secrets: CLASPRC_JSON (Inhalt von ~/.clasprc.json nach "clasp login"), SCRIPT_ID.
+name: Apps Script bereitstellen
+
+on:
+  push:
+    branches: [main]
+    paths: ['adminpanel/Code.gs', 'adminpanel/appsscript.json']
+  workflow_dispatch:
+
+concurrency: apps-script
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Zugang einrichten
+        env:
+          CLASPRC_JSON: ${{ secrets.CLASPRC_JSON }}
+          SCRIPT_ID: ${{ secrets.SCRIPT_ID }}
+        run: |
+          test -n "$CLASPRC_JSON" || { echo "Secret CLASPRC_JSON fehlt"; exit 1; }
+          test -n "$SCRIPT_ID" || { echo "Secret SCRIPT_ID fehlt"; exit 1; }
+          printf '%s' "$CLASPRC_JSON" > ~/.clasprc.json
+          printf '{"scriptId":"%s","rootDir":"."}' "$SCRIPT_ID" > adminpanel/.clasp.json
+      - name: Hochladen und neue Version bereitstellen
+        working-directory: adminpanel
+        run: |
+          DEPLOYMENT_ID=$(sed -n 's#.*/macros/s/\([^/]*\)/exec.*#\1#p' ../docs/config.js)
+          test -n "$DEPLOYMENT_ID" || { echo "Keine /exec-Adresse in docs/config.js"; exit 1; }
+          npx -y @google/clasp@2.4.2 push --force
+          npx -y @google/clasp@2.4.2 deploy -i "$DEPLOYMENT_ID" -d "GitHub ${GITHUB_SHA::7}"
