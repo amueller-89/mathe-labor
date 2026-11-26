@@ -276,7 +276,7 @@ canvas.procan{max-width:400px;margin:0 0 14px}
 
   <!-- ================= 3 RECHENTRAINER ================= -->
   <section id="tab-train" class="tab" hidden>
-    <p class="lede" style="margin-bottom:12px">Rechne auf Papier, tippe das Ergebnis ein und prüfe. Die Skizze zeigt danach deine Gerade (blau) und die richtige (rot). 3 richtige Aufgaben schalten die nächste Stufe frei.</p>
+    <p class="lede" style="margin-bottom:12px">Rechne auf Papier, tippe das Ergebnis ein und prüfe. Die Skizze zeigt danach deine Gerade (blau) und, sobald es stimmt, die richtige (rot). 3 richtige Aufgaben schalten die nächste Stufe frei.</p>
     <div class="levels" id="levels" style="margin-bottom:16px"></div>
     <div class="stage">
       <section>
@@ -877,7 +877,7 @@ function showSolution() {
 }
 function drawTrain() {
   const B = bTrain; B.begin(); if (!task) return;
-  const reveal = task.state !== "open" || task.guess, leg = [];
+  const reveal = task.state !== "open", leg = []; // richtige Skizze erst nach richtiger Antwort oder „Lösung zeigen“, sonst könnte man ablesen
   if (task.l === 0) { B.curve(task.f, tok("--pencil"), 5); leg.push(["--pencil", "Gegebene Gerade"]); }
   else if (reveal) { B.curve(task.f, tok("--pencil"), 5); leg.push(["--pencil", "Richtige Gerade"]); }
   if (task.l === 3) { B.dot(task.P[0], task.P[1], tok("--z"), 7); B.dot(task.Q[0], task.Q[1], tok("--z"), 7); leg.push(["--z", "P und Q"]); }
@@ -887,7 +887,7 @@ function drawTrain() {
     if (task.l === 2) { task.xs.forEach((x, i) => B.dot(x, g["y" + i], tok("--curve"), 5)); leg.push(["--curve", "Deine Punkte"]); }
     else { B.curve(x => g.m * x + g.b, tok("--curve"), 3); leg.push(["--curve", "Deine Gerade"]); }
   }
-  if (!reveal && task.l !== 0 && task.l !== 3) B.tag([["Skizze erscheint nach dem Prüfen", tok("--muted")]], B.w / 2, B.Y(-6), { align: "center", base: "middle" });
+  if (!reveal && task.l !== 0 && task.l !== 3) B.tag([[task.guess ? "Die richtige Skizze kommt, sobald es stimmt" : "Skizze erscheint nach dem Prüfen", tok("--muted")]], B.w / 2, B.Y(-6), { align: "center", base: "middle" });
   $("legTrain").innerHTML = leg.map(([c, t]) => `<span><i style="background:var(${c})"></i>${t}</span>`).join("");
 }
 $("trCheck").addEventListener("click", checkTask);

@@ -202,7 +202,7 @@ footer{font-size:13px;color:var(--muted)}
 
   <!-- ================= 1 RECHENTRAINER ================= -->
   <section id="tab-train" class="tab">
-    <p class="lede" style="margin-bottom:12px">Rechne auf Papier, tippe das Ergebnis ein und prüfe. Die Skizze zeigt danach deine Parabel (blau) und die richtige (rot). 3 richtige Aufgaben schalten die nächste Stufe frei.</p>
+    <p class="lede" style="margin-bottom:12px">Rechne auf Papier, tippe das Ergebnis ein und prüfe. Die Skizze zeigt danach deine Parabel (blau) und, sobald es stimmt, die richtige (rot). 3 richtige Aufgaben schalten die nächste Stufe frei.</p>
     <div class="levels" id="levels" style="margin-bottom:16px"></div>
     <div class="stage">
       <section>
@@ -675,7 +675,7 @@ function showSolution() {
 
 function drawTrain() {
   const B = bTrain; B.begin(); if (!task) return;
-  const reveal = task.state !== "open" || task.guess;
+  const reveal = task.state !== "open"; // richtige Skizze erst nach richtiger Antwort oder „Lösung zeigen“, sonst könnte man ablesen
   const leg = [];
   if (task.l === 3) {
     B.curve(task.f, tok("--pencil"), 5); leg.push(["--pencil", "Gegebene Parabel"]);
@@ -692,7 +692,7 @@ function drawTrain() {
   }
   if (!reveal && task.l !== 3) {
     const c = B.ctx; c.font = `15px ${tok("--body")}`; c.fillStyle = tok("--muted"); c.textAlign = "center";
-    B.tag([["Skizze erscheint nach dem Prüfen", tok("--muted")]], B.w / 2, B.Y(-6), { align: "center", base: "middle" });
+    B.tag([[task.guess ? "Die richtige Skizze kommt, sobald es stimmt" : "Skizze erscheint nach dem Prüfen", tok("--muted")]], B.w / 2, B.Y(-6), { align: "center", base: "middle" });
   }
   $("legTrain").innerHTML = leg.map(([c, t]) => `<span><i style="background:var(${c})"></i>${t}</span>`).join("");
 }
