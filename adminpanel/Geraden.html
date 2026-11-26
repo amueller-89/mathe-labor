@@ -387,7 +387,16 @@ async function login(name) {
   $("gErr").textContent = ""; $("gLoad").hidden = false;
   document.querySelectorAll("#gate button").forEach(b => b.disabled = true);
   try {
-    const r = await call("anmelden", LAB, name);
+    // Bei Ansturm (alle melden sich gleichzeitig an) automatisch mehrmals versetzt nachfassen
+    let r = null;
+    for (let i = 0; ; i++) {
+      try { r = await call("anmelden", LAB, name); break; }
+      catch (e) {
+        const m = e && e.message ? String(e.message) : "";
+        if (/Namen|Labor/.test(m) || i >= 6) throw e;
+        await new Promise(ok => setTimeout(ok, 1500 + Math.random() * 2500 * (i + 1)));
+      }
+    }
     me = { id: r.id, name: r.name }; store.set(IDKEY, r.name); allowed = r.tabs || []; window.__alle = !!r.alle;
     start(r.prog);
   } catch (e) {
