@@ -266,6 +266,19 @@ const LEVELS = [
   { t: "Stufe 4", s: "Gleichung aus der Skizze" },
 ];
 
+// Nullstellenform frei eingetippt: a·(x − x₁)·(x − x₂), auch x·(…), (x − n)², x − (−1) → { a, xs } oder null
+function parseNf(str) {
+  let s = String(str).toLowerCase().replace(/^\s*y\s*=/, "").replace(/[−–—]/g, "-").replace(/[·*×\s]/g, "").replace(/,/g, ".").replace(/\^2/g, "²");
+  const m = s.match(/^([+-]?\d*\.?\d*)(.*)$/); if (!m || !m[2]) return null;
+  const a = m[1] === "" || m[1] === "+" ? 1 : m[1] === "-" ? -1 : Number(m[1]); if (isNaN(a)) return null;
+  const xs = [], re = /^(?:\(x(?:([+-])\(?([+-]?\d*\.?\d+)\)?)?\)|x)(²?)/; let r = m[2];
+  while (r) {
+    const t = r.match(re); if (!t) return null;
+    const v = t[1] ? (t[1] === "-" ? 1 : -1) * Number(t[2]) : 0; xs.push(v); if (t[3]) xs.push(v); r = r.slice(t[0].length);
+  }
+  return xs.length === 2 ? { a, xs } : null;
+}
+
 function makeTask(l) {
   if (l === 0) {
     const a = pick([1, 1, -1, 2, -2, 3]), d = nz(-5, 5), e = rnd(13) - 6;
@@ -293,20 +306,18 @@ function makeTask(l) {
     return { l, k, p, q, roots, phase: 1, key: { a: k, xs: want }, // key: für die Tests
       title: "Bestimme die Nullstellen und die Nullstellenform.", task: "y = " + polyBody(k, k * p, k * q),
       answer: `<p class="q">1. Nullstellen</p>
-      <div class="nrow">x₁ = ${inp("x1")} &nbsp; x₂ = ${inp("x2")} <label class="chk" style="font-size:17px;font-weight:700"><input type="checkbox" data-k="none"> keine Nullstelle</label></div>
+      <div class="nrow"><span class="cz">x₁</span> = ${inp("x1")} &nbsp; <span class="cd">x₂</span> = ${inp("x2")} <label class="chk" style="font-size:17px;font-weight:700"><input type="checkbox" data-k="none"> keine Nullstelle</label></div>
       <div id="nf2" hidden><p class="q">2. Nullstellenform</p>
-      <div class="slots s7"><span>y =</span><span class="p">a</span><span>· (x −</span><span class="p">x₁</span><span>) · (x −</span><span class="p">x₂</span><span>)</span>
-      <span>y =</span>${inp("a")}<span>· (x −</span>${inp("n1")}<span>) · (x −</span>${inp("n2")}<span>)</span></div></div>`,
+      <div class="nfmem">y = <span class="ca">a</span> · (x − <span class="cz">x₁</span>) · (x − <span class="cd">x₂</span>)</div>
+      <div class="slots"><span>y =</span><input class="in eq" data-k="nf" autocomplete="off" spellcheck="false" aria-label="Nullstellenform"></div></div>`,
       f: x => k * (x * x + p * x + q),
       // eigene Prüfung: Reihenfolge egal, Kästchen „keine Nullstelle“; danach Teil 2
       check(F, fb) {
         if (this.phase === 2) {
-          const g = { a: parse(F.a.value), xs: [parse(F.n1.value), parse(F.n2.value)] };
-          if (isNaN(g.a) || g.xs.some(isNaN)) { fb.className = "feedback no"; fb.textContent = "Bitte alle drei Kästchen ausfüllen."; return null; }
+          const g = parseNf(F.nf.value);
+          if (!g) { fb.className = "feedback no"; fb.textContent = "Bitte in der Form a · (x − x₁) · (x − x₂) eintippen."; return null; }
           this.guess = { xs: this.guess.xs, nf: g };
-          const okX = same(g.xs, want), okA = near(g.a, k, 0.001);
-          mark(F.a, okA); [F.n1, F.n2].forEach((el, i) => mark(el, okX || want.some(w => near(w, g.xs[i], 0.01))));
-          return okA && okX;
+          const ok = near(g.a, k, 0.001) && same(g.xs, want); mark(F.nf, ok); return ok;
         }
         if (F.none.checked) { this.guess = { none: true }; [F.x1, F.x2].forEach(el => el.classList.remove("ok", "bad")); return roots.length === 0; }
         let g = [parse(F.x1.value), parse(F.x2.value)];
@@ -317,14 +328,16 @@ function makeTask(l) {
         const ok = same(g, want);
         if (!ok) { mark(F.x1, want.some(w => near(w, g[0], 0.01))); mark(F.x2, want.some(w => near(w, g[1], 0.01))); return false; }
         mark(F.x1, true); mark(F.x2, true);
-        this.phase = 2; [F.x1, F.x2].forEach(el => el.readOnly = true); F.none.disabled = true; $("nf2").hidden = false; F.a.focus();
+        this.phase = 2; [F.x1, F.x2].forEach(el => el.readOnly = true); F.none.disabled = true; $("nf2").hidden = false; F.nf.focus();
         fb.className = "feedback ok"; fb.textContent = "Richtig! Jetzt Teil 2."; drawTrain();
         return null;
       },
       failMsg() {
         if (this.guess.none) return "Doch, es gibt Nullstellen. Rechne D = (p/2)² − q nochmal nach.";
         if (roots.length === 0) return "Schau auf D = (p/2)² − q. Was ist, wenn D negativ ist?";
-        if (this.guess.nf && !near(this.guess.nf.a, k, 0.001)) return "Das a ist die Zahl vor dem x².";
+        const nf = this.guess.nf; if (!nf) return;
+        if (!near(nf.a, k, 0.001)) return "Das a ist die Zahl vor dem x².";
+        if (same(nf.xs.map(x => -x), want)) return "Vorzeichen! Zum Beispiel x − (−1) = x + 1.";
       },
       sol: () => roots.length === 0 ? `D = (p/2)² − q = ${num((p / 2) ** 2 - q)} &lt; 0 → keine Nullstelle` : nullHTML(k, want[0], want[1], false) };
   }
@@ -399,7 +412,7 @@ const EXAMPLES = [
     ["x₁", "= " + D("1") + " − " + E("2") + " = " + Z("−1")],
     ["x₂", "= " + D("1") + " + " + E("2") + " = " + Z("3")],
     { sec: "4. Nullstellenform" },
-    ["y", "= a · (x − x₁) · (x − x₂)", "einsetzen"],
+    ["y", "= " + X("a") + " · (x − " + Z("x₁") + ") · (x − " + Z("x₂") + ")", "einsetzen"],
     ["", "= " + X("2") + " · (x − (" + Z("−1") + ")) · (x − " + Z("3") + ")", "− (−1) = + 1"],
     ["", "= " + res(X("2") + " · (x + " + Z("1") + ") · (x − " + Z("3") + ")")],
   ] },

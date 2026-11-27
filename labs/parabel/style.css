@@ -21,3 +21,5 @@ footer{font-size:13px;color:var(--muted)}
 .slots.s7{grid-template-columns:repeat(7,auto)}
 .answer .q{flex-basis:100%;margin:4px 0 6px;font-size:18px;line-height:1.4;font-weight:600}
 .answer #nf2{flex-basis:100%;margin-top:10px}
+.answer .nfmem{flex-basis:100%;font-size:22px;line-height:1.3;margin:0 0 8px}
+.answer input.in.eq{width:12em;text-align:left}
