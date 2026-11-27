@@ -66,6 +66,7 @@ def page(d, lab, admin):
     h1 = f'<h1>{title}</h1>'
     ueben = lab.get('ueben', True)
     js = ('const LAB = ' + json.dumps(lab, ensure_ascii=False) + ';\n'
+          + 'const PFADE = ' + json.dumps(PFADE) + ';\n'
           + read(SHARED, 'core.js') + '\n' + read(LABS, d, 'lab.js') + '\n'
           + (read(SHARED, 'trainer.js') + '\n' + read(SHARED, 'profi.js' if lab.get('profi') else 'ohne-profi.js') if ueben
              else read(SHARED, 'ohne-ueben.js'))
@@ -87,37 +88,52 @@ def page(d, lab, admin):
             + (f'Die Skizze zeigt danach deine {sk} (blau) und, sobald es stimmt, die richtige (rot). ' if sk else '')
             + '<span class="needN">3</span> richtige Aufgaben schalten die nächste Stufe frei.')
     return fill(read(SHARED, 'page.html'),
-                ICON=lab['icon'].replace(' ', '%20'), TITLE=title, H1=h1, STYLE=style, NAV=nav,
+                ICON=lab['icon'].replace(' ', '%20'), ICON2=lab.get('icon2', '').replace(' ', '%20'), TITLE=title, H1=h1, STYLE=style, NAV=nav,
                 TABS=read(LABS, d, 'tabs.html'), N_TRAIN=str(len(tabs) - 1), N_PRO=str(len(tabs)),
                 LEDE=lede, STAGE='stage' if sk else 'stage nosketch', WIN=lab.get('win', ''), ADMIN=extra, SCRIPT=js)
 
 
+# Pfad auf GitHub Pages (…/gerade/): "pfad" im Steckbrief, sonst die ID. Die ID bleibt intern (Speicher, Apps Script).
 labs = []
 for d in sorted(os.listdir(LABS)):
     if d.startswith('_') or not os.path.exists(os.path.join(LABS, d, 'lab.json')):
         continue
     lab = json.loads(read(LABS, d, 'lab.json'))
     assert lab['id'] == d, (d, lab['id'])
-    labs.append(lab)
     lab['file'] = d.capitalize()
+    lab.setdefault('pfad', d)
+    labs.append(lab)
+PFADE = {l['id']: l['pfad'] for l in labs}
+
+# Weiterleitung von alten Adressen (…/geraden/ → …/gerade/), Suche und #Tab bleiben erhalten
+REDIRECT = """<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><title>Weiterleitung</title>
+<meta http-equiv="refresh" content="0;url=../{to}/">
+<script>location.replace("../{to}/" + location.search + location.hash);</script>
+</head><body><a href="../{to}/">Weiter</a></body></html>
+"""
+for lab in labs:
+    d = lab['id']
     write(f'labore/{lab["title"]}.html', page(d, lab, admin=False))
     a = page(d, lab, admin=True)
     write(f'adminpanel/{lab["file"]}.html', a)
-    write(f'docs/{d}/index.html', a.replace('<head>\n', '<head>\n<script src="../config.js"></script>\n', 1))
+    write(f'docs/{lab["pfad"]}/index.html', a.replace('<head>\n', '<head>\n<script src="../config.js"></script>\n', 1))
+    if lab['pfad'] != d:
+        write(f'docs/{d}/index.html', REDIRECT.replace('{to}', lab['pfad']))
 
 # Reihenfolge (Startseite, Adminpanel): "reihe" im Steckbrief, neue Labore ohne "reihe" hinten
 labs.sort(key=lambda l: l.get('reihe', 99))
 
 # Labor-Liste für den Server
-reg = {l['id']: {'title': l['title'], 'file': l['file'], 'klasse': l['klasse'], 'tabs': [list(t) for t in all_tabs(l)]} for l in labs}
+reg = {l['id']: {'title': l['title'], 'file': l['file'], 'pfad': l['pfad'], 'klasse': l['klasse'], 'tabs': [list(t) for t in all_tabs(l)]} for l in labs}
 js = lambda v: json.dumps(v, ensure_ascii=False)
 write('adminpanel/Labs.gs', '// Erzeugt von build.py aus labs/*/lab.json. Nicht von Hand ändern.\nconst LABS = {\n' + ''.join(
-    f'  {k}: {{\n    title: {js(v["title"])}, file: {js(v["file"])}, klasse: {js(v["klasse"])},\n    tabs: {js(v["tabs"])},\n  }},\n'
+    f'  {k}: {{\n    title: {js(v["title"])}, file: {js(v["file"])}, pfad: {js(v["pfad"])}, klasse: {js(v["klasse"])},\n    tabs: {js(v["tabs"])},\n  }},\n'
     for k, v in reg.items()) + '};\n')
 
 # Startseite
-cards = ''.join(f'''    <a class="lab" href="{l["id"]}/">
-      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 26H29M7 29V3" stroke="#93a5b6" stroke-width="2" fill="none" stroke-linecap="round"/><path d="{l["icon"]}" stroke="#6b9bff" stroke-width="3.2" stroke-linecap="round" fill="none"/></svg>
+cards = ''.join(f'''    <a class="lab" href="{l["pfad"]}/">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 26H29M7 29V3" stroke="#93a5b6" stroke-width="2" fill="none" stroke-linecap="round"/><path d="{l["icon"]}" stroke="#6b9bff" stroke-width="3.2" stroke-linecap="round" fill="none"/><path d="{l.get("icon2", "")}" stroke="#f5a25a" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg>
       <b>{html.escape(l["title"])}</b><span>{html.escape(l["thema"])}</span>
     </a>
 ''' for l in labs)

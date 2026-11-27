@@ -1,10 +1,12 @@
 {
   "id": "tangenten",
+  "pfad": "tangente",
   "title": "Tangenten-Labor",
   "thema": "Tangenten und ihre Steigung",
   "reihe": 3,
   "klasse": "OIIIa",
-  "icon": "M7 5Q15 37 23 5M9 25L29 13",
+  "icon": "M7 5Q15 37 23 5",
+  "icon2": "M9 24.6L29 12.6",
   "ueben": false,
   "tabs": [
     { "id": "tan", "label": "Tangente", "slug": "tangente" },

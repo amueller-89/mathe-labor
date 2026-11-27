@@ -106,7 +106,7 @@ function proNextLab() {
   const W = LAB.weiter; if (!W) return;
   const f = pro.errs.reduce((s, v) => s + (v || 0), 0), good = f < W.maxFehler;
   // Adresse eines anderen Labors: GitHub Pages (../id/), eigenständige Datei (Titel.html); in der Google-Version kein Link
-  const href = L => !L ? "" : window.LABOR_API ? "../" + L.id + "/" : !ADMIN ? L.title + ".html" : "";
+  const href = L => !L ? "" : window.LABOR_API ? "../" + (PFADE[L.id] || L.id) + "/" : !ADMIN ? L.title + ".html" : "";
   const link = (el, L) => { const h = href(L); el.hidden = !h; el.href = h || "#"; el.textContent = L ? "Zum " + L.title : ""; };
   const line = (el, t) => { el.textContent = t || ""; el.hidden = !t; };
   const alt = good ? null : W.ueben;

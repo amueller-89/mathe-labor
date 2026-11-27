@@ -2,7 +2,7 @@
 <html lang="de" data-theme="dark">
 <head>
 <meta charset="utf-8">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%2317212b%22/%3E%3Cpath%20d%3D%22M4%2026H29M7%2029V3%22%20stroke%3D%22%2393a5b6%22%20stroke-width%3D%222%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22/%3E%3Cpath%20d%3D%22M8%204Q17%2034%2026%204%22%20stroke%3D%22%236b9bff%22%20stroke-width%3D%223.2%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%2317212b%22/%3E%3Cpath%20d%3D%22M4%2026H29M7%2029V3%22%20stroke%3D%22%2393a5b6%22%20stroke-width%3D%222%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22/%3E%3Cpath%20d%3D%22M8%204Q17%2034%2026%204%22%20stroke%3D%22%236b9bff%22%20stroke-width%3D%223.2%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22/%3E%3Cpath%20d%3D%22%22%20stroke%3D%22%23f5a25a%22%20stroke-width%3D%222.2%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22/%3E%3C/svg%3E">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Parabel-Labor</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -442,7 +442,8 @@ footer{font-size:13px;color:var(--muted)}
 <script>
 (() => {
 "use strict";
-const LAB = {"id": "parabel", "title": "Parabel-Labor", "thema": "Quadratische Funktionen", "reihe": 2, "klasse": "OIIIa", "icon": "M8 4Q17 34 26 4", "tabs": [{"id": "sp", "label": "Scheitelpunktform", "slug": "scheitelpunktform"}, {"id": "forms", "label": "Drei Formen", "slug": "drei-formen"}, {"id": "pq", "label": "pq-Formel", "slug": "pq-formel"}], "skizze": "Parabel", "win": "Scheitelpunktform, Nullstellenform, pq-Formel und Ablesen aus der Skizze: Du kannst Parabeln jetzt in allen Formen. Richtig gut gemacht!", "profi": "Parabel-Profi!", "weiter": {"maxFehler": 10, "gut": {"id": "tangenten", "title": "Tangenten-Labor"}, "ueben": {"id": "binomi", "title": "Binomi-Labor", "text": "Oder übe die binomischen Formeln und Termumformungen im Binomi-Labor."}, "auch": {"id": "geraden", "title": "Geraden-Labor", "text": "Oder wiederhole den Stoff der 8. Klasse im Geraden-Labor."}}, "file": "Parabel"};
+const LAB = {"id": "parabel", "title": "Parabel-Labor", "thema": "Quadratische Funktionen", "reihe": 2, "klasse": "OIIIa", "icon": "M8 4Q17 34 26 4", "tabs": [{"id": "sp", "label": "Scheitelpunktform", "slug": "scheitelpunktform"}, {"id": "forms", "label": "Drei Formen", "slug": "drei-formen"}, {"id": "pq", "label": "pq-Formel", "slug": "pq-formel"}], "skizze": "Parabel", "win": "Scheitelpunktform, Nullstellenform, pq-Formel und Ablesen aus der Skizze: Du kannst Parabeln jetzt in allen Formen. Richtig gut gemacht!", "profi": "Parabel-Profi!", "weiter": {"maxFehler": 10, "gut": {"id": "tangenten", "title": "Tangenten-Labor"}, "ueben": {"id": "binomi", "title": "Binomi-Labor", "text": "Oder übe die binomischen Formeln und Termumformungen im Binomi-Labor."}, "auch": {"id": "geraden", "title": "Geraden-Labor", "text": "Oder wiederhole den Stoff der 8. Klasse im Geraden-Labor."}}, "file": "Parabel", "pfad": "parabel"};
+const PFADE = {"binomi": "binomi", "geraden": "gerade", "parabel": "parabel", "tangenten": "tangente"};
 /* Geteilter Kern aller Labore: kleine Helfer, Koordinatensystem, Zahlen einlesen.
    Wird vom Build (build.py) zusammen mit dem Code des Labors in eine Datei kopiert. */
 const $ = id => document.getElementById(id);
@@ -1421,7 +1422,7 @@ function proNextLab() {
   const W = LAB.weiter; if (!W) return;
   const f = pro.errs.reduce((s, v) => s + (v || 0), 0), good = f < W.maxFehler;
   // Adresse eines anderen Labors: GitHub Pages (../id/), eigenständige Datei (Titel.html); in der Google-Version kein Link
-  const href = L => !L ? "" : window.LABOR_API ? "../" + L.id + "/" : !ADMIN ? L.title + ".html" : "";
+  const href = L => !L ? "" : window.LABOR_API ? "../" + (PFADE[L.id] || L.id) + "/" : !ADMIN ? L.title + ".html" : "";
   const link = (el, L) => { const h = href(L); el.hidden = !h; el.href = h || "#"; el.textContent = L ? "Zum " + L.title : ""; };
   const line = (el, t) => { el.textContent = t || ""; el.hidden = !t; };
   const alt = good ? null : W.ueben;

@@ -1,19 +1,19 @@
 // Erzeugt von build.py aus labs/*/lab.json. Nicht von Hand ändern.
 const LABS = {
   geraden: {
-    title: "Geraden-Labor", file: "Geraden", klasse: "UIIIb",
+    title: "Geraden-Labor", file: "Geraden", pfad: "gerade", klasse: "UIIIb",
     tabs: [["mb", "1 Steigung & y-Achsenabschnitt", "Erkunden"], ["pts", "2 Zwei Punkte", "Erkunden"], ["train", "3 Rechentrainer", "Üben"], ["pro", "4 Profi ★", "Üben"]],
   },
   parabel: {
-    title: "Parabel-Labor", file: "Parabel", klasse: "OIIIa",
+    title: "Parabel-Labor", file: "Parabel", pfad: "parabel", klasse: "OIIIa",
     tabs: [["sp", "1 Scheitelpunktform", "Erkunden"], ["forms", "2 Drei Formen", "Erkunden"], ["pq", "3 pq-Formel", "Erkunden"], ["train", "4 Rechentrainer", "Üben"], ["pro", "5 Profi ★", "Üben"]],
   },
   tangenten: {
-    title: "Tangenten-Labor", file: "Tangenten", klasse: "OIIIa",
+    title: "Tangenten-Labor", file: "Tangenten", pfad: "tangente", klasse: "OIIIa",
     tabs: [["tan", "1 Tangente", "Erkunden"], ["nor", "2 Steigung an y = x²", "Erkunden"], ["kub", "3 Kubische Funktionen", "Erkunden"]],
   },
   binomi: {
-    title: "Binomi-Labor", file: "Binomi", klasse: "OIIIa",
+    title: "Binomi-Labor", file: "Binomi", pfad: "binomi", klasse: "OIIIa",
     tabs: [["train", "1 Rechentrainer", "Üben"]],
   },
 };

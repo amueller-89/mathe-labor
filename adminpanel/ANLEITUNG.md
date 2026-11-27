@@ -31,10 +31,10 @@ Dateien in diesem Ordner:
 
 Die Seiten liegen auf GitHub Pages und holen sich die Daten im Hintergrund vom Apps Script.
 
-- Startseite: `https://amueller-89.github.io/mathe-labore/`
-- Kinder UIIIb: `https://amueller-89.github.io/mathe-labore/geraden`
-- Kinder OIIIa: `https://amueller-89.github.io/mathe-labore/parabel`
-- Du (Admin): `https://amueller-89.github.io/mathe-labore/admin`: fragt einmal nach dem Admin-Schlüssel und merkt ihn sich in diesem Browser.
+- Startseite: `https://amueller-89.github.io/mathe-labor/`
+- Kinder UIIIb: `https://amueller-89.github.io/mathe-labor/gerade`
+- Kinder OIIIa: `https://amueller-89.github.io/mathe-labor/parabel`
+- Du (Admin): `https://amueller-89.github.io/mathe-labor/admin`: fragt einmal nach dem Admin-Schlüssel und merkt ihn sich in diesem Browser.
 
 Die Adresse des Scripts steht in `docs/config.js` im GitHub-Repo. Sie ändert sich nicht, solange du bei Updates *Bereitstellungen verwalten → Bearbeiten → Neue Version* benutzt.
 

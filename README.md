@@ -1,4 +1,4 @@
-# Mathe-Labore
+# Mathe-Labor
 
 Interaktive HTML-Labore für den Mathematikunterricht (Klasse 8 und 9). Alle Labore teilen sich ein Gerüst und werden mit `build.py` zu eigenständigen Dateien gebaut.
 
@@ -49,6 +49,7 @@ Mit `#alle` am Ende der Adresse sind alle Stufen und der Profi-Tab sofort offen 
 2. `lab.json` (Steckbrief):
    - `id` wie der Ordner, `title` (z. B. „Potenz-Labor“), `thema`, `klasse` (für das Adminpanel)
    - `icon`: SVG-Pfad für das Symbol, 32×32
+   - `icon2` (optional): zweiter Pfad, orange und dünner (z. B. die Tangente)
    - `tabs`: die Erkunden-Tabs mit `id`, `label`, `slug` (für die Adresse). Rechentrainer und Profi kommen automatisch dahinter.
    - `skizze` („Gerade“, „Parabel“ …), `win` (Text im Glückwunsch-Popup), `profi` (Titel bei fast allen Profi-Fragen richtig)
    - `weiter` (optional) `{ maxFehler, gut: { id, title, hinweis? }, ueben?: { id, title, text }, auch?: { id, title, text } }`: nach dem Profi-Durchgang mit weniger als `maxFehler` Fehlern Einladung ins Labor `gut`, sonst Aufforderung, die Fragen sorgfältig nochmal zu machen, oder im Labor `ueben` zu üben; `auch` wird in beiden Fällen zusätzlich angeboten
@@ -76,7 +77,7 @@ Version der beiden Labore mit Anmeldung und Lehrer-Oberfläche, als Google-Apps-
 Einrichtung: siehe [`adminpanel/ANLEITUNG.md`](adminpanel/ANLEITUNG.md).
 
 Die Seiten für die Kinder und das Adminpanel laufen über GitHub Pages aus `docs/`:
-[amueller-89.github.io/mathe-labore](https://amueller-89.github.io/mathe-labore/) (`/geraden`, `/parabel`, `/admin`).
+[amueller-89.github.io/mathe-labor](https://amueller-89.github.io/mathe-labor/) (`/gerade`, `/parabel`, `/tangente`, `/binomi`, `/admin`; alte Adressen wie `/geraden` leiten weiter).
 Sie sprechen das Apps Script über `doPost` an. Dessen Adresse steht in `docs/config.js`.
 `docs/` wird von `build.py` erzeugt (bis auf `config.js`).
 

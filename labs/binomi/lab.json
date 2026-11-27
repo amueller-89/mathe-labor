@@ -4,7 +4,8 @@
   "thema": "Binomische Formeln und Terme",
   "reihe": 4,
   "klasse": "OIIIa",
-  "icon": "M9 6H27V24H9ZM9 17H27M20 6V24",
+  "icon": "M9 6H27V24H9Z",
+  "icon2": "M9 17H27M20 6V24",
   "tabs": [],
   "win": "Binomische Formeln und Terme zusammenfassen: Das sitzt. Richtig gut gemacht!"
 }

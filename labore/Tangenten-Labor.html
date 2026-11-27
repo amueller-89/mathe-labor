@@ -2,7 +2,7 @@
 <html lang="de" data-theme="dark">
 <head>
 <meta charset="utf-8">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%2317212b%22/%3E%3Cpath%20d%3D%22M4%2026H29M7%2029V3%22%20stroke%3D%22%2393a5b6%22%20stroke-width%3D%222%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22/%3E%3Cpath%20d%3D%22M7%205Q15%2037%2023%205M9%2025L29%2013%22%20stroke%3D%22%236b9bff%22%20stroke-width%3D%223.2%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%2317212b%22/%3E%3Cpath%20d%3D%22M4%2026H29M7%2029V3%22%20stroke%3D%22%2393a5b6%22%20stroke-width%3D%222%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22/%3E%3Cpath%20d%3D%22M7%205Q15%2037%2023%205%22%20stroke%3D%22%236b9bff%22%20stroke-width%3D%223.2%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22/%3E%3Cpath%20d%3D%22M9%2024.6L29%2012.6%22%20stroke%3D%22%23f5a25a%22%20stroke-width%3D%222.2%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22/%3E%3C/svg%3E">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Tangenten-Labor</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -427,7 +427,8 @@ table.tt td.act input{border-color:var(--d)}
 <script>
 (() => {
 "use strict";
-const LAB = {"id": "tangenten", "title": "Tangenten-Labor", "thema": "Tangenten und ihre Steigung", "reihe": 3, "klasse": "OIIIa", "icon": "M7 5Q15 37 23 5M9 25L29 13", "ueben": false, "tabs": [{"id": "tan", "label": "Tangente", "slug": "tangente"}, {"id": "nor", "label": "Steigung an y = x²", "slug": "normalparabel"}, {"id": "kub", "label": "Kubische Funktionen", "slug": "kubisch"}], "file": "Tangenten"};
+const LAB = {"id": "tangenten", "pfad": "tangente", "title": "Tangenten-Labor", "thema": "Tangenten und ihre Steigung", "reihe": 3, "klasse": "OIIIa", "icon": "M7 5Q15 37 23 5", "icon2": "M9 24.6L29 12.6", "ueben": false, "tabs": [{"id": "tan", "label": "Tangente", "slug": "tangente"}, {"id": "nor", "label": "Steigung an y = x²", "slug": "normalparabel"}, {"id": "kub", "label": "Kubische Funktionen", "slug": "kubisch"}], "file": "Tangenten"};
+const PFADE = {"binomi": "binomi", "geraden": "gerade", "parabel": "parabel", "tangenten": "tangente"};
 /* Geteilter Kern aller Labore: kleine Helfer, Koordinatensystem, Zahlen einlesen.
    Wird vom Build (build.py) zusammen mit dem Code des Labors in eine Datei kopiert. */
 const $ = id => document.getElementById(id);

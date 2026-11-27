@@ -158,7 +158,7 @@ const call = (fn, ...args) => window.LABOR_API
       catch (e) { rej(e); }
     });
 let KEY = "", LAB = "geraden", data = null, busy = false, timer = null, rev = 0, pending = 0;
-const PAGES = "https://amueller-89.github.io/mathe-labore/";
+const PAGES = "https://amueller-89.github.io/mathe-labor/";
 
 const COPY = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>';
 // lange Links in der Mitte kürzen, damit sie einzeilig bleiben (Anfang und Ende sind die wichtigen Teile)
@@ -186,7 +186,7 @@ function renderLinks(d) {
   };
   head("GitHub");
   row("Startseite", pages);
-  d.labs.forEach(l => row(l.title.replace(/-Labor$/, "") + " · " + l.klasse, pages + l.id));
+  d.labs.forEach(l => row(l.title.replace(/-Labor$/, "") + " · " + l.klasse, pages + (l.pfad || l.id)));
   row("Admin", pages + "admin");
   if (google) {
     head("Google");
