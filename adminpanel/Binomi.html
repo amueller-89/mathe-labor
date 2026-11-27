@@ -1,0 +1,1057 @@
+<!doctype html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%2317212b%22/%3E%3Cpath%20d%3D%22M4%2026H29M7%2029V3%22%20stroke%3D%22%2393a5b6%22%20stroke-width%3D%222%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22/%3E%3Cpath%20d%3D%22M9%206H27V24H9ZM9%2017H27M20%206V24%22%20stroke%3D%22%236b9bff%22%20stroke-width%3D%223.2%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22/%3E%3C/svg%3E">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Binomi-Labor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+:root{
+  --paper:#fbfcfd; --ink:#15212c; --muted:#58697a; --line:#d4dee8; --surface:#eef3f8;
+  --grid:#dbe6f0; --grid-strong:#b3c6d8;
+  --a:#8e44ad; --d:#e07a1f; --e:#2e9e4f; --z:#0e7c86; --curve:#1f5eff; --pencil:#d2452f; --focus:#1f5eff;
+  --ok-bg:#e3f4e8; --bad-bg:#fbe6e2;
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible",system-ui,-apple-system,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0f161d; --ink:#e5ecf3; --muted:#93a5b6; --line:#273543; --surface:#17212b;
+  --grid:#1c2834; --grid-strong:#2e3f50;
+  --a:#c387e0; --d:#f5a25a; --e:#5fcf82; --z:#4fc3cf; --curve:#6b9bff; --pencil:#ff7d60; --focus:#6b9bff;
+  --ok-bg:#16301f; --bad-bg:#3a1d17; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0f161d; --ink:#e5ecf3; --muted:#93a5b6; --line:#273543; --surface:#17212b;
+  --grid:#1c2834; --grid-strong:#2e3f50;
+  --a:#c387e0; --d:#f5a25a; --e:#5fcf82; --z:#4fc3cf; --curve:#6b9bff; --pencil:#ff7d60; --focus:#6b9bff;
+  --ok-bg:#16301f; --bad-bg:#3a1d17; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+.wrap{max-width:1240px;margin:0 auto;padding:20px max(16px,env(safe-area-inset-right,0px)) 32px max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 24px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,4vw,40px);line-height:1.05;margin:0}
+.seg{display:inline-flex;flex-wrap:wrap}
+.seg button{font:inherit;font-size:15px;padding:8px 14px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer;margin-left:-1.5px}
+.seg button:first-child{border-radius:8px 0 0 8px;margin-left:0}
+.seg button:last-child{border-radius:0 8px 8px 0}
+.seg button[aria-selected="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.lede{margin:0;color:var(--muted);max-width:75ch}
+.stage{display:grid;grid-template-columns:minmax(0,11fr) minmax(0,10fr);gap:18px;align-items:start}
+@media (max-width:860px){.stage{grid-template-columns:minmax(0,1fr)}}
+.stage.nosketch{grid-template-columns:minmax(0,820px)}
+.stage.nosketch>section{display:none}
+canvas{display:block;width:100%;aspect-ratio:1/1;max-height:640px;border:1px solid var(--line);border-radius:12px;background:var(--paper);touch-action:none}
+.side{display:flex;flex-direction:column;gap:14px;min-width:0}
+.card{background:var(--surface);border-radius:12px;padding:14px 16px;min-width:0}
+.label{font-size:13px;color:var(--muted);margin:0 0 4px}
+.formula.mid{font-size:clamp(20px,2.4vw,28px)}
+.formula.small{font-size:clamp(17px,2vw,22px);font-weight:600}
+.sl{display:grid;grid-template-columns:28px minmax(0,1fr) 72px;align-items:center;gap:10px;margin:8px 0}
+.sl b{font-family:var(--display);font-size:22px}
+.sl input{width:100%;min-width:0}
+.sl output{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button.btn{font:inherit;font-size:15px;padding:8px 14px;border-radius:8px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+button.btn.primary{background:var(--curve);border-color:var(--curve);color:#fff;font-weight:700}
+button.btn:disabled{opacity:.45;cursor:default}
+button.btn.small{font-size:13px;padding:4px 10px}
+button:focus-visible,input:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.feedback{font-family:var(--display);font-weight:800;font-size:21px;min-height:30px;margin-top:8px}
+.feedback.ok{color:var(--e)} .feedback.no{color:var(--pencil)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px;color:var(--muted);margin-top:8px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{display:inline-block;width:22px;height:3px;border-radius:2px}
+.hint{font-size:13px;color:var(--muted);margin:6px 0 0}
+.levels{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:860px){.levels{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.lvl{font:inherit;text-align:left;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+.lvl[aria-pressed="true"]{border-color:var(--curve);box-shadow:inset 0 0 0 1.5px var(--curve)}
+.lvl:disabled{cursor:not-allowed;opacity:.5}
+.lvl .t{font-weight:700;display:block}
+.lvl .s{font-size:13px;color:var(--muted);display:block}
+.dots{letter-spacing:3px;color:var(--e);font-size:14px}
+.answer{font-family:var(--display);font-weight:800;font-size:clamp(20px,2.4vw,28px);line-height:2.1;display:flex;flex-wrap:wrap;align-items:center;gap:2px 6px}
+.answer input.in{font:inherit;font-family:var(--body);font-weight:700;font-size:22px;width:4.2em;padding:2px 6px;text-align:center;border:2px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink)}
+.answer input.in.ok{border-color:var(--e);background:var(--ok-bg)}
+.answer input.in.bad{border-color:var(--pencil);background:var(--bad-bg)}
+.slots .p{text-align:center;font-size:1.3em}
+.prog{display:grid;grid-template-columns:auto 1fr auto;gap:2px 12px;font-size:15px;font-variant-numeric:tabular-nums}
+.prog .muted{color:var(--muted)}
+.prowrap{max-width:860px;display:flex;flex-direction:column;gap:14px}
+.proq{font-family:var(--display);font-weight:800;font-size:clamp(21px,2.6vw,28px);line-height:1.25;margin:2px 0 12px}
+canvas.procan{max-width:400px;margin:0 0 14px}
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:600px){.opts:not(.graphs){grid-template-columns:minmax(0,1fr)}}
+.opt{font:inherit;font-size:18px;text-align:left;display:flex;align-items:center;gap:12px;padding:12px 14px;border:2px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--curve)}
+.opt:disabled{cursor:default;opacity:.55}
+.opt.right{border-color:var(--e);background:var(--ok-bg);opacity:1}
+.opt.wrong{border-color:var(--pencil);background:var(--bad-bg)}
+.opt .badge{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--surface);font-weight:700;font-size:15px}
+.opts.graphs{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:700px){.opts.graphs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.opts.graphs .opt{flex-direction:column;align-items:stretch;padding:8px;gap:6px}
+.opts.graphs .opt:disabled:not(.wrong){opacity:.8}
+.opts.graphs canvas{max-height:none;border:0}
+.optwrap{position:relative}
+.lock{position:absolute;inset:-6px;display:grid;place-items:center;text-align:center;padding:12px;border-radius:12px;border:2px solid var(--pencil);background:var(--bad-bg);color:var(--pencil);font-family:var(--display);font-size:clamp(20px,2.6vw,26px);line-height:1.3;z-index:2}
+.lock .count{font-size:38px;font-weight:800;line-height:1.1;margin:2px 0}
+.revlist{display:flex;flex-direction:column;gap:6px;text-align:left}
+.revitem{font:inherit;font-size:15px;display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);cursor:pointer;text-align:left}
+.revitem:hover{border-color:var(--curve)}
+.revitem .nr{font-weight:700;color:var(--muted)}
+.revitem .er{font-weight:700;color:var(--e);white-space:nowrap}
+.revitem.had .er{color:var(--pencil)}
+.proex{margin:4px 0 0;padding:10px 12px;border-left:4px solid var(--e);background:var(--paper);border-radius:6px}
+.win{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:16px;background:rgb(10 16 24 / .55)}
+.win canvas{position:fixed;inset:0;width:100%;height:100%;aspect-ratio:auto;max-height:none;border:0;border-radius:0;background:transparent;pointer-events:none}
+.win .box{position:relative;background:var(--paper);color:var(--ink);border-radius:18px;padding:28px 28px 22px;max-width:520px;width:100%;text-align:center;box-shadow:0 20px 60px rgb(0 0 0 / .35);animation:pop .45s cubic-bezier(.2,1.4,.4,1)}
+.win h2{font-family:var(--display);font-weight:800;font-size:clamp(30px,5vw,44px);line-height:1.05;margin:4px 0 10px}
+.win .big{font-size:56px;line-height:1}
+.win p{margin:0 0 8px}
+.win .stats{color:var(--muted);font-size:15px;margin:10px 0 18px}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion: reduce){.win .box{animation:none}}
+[hidden]{display:none!important}
+
+/* Musterbeispiel */
+.win .box.exbox{max-width:780px;text-align:left;max-height:calc(100vh - 32px);overflow:auto;padding:22px 24px 18px}
+.exbox h2{font-size:clamp(24px,4vw,32px);margin:0 0 4px}
+.exbox .exsub{color:var(--muted);margin:0 0 8px}
+.exclose{position:absolute;top:10px;right:12px;font:inherit;font-size:26px;line-height:1;background:none;border:0;color:var(--muted);cursor:pointer;padding:4px 8px}
+.exg{display:grid;grid-template-columns:max-content max-content minmax(0,1fr);gap:14px 18px;align-items:center;margin:8px 0 14px}
+.exg .l{text-align:right;font-family:var(--display);font-weight:700;font-size:24px;white-space:nowrap}
+.exg .r{font-family:var(--display);font-weight:700;font-size:24px;white-space:nowrap}
+.exg .op{font-family:var(--display);font-weight:700;font-size:22px;color:var(--ink)}
+.exg .c{font-size:15px;line-height:1.35;color:var(--muted);border-left:3px solid var(--line);padding:2px 0 2px 10px}
+.exg .c:empty{border:0;padding:0}
+.exg .sec{grid-column:1/-1;font-weight:700;margin:10px 0 -4px}
+.exg .sec:first-child{margin-top:0}
+.exg .note{grid-column:1/-1;font-size:15px;background:var(--surface);border-radius:8px;padding:8px 12px;margin-top:6px}
+.exg .wide{grid-column:1/-1;margin:4px 0}
+.exg .res{background:var(--ok-bg);border-radius:6px;padding:0 6px}
+.exg .frac{font-size:.85em}
+.exsvg{display:block;width:100%;max-width:330px;height:auto;margin:0 auto}
+.extab{display:inline-grid;grid-template-columns:repeat(5,auto);border:1.5px solid var(--line);border-radius:8px;overflow:hidden;font-weight:700;font-variant-numeric:tabular-nums}
+.extab span{padding:4px 14px;border-left:1px solid var(--line);text-align:center}
+.extab span:nth-child(5n+1){border-left:0;color:var(--muted)}
+.extab span:nth-child(n+6){border-top:1px solid var(--line)}
+@media (max-width:640px){
+  .exg{grid-template-columns:max-content minmax(0,1fr)}
+  .exg .c{grid-column:1/-1;margin:0 0 6px}
+  .exg .l,.exg .r{font-size:19px;white-space:normal}
+}
+
+/* Musterbeispiel-Knopf direkt neben dem Aufgabentitel */
+.trhead{display:flex;align-items:center;gap:16px;margin-bottom:6px}
+.trhead .label{margin:0}
+
+/* Tabs in zwei Gruppen: Erkunden | Üben */
+.tabnav{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 20px}
+.tgrp{display:flex;flex-direction:column;gap:4px}
+.tgrp .gl{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.fx{display:inline-block;text-align:center}
+/* Wertetabelle (Erkunden + Profi) */
+table.wt{border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:18px;width:100%}
+table.wt td,table.wt th{border:1.5px solid var(--line);padding:4px 6px;text-align:center;min-width:2.6em}
+table.wt th{color:var(--muted);font-weight:700;background:var(--paper)}
+table.wt td{font-weight:700}
+/* Profi: Fragenliste bei „alles frei“ */
+.pjump{display:grid;grid-template-columns:repeat(auto-fill,40px);gap:6px;margin-bottom:12px}
+.pjump button{font:inherit;font-size:14px;font-weight:700;height:34px;border-radius:8px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+.pjump button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+a.btn{font:inherit;font-size:15px;padding:8px 14px;border-radius:8px;border:1.5px solid var(--curve);background:var(--curve);color:#fff;font-weight:700;text-decoration:none}
+.formula{font-family:var(--display);font-weight:800;font-size:clamp(24px,3vw,34px);line-height:1.2;white-space:nowrap;overflow-x:auto}
+.ca{color:var(--a)} .cd{color:var(--d)} .ce{color:var(--e)} .cx{color:var(--curve)}
+/* Antwortzeilen: Aufgabe | = | Eingabe, feste Spalten, damit alle „=“ untereinander stehen */
+.brows{display:grid;grid-template-columns:9.5em 1em 13em;column-gap:10px;row-gap:12px;align-items:center;flex-basis:100%}
+.brows .t{text-align:right;white-space:nowrap}
+.brows .eqs{text-align:center}
+.brows.wide{grid-template-columns:1em 18em}
+.answer input.in.poly{width:100%;text-align:left;font-size:24px;line-height:1.25;padding:4px 10px}
+.trterm{white-space:normal}
+#mainTabs button.locked{opacity:.55}
+#mainTabs button.locked::before{content:"\1F512\00A0"}
+.proToast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:70;background:var(--surface);color:var(--ink);border:2px solid var(--line);border-radius:12px;padding:12px 18px;box-shadow:0 12px 40px rgb(0 0 0 / .4);max-width:calc(100vw - 32px);text-align:center}
+.gate{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:16px;background:var(--paper)}
+.gate .box{background:var(--surface);border-radius:16px;padding:28px 24px;max-width:460px;width:100%;box-shadow:0 20px 60px rgb(0 0 0 / .35)}
+.gate h2{font-family:var(--display);font-weight:800;font-size:clamp(28px,5vw,38px);line-height:1.05;margin:0 0 14px}
+.gate p{margin:0 0 14px}
+.gate input{font:inherit;font-size:20px;font-weight:700;padding:8px 12px;border:2px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);flex:1;min-width:0}
+.gate input:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.gate .gform{display:flex;gap:10px;flex-wrap:wrap}
+.gate .small{font-size:14px;color:var(--muted);margin:12px 0 0}
+.who{font-size:14px;color:var(--muted);margin-top:4px}
+.who b{color:var(--ink)}
+.linkbtn{font:inherit;background:none;border:0;padding:0;color:var(--muted);text-decoration:underline;cursor:pointer}
+.who .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--e);margin-right:6px;vertical-align:middle}
+.who .dot.off{background:var(--pencil)}
+.unlockToast{position:fixed;right:20px;bottom:20px;z-index:70;display:flex;align-items:center;gap:12px;max-width:min(520px,calc(100vw - 40px));background:var(--surface);color:var(--ink);border:2px solid var(--e);border-radius:12px;padding:14px 18px;font-size:17px;font-weight:700;box-shadow:0 12px 40px rgb(0 0 0 / .45);cursor:pointer}
+.unlockToast b{font-size:22px}
+.unlockToast.in{animation:unlockIn .35s ease-out}
+@keyframes unlockIn{from{transform:translateX(30px);opacity:0}to{transform:none;opacity:1}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>Binomi-Labor</h1><div class="who" id="who" hidden><span class="dot" id="whoDot"></span>Angemeldet als <b id="whoName"></b> · <button class="linkbtn" id="whoSwitch">abmelden</button></div></div>
+    <nav class="tabnav" role="tablist" id="mainTabs">
+      <div class="tgrp" data-grp="Üben"><span class="gl">Üben</span><div class="seg">
+        <button role="tab" data-tab="train" aria-selected="true">1 Rechentrainer</button>
+      </div></div>
+    </nav>
+  </header>
+
+  <!-- Binomi-Labor: keine Erkunden-Tabs, nur der Rechentrainer -->
+
+  <!-- ================= 0 RECHENTRAINER ================= -->
+  <section id="tab-train" class="tab" hidden>
+    <p class="lede" style="margin-bottom:12px">Rechne auf Papier, tippe das Ergebnis ein und prüfe. <span class="needN">3</span> richtige Aufgaben schalten die nächste Stufe frei.</p>
+    <div class="levels" id="levels" style="margin-bottom:16px"></div>
+    <div class="stage nosketch">
+      <section>
+        <canvas id="cTrain" aria-label="Koordinatensystem zur Aufgabe"></canvas>
+        <div class="legend" id="legTrain"></div>
+      </section>
+      <aside class="side">
+        <div class="card">
+          <div class="trhead"><p class="label" id="trTitle"></p><button class="btn small" id="trEx" type="button">📘 Musterbeispiel ansehen</button></div>
+          <div class="formula" id="trTask"></div>
+        </div>
+        <div class="card">
+          <p class="label">Deine Antwort</p>
+          <div class="answer" id="trAnswer"></div>
+          <div class="row" style="margin-top:8px">
+            <button class="btn primary" id="trCheck">Prüfen</button>
+            <button class="btn" id="trShow">Lösung zeigen</button>
+            <button class="btn" id="trNext">Nächste Aufgabe</button>
+          </div>
+          <div class="feedback" id="trFb" aria-live="polite"></div>
+          <div class="formula small" id="trSol" hidden></div>
+        </div>
+        <div class="card">
+          <p class="label">Dein Fortschritt</p>
+          <div class="prog" id="trProg"></div>
+          <div class="row" style="margin-top:8px"><button class="btn small" id="trReset">Fortschritt zurücksetzen</button></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= 1 PROFI ================= -->
+  <section id="tab-pro" class="tab" hidden>
+    <div class="prowrap">
+      <p class="lede">Profi-Aufgaben für alle, die den Rechentrainer geschafft haben. Erst nachdenken, dann klicken.</p>
+      <div class="pjump" id="proJump" hidden></div>
+      <div id="proQuiz" class="card">
+        <p class="label" id="proHead"></p>
+        <div class="proq" id="proQ"></div>
+        <div id="proTable" style="margin:0 0 14px;max-width:420px" hidden></div>
+        <canvas id="cPro" class="procan" aria-label="Skizze zur Frage"></canvas>
+        <p class="hint" id="proCap" style="margin:-8px 0 14px" hidden></p>
+        <div class="optwrap">
+          <div class="opts" id="proOpts"></div>
+          <div class="lock" id="proLock" hidden aria-live="assertive"><div><b>Leider nicht. Überleg nochmal …</b><small id="proPicked"></small><div class="count" id="proCount">3</div></div></div>
+        </div>
+        <div class="feedback" id="proFb" aria-live="polite"></div>
+        <p class="proex" id="proEx" hidden></p>
+        <div class="row" style="margin-top:10px"><button class="btn primary" id="proNext" hidden>Nächste Frage</button></div>
+      </div>
+      <div id="proDone" class="card" hidden style="text-align:center;padding:28px 16px">
+        <h2 class="proq" id="proDoneT" style="font-size:34px;margin:0 0 8px"></h2>
+        <p id="proDoneS" style="margin:0 0 16px"></p>
+        <button class="btn primary" id="proAgain">Nochmal von vorn</button>
+        <p class="label" style="text-align:left;margin:24px 0 8px">Alle Fragen zum Nachschauen (Fehler pro Frage):</p>
+        <div class="revlist" id="proList"></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="win" id="exWin" hidden role="dialog" aria-modal="true" aria-labelledby="exT">
+  <div class="box exbox">
+    <button class="exclose" id="exClose" type="button" aria-label="Schließen">×</button>
+    <p class="label" id="exLvl"></p>
+    <h2 id="exT">Musterbeispiel</h2>
+    <p class="exsub" id="exSub"></p>
+    <div class="exg" id="exBody"></div>
+    <div class="row" style="justify-content:center"><button class="btn primary" id="exOk" type="button">Verstanden, jetzt ich!</button></div>
+  </div>
+</div>
+<div class="win" id="nextWin" hidden role="dialog" aria-modal="true" aria-labelledby="nextT">
+  <div class="box">
+    <div class="big" id="nextIcon" aria-hidden="true"></div>
+    <h2 id="nextT"></h2>
+    <p id="nextS"></p>
+    <div class="row" style="justify-content:center;margin-top:14px">
+      <button class="btn" id="nextClose" type="button">Schließen</button>
+      <a class="btn primary" id="nextGo" href="#"></a>
+      <button class="btn primary" id="nextAgain" type="button">Nochmal von vorn</button>
+    </div>
+  </div>
+</div>
+<div class="win" id="win" hidden role="dialog" aria-modal="true" aria-labelledby="winT">
+  <canvas id="confetti" aria-hidden="true"></canvas>
+  <div class="box">
+    <div class="big" aria-hidden="true">🏆</div>
+    <h2 id="winT">Glückwunsch!</h2>
+    <p><b>Du hast alle Stufen geschafft.</b></p>
+    <p>Binomische Formeln und Terme zusammenfassen: Das sitzt. Richtig gut gemacht!</p>
+    <p id="winProTxt"><b>Neu freigeschaltet: Tab 1 mit Profi-Aufgaben</b> zum Knobeln.</p>
+    <div class="stats" id="winStats"></div>
+    <div class="row" style="justify-content:center">
+      <button class="btn" id="winClose">Weiter üben</button>
+      <button class="btn primary" id="winPro">Zu den Profi-Aufgaben ★</button>
+    </div>
+  </div>
+</div>
+
+<div class="gate" id="gate">
+  <div class="box">
+    <h2>Binomi-Labor</h2>
+    <div id="gLogin">
+      <p>Wie heißt du? Nimm deinen Vornamen und immer genau denselben, dann geht es an jedem Rechner da weiter, wo du aufgehört hast.</p>
+      <div class="gform"><input id="gWer" type="text" maxlength="30" autocomplete="nickname" autocapitalize="words" spellcheck="false" data-lpignore="true" data-1p-ignore placeholder="z. B. Mia" aria-label="Wie heißt du?"><button class="btn primary" id="gGo" type="button">Los geht’s</button></div>
+    </div>
+    <div id="gAgain" hidden>
+      <p>Bist du <b id="gWho"></b>?</p>
+      <div class="row"><button class="btn primary" id="gYes">Ja, weiter</button><button class="btn" id="gNo">Nein, ich bin jemand anderes</button></div>
+    </div>
+    <div id="gWait" hidden><p><b>Gleich geht’s los.</b></p><p>Deine Lehrkraft schaltet die erste Station gleich frei. Diese Seite merkt das von selbst.</p></div>
+    <div id="gBye" hidden><p><b>Du bist abgemeldet.</b></p><p>Lade die Seite neu (Taste F5), damit sich jemand anderes anmelden kann.</p></div>
+    <p class="feedback no" id="gErr" aria-live="polite"></p>
+    <p class="small" id="gLoad" hidden>Einen Moment …</p>
+  </div>
+</div>
+
+<script>
+/* Anmeldung + Verbindung zum Apps Script, nur in der Admin-Version (adminpanel/, docs/).
+   binomi ersetzt der Build durch die Labor-ID. */
+(() => {
+"use strict";
+const LAB = "binomi", IDKEY = "labor-" + LAB + "-name", SESS = "labor-" + LAB + "-sitzung";
+const $ = id => document.getElementById(id);
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch (_) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (_) {} },
+  del(k) { try { localStorage.removeItem(k); } catch (_) {} },
+};
+// Sitzung in diesem Browser-Tab: beim Neuladen (F5) ohne Nachfrage wieder anmelden
+const sess = {
+  get() { try { return sessionStorage.getItem(SESS); } catch (_) { return null; } },
+  set(v) { try { sessionStorage.setItem(SESS, v); } catch (_) {} },
+  del() { try { sessionStorage.removeItem(SESS); } catch (_) {} },
+};
+const call = (fn, ...args) => window.LABOR_API
+  ? fetch(window.LABOR_API, { method: "POST", body: JSON.stringify({ fn, args }) })
+      .then(r => r.json()).then(j => { if (j.error) throw new Error(j.error); return j.result; })
+  : new Promise((res, rej) => {
+      try { google.script.run.withSuccessHandler(res).withFailureHandler(rej)[fn](...args); }
+      catch (e) { rej(e); }
+    });
+const errMsg = e => {
+  const m = e && e.message ? String(e.message).replace(/^(Exception|Error):\s*/, "") : "";
+  return /Namen|Labor/.test(m) ? m : "Die Verbindung klappt gerade nicht. Versuch es gleich nochmal.";
+};
+let me = null, allowed = [], alle = false, need = 3, started = false, pingTimer = null, debounce = null, online = true, epoch = 0;
+const tabOk = t => allowed.indexOf(t) >= 0;
+let toastT = null;
+// Haken für das Labor (labs/_shared/core.js liest window.LAB_ADMIN)
+window.LAB_ADMIN = {
+  alle: () => alle,
+  need: () => need,
+  tabOk,
+  prog: null,
+  changed: () => { clearTimeout(debounce); debounce = setTimeout(ping, 2000); },
+  proLocked() {
+    let t = document.querySelector(".proToast");
+    if (!t) { t = document.createElement("div"); t.className = "proToast"; t.setAttribute("role", "status"); document.body.appendChild(t); }
+    t.textContent = "Der Profi-Tab öffnet sich, sobald du alle Stufen im Rechentrainer geschafft hast.";
+    t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 3500);
+  },
+};
+
+function gate(which) {
+  $("gate").hidden = !which;
+  ["gLogin", "gAgain", "gWait", "gBye"].forEach(id => $(id).hidden = id !== which);
+  $("gErr").textContent = ""; $("gLoad").hidden = true;
+  if (which === "gLogin") setTimeout(() => $("gWer").focus(), 50);
+}
+async function login(name) {
+  $("gErr").textContent = ""; $("gLoad").hidden = false;
+  document.querySelectorAll("#gate button").forEach(b => b.disabled = true);
+  try {
+    // Bei Ansturm (alle melden sich gleichzeitig an) automatisch mehrmals versetzt nachfassen
+    let r = null;
+    for (let i = 0; ; i++) {
+      try { r = await call("anmelden", LAB, name); break; }
+      catch (e) {
+        const m = e && e.message ? String(e.message) : "";
+        if (/Namen|Labor/.test(m) || i >= 6) throw e;
+        await new Promise(ok => setTimeout(ok, 1500 + Math.random() * 2500 * (i + 1)));
+      }
+    }
+    me = { id: r.id, name: r.name }; store.set(IDKEY, r.name); sess.set(r.name); allowed = r.tabs || []; alle = !!r.alle; epoch = r.epoch || 0; need = r.need || 3;
+    start(r.prog);
+  } catch (e) {
+    $("gLoad").hidden = true; $("gErr").textContent = errMsg(e);
+  } finally { document.querySelectorAll("#gate button").forEach(b => b.disabled = false); }
+}
+function start(prog) {
+  if (started) return;
+  started = true;
+  window.LAB_ADMIN.prog = prog || {};
+  window.__startLab();
+  $("whoName").textContent = me.name;
+  $("who").hidden = false;
+  apply();
+  pingTimer = setInterval(ping, 20000);
+  setTimeout(ping, 1500);
+}
+function snap() {
+  const L = window.__lab; if (!L) return null;
+  const p = L.prog(), q = L.pro();
+  return {
+    tab: L.current(),
+    prog: { c: p.c, f: p.f, unl: p.unl, lvl: p.lvl, won: !!p.won },
+    pro: { i: q.i, score: q.score, errs: (q.errs || []).map(x => x || 0), n: L.PRO_N, answered: !!q.answered, done: !$("proDone").hidden },
+  };
+}
+let lastSent = "";
+async function ping() {
+  if (!me) return;
+  const s = snap(), js = JSON.stringify(s);
+  try {
+    const r = await call("ping", LAB, me.id, js !== lastSent ? s : null, epoch);
+    lastSent = js;
+    setOnline(true);
+    if (!r.known) { clearInterval(pingTimer); me = null; store.del(IDKEY); sess.del(); gate("gBye"); return; }
+    // Lehrkraft hat alle zurückgesetzt: neu laden, dann startet alles bei null (Anmeldung bleibt)
+    if (r.epoch && epoch && r.epoch !== epoch) { clearInterval(pingTimer); location.reload(); return; }
+    if (JSON.stringify(r.tabs) !== JSON.stringify(allowed) || !!r.alle !== alle || (r.need || 3) !== need) {
+      const neu = (r.tabs || []).filter(t => allowed.indexOf(t) < 0).map(tabName), msgs = [];
+      if (neu.length) msgs.push("Neu freigeschaltet: " + neu.join(", "));
+      if (r.alle && !alle) msgs.push("Für dich ist jetzt alles freigeschaltet");
+      if ((r.need || 3) < need) msgs.push("Jetzt reichen " + (r.need || 3) + " richtige Aufgaben je Stufe");
+      allowed = r.tabs || []; alle = !!r.alle; need = r.need || 3; apply();
+      if (msgs.length) unlockToast(msgs);
+    }
+  } catch (e) { setOnline(false); }
+}
+const tabName = t => { const b = document.querySelector('#mainTabs [data-tab="' + t + '"]'); return b ? b.textContent.replace(/^\d+\s*/, "") : t; };
+// Hinweis am Rand, wenn die Lehrkraft etwas freischaltet (nimmt keinen Fokus)
+let unlockT = null;
+function unlockToast(msgs) {
+  let t = document.querySelector(".unlockToast");
+  if (!t) { t = document.createElement("div"); t.className = "unlockToast"; t.setAttribute("role", "status"); t.addEventListener("click", () => t.hidden = true); document.body.appendChild(t); }
+  t.innerHTML = "<b>🔓</b><span></span>"; t.querySelector("span").textContent = msgs.join(" · ");
+  t.hidden = false; t.classList.remove("in"); void t.offsetWidth; t.classList.add("in");
+  clearTimeout(unlockT); unlockT = setTimeout(() => t.hidden = true, 8000);
+}
+function setOnline(v) { online = v; $("whoDot").classList.toggle("off", !v); $("whoDot").title = v ? "verbunden" : "keine Verbindung"; }
+function apply() {
+  const L = window.__lab; if (!L) return;
+  document.querySelectorAll("#mainTabs button").forEach(b => { if (b.dataset.tab !== "pro") b.hidden = !tabOk(b.dataset.tab); });
+  L.updProTab(); L.renderLevels();
+  document.querySelectorAll("#mainTabs .tgrp").forEach(g => g.hidden = ![...g.querySelectorAll("button")].some(b => !b.hidden));
+  $("winPro").hidden = !tabOk("pro"); $("winProTxt").hidden = !tabOk("pro");
+  const vis = [...document.querySelectorAll("#mainTabs button")].filter(b => !b.hidden);
+  if (!vis.length) { gate("gWait"); return; }
+  if (!$("gWait").hidden || !$("gLogin").hidden || !$("gAgain").hidden) gate(null);
+  if (!vis.some(b => b.dataset.tab === L.current())) L.show(vis[0].dataset.tab);
+}
+
+$("gGo").addEventListener("click", () => login($("gWer").value));
+$("gWer").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); login($("gWer").value); } });
+$("gYes").addEventListener("click", () => login(store.get(IDKEY)));
+$("gNo").addEventListener("click", () => { store.del(IDKEY); gate("gLogin"); });
+$("whoSwitch").addEventListener("click", () => { clearInterval(pingTimer); me = null; store.del(IDKEY); sess.del(); gate("gBye"); });
+$("gNo").addEventListener("click", () => sess.del());
+document.addEventListener("DOMContentLoaded", () => {
+  const known = store.get(IDKEY);
+  if (known && sess.get() === known) { $("gWho").textContent = known; gate("gAgain"); login(known); }
+  else if (known) { $("gWho").textContent = known; gate("gAgain"); } else gate("gLogin");
+});
+})();
+</script>
+<script>
+window.__startLab = () => {
+"use strict";
+const LAB = {"id": "binomi", "title": "Binomi-Labor", "thema": "Binomische Formeln und Terme", "reihe": 4, "klasse": "OIIIa", "icon": "M9 6H27V24H9ZM9 17H27M20 6V24", "tabs": [], "win": "Binomische Formeln und Terme zusammenfassen: Das sitzt. Richtig gut gemacht!", "file": "Binomi"};
+/* Geteilter Kern aller Labore: kleine Helfer, Koordinatensystem, Zahlen einlesen.
+   Wird vom Build (build.py) zusammen mit dem Code des Labors in eine Datei kopiert. */
+const $ = id => document.getElementById(id);
+const tok = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const r6 = v => Math.round(v * 1e6) / 1e6;
+const num = v => { const r = r6(v); return (r < 0 ? "−" : "") + String(Math.abs(r)).replace(".", ","); };
+const sp = (cls, t) => cls ? `<span class="${cls}">${t}</span>` : t;
+const rnd = n => Math.floor(Math.random() * n);
+const pick = arr => arr[rnd(arr.length)];
+const near = (u, v, tol = 1e-6) => Math.abs(u - v) <= tol;
+const paren = v => r6(v) < 0 ? `(${num(v)})` : num(v);
+// Zahl in fester Breite, damit Text dahinter beim Ziehen nicht springt
+const fx = (cls, t, w = 3.2, al = "center") => `<span class="fx ${cls}" style="width:${w}em;text-align:${al}">${t}</span>`;
+const frac = (a, b) => `<span class="frac"><span>${a}</span><span>${b}</span></span>`;
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+function nz(lo, hi) { let v; do v = lo + rnd(hi - lo + 1); while (v === 0); return v; }
+function shuffle(n) { const a = [...Array(n).keys()]; for (let i = n - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+// Eingabefeld für den Rechentrainer; data-k ist der Schlüssel in task.want
+const inp = k => `<input class="in" data-k="${k}" inputmode="decimal" autocomplete="off" spellcheck="false" aria-label="${k}">`;
+
+// ---------- Koordinatensystem ----------
+class Board {
+  // R = halbe Breite in Einheiten; cx, cy = Mitte des Ausschnitts (Standard: Ursprung)
+  constructor(canvas, R = 8, cx = 0, cy = 0) { this.c = canvas; this.R = R; this.cx = cx; this.cy = cy; this.lab = 1; }
+  begin() {
+    const c = this.c, r = c.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+    const w = Math.max(1, Math.round(r.width * dpr)), h = Math.max(1, Math.round(r.height * dpr));
+    if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
+    const ctx = this.ctx = c.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    this.w = r.width; this.h = r.height;
+    const R = this.R, m = 14; this.u = (Math.min(this.w, this.h) - 2 * m) / (2 * R);
+    this.ox = this.w / 2 - this.cx * this.u; this.oy = this.h / 2 + this.cy * this.u;
+    const X = x => this.X(x), Y = y => this.Y(y);
+    const x0 = this.cx - R, x1 = this.cx + R, y0 = this.cy - R, y1 = this.cy + R;
+    ctx.clearRect(0, 0, this.w, this.h); ctx.setLineDash([]);
+    ctx.lineWidth = 1;
+    for (let i = Math.ceil(x0); i <= x1; i++) {
+      ctx.strokeStyle = i % 5 ? tok("--grid") : tok("--grid-strong");
+      ctx.beginPath(); ctx.moveTo(X(i), Y(y0)); ctx.lineTo(X(i), Y(y1)); ctx.stroke();
+    }
+    for (let i = Math.ceil(y0); i <= y1; i++) {
+      ctx.strokeStyle = i % 5 ? tok("--grid") : tok("--grid-strong");
+      ctx.beginPath(); ctx.moveTo(X(x0), Y(i)); ctx.lineTo(X(x1), Y(i)); ctx.stroke();
+    }
+    const ink = tok("--ink"), muted = tok("--muted");
+    ctx.strokeStyle = ink; ctx.fillStyle = ink; ctx.lineWidth = 1.6;
+    ctx.beginPath(); ctx.moveTo(X(x0), Y(0)); ctx.lineTo(X(x1), Y(0)); ctx.moveTo(X(0), Y(y0)); ctx.lineTo(X(0), Y(y1)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X(x1) + 2, Y(0)); ctx.lineTo(X(x1) - 7, Y(0) - 4); ctx.lineTo(X(x1) - 7, Y(0) + 4); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(X(0), Y(y1) - 2); ctx.lineTo(X(0) - 4, Y(y1) + 7); ctx.lineTo(X(0) + 4, Y(y1) + 7); ctx.fill();
+    ctx.font = `12px ${tok("--body")}`; ctx.fillStyle = muted;
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    for (let i = Math.floor(x0) + 1; i < x1; i++) if (i && i % this.lab === 0) ctx.fillText(num(i), X(i), Y(0) + 4);
+    ctx.textAlign = "right"; ctx.textBaseline = "middle";
+    for (let i = Math.floor(y0) + 1; i < y1; i++) if (i && i % this.lab === 0) ctx.fillText(num(i), X(0) - 5, Y(i));
+    ctx.fillStyle = ink; ctx.font = `700 14px ${tok("--body")}`;
+    ctx.textAlign = "right"; ctx.textBaseline = "bottom"; ctx.fillText(this.xName || "x", X(x1) - 4, Y(0) - 6);
+    ctx.textAlign = "left"; ctx.textBaseline = "top"; ctx.fillText(this.yName || "y", X(0) + 8, Y(y1) + 2);
+    return ctx;
+  }
+  X(x) { return this.ox + x * this.u; }
+  Y(y) { return this.oy - y * this.u; }
+  ix(px) { return (px - this.ox) / this.u; }
+  iy(py) { return (this.oy - py) / this.u; }
+  clip(fn) { const c = this.ctx, R = this.R; c.save(); c.beginPath(); c.rect(this.X(this.cx - R), this.Y(this.cy + R), 2 * R * this.u, 2 * R * this.u); c.clip(); fn(c); c.restore(); }
+  curve(f, color, width, dash) {
+    const R = this.R, lo = this.cy - R - 4 * R / 8, hi = this.cy + R + 4 * R / 8;
+    this.clip(c => {
+      c.strokeStyle = color; c.lineWidth = width; c.setLineDash(dash || []); c.lineJoin = "round"; c.lineCap = "round";
+      c.beginPath(); let started = false; const N = 700;
+      for (let i = 0; i <= N; i++) {
+        const x = this.cx - R + 2 * R * i / N, y = f(x);
+        if (y > hi || y < lo) { if (started) { c.lineTo(this.X(x), this.Y(Math.max(lo, Math.min(hi, y)))); c.stroke(); c.beginPath(); started = false; } continue; }
+        if (!started) { c.moveTo(this.X(x), this.Y(y)); started = true; } else c.lineTo(this.X(x), this.Y(y));
+      }
+      c.stroke();
+    });
+  }
+  seg(x1, y1, x2, y2, color, width = 1.5, dash = [5, 4]) {
+    this.clip(c => { c.strokeStyle = color; c.lineWidth = width; c.setLineDash(dash); c.beginPath(); c.moveTo(this.X(x1), this.Y(y1)); c.lineTo(this.X(x2), this.Y(y2)); c.stroke(); });
+  }
+  dot(x, y, color, r = 6, ring = true) {
+    if (Math.abs(x - this.cx) > this.R || Math.abs(y - this.cy) > this.R) return;
+    const c = this.ctx; c.setLineDash([]); c.fillStyle = color; c.strokeStyle = tok("--paper"); c.lineWidth = 2;
+    c.beginPath(); c.arc(this.X(x), this.Y(y), r, 0, 2 * Math.PI); c.fill(); if (ring) c.stroke();
+  }
+  // farbiger Text mit Hintergrund; parts = [[text, farbe], ...]
+  tag(parts, px, py, { align = "left", base = "top", size = 15 } = {}) {
+    const c = this.ctx; c.font = `700 ${size}px ${tok("--body")}`; c.textBaseline = "alphabetic"; c.textAlign = "left";
+    const tw = parts.reduce((s, p) => s + c.measureText(p[0]).width, 0);
+    let x = align === "left" ? px : align === "right" ? px - tw : px - tw / 2;
+    x = Math.max(4, Math.min(this.w - tw - 4, x));
+    let y = base === "top" ? py + size : base === "bottom" ? py - 4 : py + size / 2 - 2;
+    y = Math.max(size + 2, Math.min(this.h - 6, y));
+    c.fillStyle = tok("--paper"); c.globalAlpha = .85; c.fillRect(x - 3, y - size, tw + 6, size + 6); c.globalAlpha = 1;
+    for (const [t, col] of parts) { c.fillStyle = col; c.fillText(t, x, y); x += c.measureText(t).width; }
+  }
+  pointer(e) { const r = this.c.getBoundingClientRect(); return [this.ix(e.clientX - r.left), this.iy(e.clientY - r.top), e.clientX - r.left, e.clientY - r.top]; }
+}
+
+// Ziehen: hit(x,y,px,py) liefert Griff oder null; move(griff,x,y)
+function draggable(board, hit, move, redraw) { // redraw optional
+  const c = board.c; let grab = null;
+  c.addEventListener("pointerdown", e => { const [x, y, px, py] = board.pointer(e); grab = hit(x, y, px, py); if (grab) { c.setPointerCapture(e.pointerId); e.preventDefault(); } });
+  c.addEventListener("pointermove", e => {
+    const [x, y, px, py] = board.pointer(e);
+    if (grab) { move(grab, x, y); if (redraw) redraw(); } else c.style.cursor = hit(x, y, px, py) ? "grab" : "default";
+  });
+  const end = () => { grab = null; };
+  c.addEventListener("pointerup", end); c.addEventListener("pointercancel", end);
+}
+// ---------- Schieberegler ----------
+// Jeder Regler sagt im HTML nur, wozu er da ist; die Schrittweite steht nur hier:
+//   data-step="look"   nur anschauen/erkunden: fein
+//   data-step="match"  etwas Gegebenes treffen (Quiz): grob, damit man es auch trifft
+// Umschalten (z. B. Erkunden ↔ Quiz) mit setStep(regler, "match").
+const STEP = { look: 0.05, match: 0.25 };
+function setStep(el, kind) { el.dataset.step = kind; el.step = STEP[kind]; }
+// Startwert neu setzen: ohne step-Attribut hat der Browser ihn schon auf ganze Zahlen gerundet
+document.querySelectorAll('input[type="range"]').forEach(el => { setStep(el, el.dataset.step || "look"); el.value = el.getAttribute("value"); });
+
+const nearPx = (board, x, y, px, py, r = 16) => Math.hypot(board.X(x) - px, board.Y(y) - py) <= r;
+const snapTo = (v, s) => r6(Math.round(v / s) * s);
+
+// ---------- Zahlen einlesen (Komma, Minuszeichen, Brüche wie 3/4) ----------
+function parse(str) {
+  let s = String(str).trim().replace(/[−–—]/g, "-").replace(/\s/g, "").replace(",", ".");
+  if (s === "") return NaN;
+  if (s === "-") return -1;
+  if (s === "+") return 1;
+  const fr = s.match(/^([+-]?\d*\.?\d+)\/(\d*\.?\d+)$/);
+  if (fr) return Number(fr[1]) / Number(fr[2]);
+  if (!/^[+-]?(\d+\.?\d*|\.\d+)$/.test(s)) return NaN;
+  return Number(s);
+}
+
+// „0,09x + 7,5“, „7,5 + 0,09·x“, „24 − 1,5x“ → {m, b}; null, wenn es keine Gerade in x ist
+function parseLin(str) {
+  let s = String(str).toLowerCase().replace(/^\s*y\s*=/, "").replace(/[−–—]/g, "-").replace(/[·*×\s€%]/g, "").replace(/,/g, ".");
+  if (!s) return null;
+  if (!/^[+-]/.test(s)) s = "+" + s;
+  const terms = s.match(/[+-][^+-]+/g);
+  if (!terms || terms.join("") !== s) return null;
+  let m = 0, b = 0;
+  for (const t of terms) {
+    if (t.endsWith("x")) { const k = t.slice(0, -1); const v = k === "+" ? 1 : k === "-" ? -1 : parse(k); if (isNaN(v)) return null; m += v; }
+    else { const v = parse(t); if (isNaN(v)) return null; b += v; }
+  }
+  return { m: r6(m), b: r6(b) };
+}
+
+// ---------- Admin-Version ----------
+// Die Version mit Anmeldung (adminpanel/, docs/) setzt vorher window.LAB_ADMIN, sonst ist es null.
+// alle(): Lehrkraft hat für dieses Kind alles geöffnet · tabOk(t): Tab freigegeben · prog: gespeicherter Fortschritt
+// changed(): Fortschritt geändert (wird gebündelt an den Server geschickt) · proLocked(): Hinweis „Profi noch zu“
+const ADMIN = window.LAB_ADMIN || null;
+const changed = () => { if (ADMIN) ADMIN.changed(); };
+// #alle in der Adresse öffnet alle Stufen und den Profi-Tab (für die Lehrkraft)
+const allOpen = () => ADMIN ? ADMIN.alle() : /alle/i.test(location.hash);
+
+/* =============================================================
+   BINOMI-LABOR: nur Rechentrainer, keine Erkunden-Tabs, keine Skizze
+   Stufe 1: je Aufgabe alle drei binomischen Formeln
+   Stufe 2: Terme mit einer Variablen ausmultiplizieren und zusammenfassen
+   ============================================================= */
+
+const LEVELS = [
+  { t: "Stufe 1", s: "Binomische Formeln" },
+  { t: "Stufe 2", s: "Terme zusammenfassen" },
+];
+
+// ---------- Terme als Text ----------
+const vz = (v, first) => first ? (v < 0 ? "−" : "") : (v < 0 ? " − " : " + ");
+const xT = (a, cls) => sp(cls, (a === 1 ? "" : num(a)) + "x");        // 1 → x, 3 → 3x
+// Polynom c = [Zahl, x-Glied, x²-Glied] als Text, optional farbig (x² lila, x blau, Zahl grün)
+function polyT(c, col) {
+  const parts = [];
+  [[c[2], "x²", "ca"], [c[1], "x", "cx"], [c[0], "", "ce"]].forEach(([k, s, cls]) => {
+    if (!k) return;
+    const body = (Math.abs(k) === 1 && s ? "" : num(Math.abs(k))) + s;
+    parts.push(vz(k, !parts.length) + sp(col ? cls : "", body));
+  });
+  return parts.join("") || "0";
+}
+
+// ---------- Eingabe lesen: Polynom in x, frei getippt ----------
+// erlaubt x², x^2, x2, Leerzeichen, · und *, Komma; Reihenfolge egal.
+// Ergebnis { c: [Zahl, x, x²], dup } (dup = ein Glied kommt mehrfach vor, also noch nicht zusammengefasst) oder null
+function parsePoly(str) {
+  let s = String(str).toLowerCase().replace(/[−–—]/g, "-").replace(/[\s·*×]/g, "").replace(/,/g, ".")
+    .replace(/\^2|x2(?!\d)/g, m => m === "^2" ? "²" : "x²").replace(/^=/, "");
+  if (!s || /[()]/.test(s)) return null;
+  if (!/^[+-]/.test(s)) s = "+" + s;
+  const terms = s.match(/[+-][^+-]*/g); if (!terms || terms.join("") !== s) return null;
+  const c = [0, 0, 0], seen = [0, 0, 0];
+  for (const t of terms) {
+    const m = t.match(/^([+-])(\d*\.?\d*)(x²|x)?$/); if (!m || (!m[2] && !m[3])) return null;
+    const k = (m[1] === "-" ? -1 : 1) * (m[2] === "" ? 1 : Number(m[2])); if (isNaN(k)) return null;
+    const p = m[3] === "x²" ? 2 : m[3] ? 1 : 0;
+    c[p] += k; seen[p]++;
+  }
+  return { c, dup: seen.some(n => n > 1) };
+}
+const samePoly = (g, w) => g.c.every((v, i) => near(v, w[i], 1e-9));
+
+// ---------- Aufgaben ----------
+// Stufe 1: Typ 1 (ax + b)², Typ 2 (ax − b)² oder (b − ax)², Typ 3 (ax + b)(ax − b)
+function binom(type) {
+  const a = pick([1, 1, 1, 2, 3, 4, 5]), b = a === 1 ? 1 + rnd(12) : 1 + rnd(9);
+  const A = xT(a, "ca"), B = sp("cd", num(b));
+  if (type === 1) return { a, b, type, html: `(${A} + ${B})²`, plain: `(${xT(a)} + ${num(b)})²`, c: [b * b, 2 * a * b, a * a] };
+  if (type === 2) {
+    const rev = Math.random() < 0.25; // manchmal Zahl vorn: (3 − x)²
+    return { a, b, type, html: rev ? `(${B} − ${A})²` : `(${A} − ${B})²`, plain: rev ? `(${num(b)} − ${xT(a)})²` : `(${xT(a)} − ${num(b)})²`, c: [b * b, -2 * a * b, a * a] };
+  }
+  const sw = Math.random() < 0.5;
+  const p = `(${A} + ${B})`, m = `(${A} − ${B})`, pp = `(${xT(a)} + ${num(b)})`, mp = `(${xT(a)} − ${num(b)})`;
+  return { a, b, type, html: sw ? m + p : p + m, plain: sw ? mp + pp : pp + mp, c: [-b * b, 0, a * a] };
+}
+
+// Stufe 2: Summe aus 2–3 Teilen; der Generator kennt die Teile und rechnet das Ergebnis mit
+const inner = (a, p) => `(${xT(a)}${p < 0 ? " − " : " + "}${num(Math.abs(p))})`;
+const coef = (k, first) => (first ? (k < 0 ? "−" : "") : (k < 0 ? " − " : " + ")) + (Math.abs(k) === 1 ? "" : num(Math.abs(k)));
+const PARTS = {
+  sq(k, first) { const a = pick([1, 1, 1, 2]), p = nz(-6, 6); return { html: coef(k, first) + inner(a, p) + "²", c: [k * p * p, k * 2 * a * p, k * a * a] }; },
+  pm(k, first) { const a = pick([1, 1, 2]), p = 1 + rnd(6); return { html: coef(k, first) + inner(a, p) + inner(a, -p), c: [-k * p * p, 0, k * a * a] }; },
+  pq(k, first) { let p = nz(-6, 6), q; do q = nz(-6, 6); while (Math.abs(q) === Math.abs(p)); return { html: coef(k, first) + inner(1, p) + inner(1, q), c: [k * p * q, k * (p + q), k] }; },
+  xp(k, first) { const p = nz(-6, 6); return { html: (first ? (k < 0 ? "−" : "") : (k < 0 ? " − " : " + ")) + xT(Math.abs(k)) + inner(1, p), c: [0, k * p, k] }; },
+  lin(k, first) { const m = nz(-9, 9); return { html: vz(m, first) + xT(Math.abs(m)), c: [0, m, 0] }; },
+  con(k, first) { const n = nz(-12, 12); return { html: vz(n, first) + num(Math.abs(n)), c: [n, 0, 0] }; },
+};
+function termTask() {
+  for (;;) {
+    let kinds = [pick(["sq", "sq", "pm", "pq", "xp"]), pick(["sq", "pm", "pq", "xp"])];
+    if (Math.random() < 0.6) kinds.push(pick(["lin", "con", "con"]));
+    if (Math.random() < 0.25) kinds = ["sq", "con"]; // wie Scheitelpunktform → allgemeine Form
+    if (kinds[0] === "sq" && kinds[1] === "sq" && Math.random() < 0.5) kinds[1] = "pq";
+    let html = "", c = [0, 0, 0];
+    kinds.forEach((kd, i) => {
+      const k = i === 0 ? pick([1, 1, 1, 2, 3]) : pick([1, 1, -1, -1, 2, -2, 3, -3]);
+      const P = PARTS[kd](k, i === 0); html += P.html; c = c.map((v, j) => v + P.c[j]);
+    });
+    if (c.every(v => v === 0) || c.some(v => Math.abs(v) > 80)) continue;
+    return { html, c };
+  }
+}
+
+const NAMES = ["x²-Glied", "x-Glied", "Zahl ohne x"];
+function makeTask(l) {
+  if (l === 0) {
+    const B = [binom(1), binom(2), binom(3)];
+    return { l, B, key: B.map(b => b.c), // key: für die Tests
+      title: "Rechne mit den binomischen Formeln aus.", task: "",
+      answer: `<div class="brows">${B.map((b, i) => `<span class="t">${b.html}</span><span class="eqs">=</span>
+        <input class="in poly" data-k="t${i}" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Ergebnis ${i + 1}">`).join("")}</div>`,
+      check(F, fb) {
+        const G = B.map((b, i) => F["t" + i].value.trim() ? parsePoly(F["t" + i].value) : undefined);
+        if (G.some(g => g === undefined)) { fb.className = "feedback no"; fb.textContent = "Bitte alle drei ausrechnen."; return null; }
+        const bad = G.findIndex(g => g === null);
+        if (bad >= 0) { mark(F["t" + bad], false); fb.className = "feedback no"; fb.textContent = "Das rote Feld kann ich nicht lesen."; return null; }
+        const dup = G.findIndex((g, i) => g.dup && samePoly(g, B[i].c));
+        if (dup >= 0) { F["t" + dup].classList.remove("ok", "bad"); fb.className = "feedback no"; fb.textContent = "Fast: noch zusammenfassen."; return null; }
+        let ok = true;
+        G.forEach((g, i) => { const good = samePoly(g, B[i].c) && !g.dup; mark(F["t" + i], good); ok = ok && good; });
+        this.guess = G; return ok;
+      },
+      failMsg() {
+        const i = this.guess.findIndex((g, j) => !(samePoly(g, B[j].c) && !g.dup)), g = this.guess[i], b = B[i];
+        if (g.c[2] !== b.c[2] && b.a > 1 && near(g.c[2], b.a, 1e-9)) return `Auch die Zahl vor dem x wird quadriert: (${num(b.a)}x)² = ${num(b.a * b.a)}x².`;
+        if (b.type < 3 && g.c[1] === 0) return "Das Mittelglied fehlt.";
+        if (b.type < 3 && near(g.c[1], -b.c[1], 1e-9)) return "Vorzeichen beim Mittelglied prüfen.";
+        if (b.type === 3 && near(g.c[0], b.b * b.b, 1e-9)) return "Bei (a + b)(a − b) kommt hinten minus.";
+      },
+      sol: () => `<div class="brows">${B.map(b => `<span class="t">${b.plain}</span><span class="eqs">=</span><span>${polyT(b.c)}</span>`).join("")}</div>` };
+  }
+  const T = termTask();
+  return { l, T, key: [T.c],
+    title: "Löse die Klammern auf und fasse zusammen.", task: `<span class="trterm">${T.html}</span>`,
+    answer: `<div class="brows wide"><span class="eqs">=</span><input class="in poly" data-k="t0" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Ergebnis"></div>`,
+    check(F, fb) {
+      if (!F.t0.value.trim()) { fb.className = "feedback no"; fb.textContent = "Bitte ausrechnen."; return null; }
+      const g = parsePoly(F.t0.value);
+      if (!g) { mark(F.t0, false); fb.className = "feedback no"; fb.textContent = "Das kann ich nicht lesen. Bitte ohne Klammern."; return null; }
+      if (g.dup && samePoly(g, T.c)) { fb.className = "feedback no"; fb.textContent = "Fast: noch zusammenfassen."; return null; }
+      this.guess = g; const ok = samePoly(g, T.c) && !g.dup; mark(F.t0, ok); return ok;
+    },
+    failMsg() {
+      const g = this.guess;
+      const wrong = [2, 1, 0].filter(i => !near(g.c[i], T.c[i], 1e-9)).map(i => NAMES[2 - i]);
+      return "Noch falsch: " + wrong.join(", ") + ".";
+    },
+    sol: () => `${T.html.replace(/<[^>]+>/g, "")} = ${polyT(T.c)}` };
+}
+function drawTrain() {}
+
+// ---------- Musterbeispiel je Stufe ----------
+// Kommentar steht in der Zeile VOR dem Schritt. Farben: a lila, b orange; im Ergebnis x² lila, x blau, Zahl grün.
+const A = t => sp("ca", t), D = t => sp("cd", t), E = t => sp("ce", t), X = t => sp("cx", t);
+const res = t => `<span class="res">${t}</span>`;
+const pad = `<span style="visibility:hidden">= </span>`; // erste Zeile ohne „=“, Terme trotzdem bündig
+const EXAMPLES = [
+  { sub: "Rechne mit den binomischen Formeln aus.", rows: [
+    { sec: "1. binomische Formel: (a + b)² = a² + 2ab + b²" },
+    ["(" + A("2x") + " + " + D("3") + ")²", "= (" + A("2x") + ")² + 2 · " + A("2x") + " · " + D("3") + " + " + D("3") + "²", "ausrechnen"],
+    ["", "= " + res(A("4x²") + " + " + X("12x") + " + " + E("9"))],
+    { sec: "2. binomische Formel: (a − b)² = a² − 2ab + b²" },
+    ["(" + A("x") + " − " + D("5") + ")²", "= " + A("x") + "² − 2 · " + A("x") + " · " + D("5") + " + " + D("5") + "²", "ausrechnen"],
+    ["", "= " + res(A("x²") + " − " + X("10x") + " + " + E("25"))],
+    { sec: "3. binomische Formel: (a + b)(a − b) = a² − b²" },
+    ["(" + A("3x") + " + " + D("4") + ")(" + A("3x") + " − " + D("4") + ")", "= (" + A("3x") + ")² − " + D("4") + "²", "ausrechnen"],
+    ["", "= " + res(A("9x²") + " − " + E("16"))],
+  ] },
+  { sub: "Löse die Klammern auf und fasse zusammen.", rows: [
+    ["", pad + "2(x − 3)² − (x + 1)(x − 1) + " + X("4x"), "binomische Formeln"],
+    ["", "= 2(" + A("x²") + " − " + X("6x") + " + " + E("9") + ") − (" + A("x²") + " − " + E("1") + ") + " + X("4x"), "Klammern auflösen, Vorzeichen!"],
+    ["", "= " + A("2x²") + " − " + X("12x") + " + " + E("18") + " − " + A("x²") + " + " + E("1") + " + " + X("4x"), "gleiche Farben zusammenfassen"],
+    ["", "= " + res(A("x²") + " − " + X("8x") + " + " + E("19"))],
+  ] },
+];
+
+const EXPLORE = { draw: {}, canvases: [], init() {} };
+
+/* =============================================================
+   RECHENTRAINER (geteilt)
+   Das Labor liefert: LEVELS (beliebig viele Stufen), makeTask(l), drawTrain(), EXAMPLES (je Stufe ein Musterbeispiel).
+   makeTask(l) gibt zurück: { l, title, task, answer, want, sol(), … }
+     want  = { feldname: richtiger Wert } für die inp(…)-Felder in answer
+     check(F, fb) optional statt want: eigene Prüfung, gibt true/false zurück oder null (= unvollständig)
+     failMsg() optional: eigene Meldung bei falscher Antwort
+   ============================================================= */
+// Richtige Aufgaben je Stufe: in der Version mit Anmeldung stellt das die Lehrkraft im Adminpanel ein
+const need = () => (ADMIN && ADMIN.need && ADMIN.need()) || 3, KEY = LAB.id + "-labor-v1";
+const NL = LEVELS.length, freshProg = () => ({ c: LEVELS.map(() => 0), f: LEVELS.map(() => 0), unl: 0, lvl: 0, won: false });
+let prog = freshProg();
+try { const s = ADMIN ? ADMIN.prog : JSON.parse(localStorage.getItem(KEY)); if (s && Array.isArray(s.c)) prog = Object.assign(prog, s); } catch (_) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(prog)); } catch (_) {} changed(); };
+const bTrain = new Board($("cTrain"));
+let task = null;
+
+function renderLevels() {
+  const N = need();
+  // Wurde die Zahl gesenkt: was jetzt reicht, wird freigeschaltet (gesperrt wird nie wieder)
+  let up = false;
+  while (prog.unl < NL - 1 && prog.c[prog.unl] >= N) { prog.unl++; up = true; }
+  if (!prog.won && prog.c.every(c => c >= N)) { prog.won = true; up = true; setTimeout(showWin, 500); }
+  if (up) save();
+  document.querySelectorAll(".needN").forEach(e => e.textContent = N);
+  const box = $("levels"); box.innerHTML = "";
+  LEVELS.forEach((L, i) => {
+    const b = document.createElement("button"); b.className = "lvl";
+    const open = allOpen() || i <= prog.unl;
+    b.disabled = !open; b.setAttribute("aria-pressed", i === prog.lvl);
+    const n = Math.min(prog.c[i], N);
+    b.innerHTML = `<span class="t">${open ? "" : "🔒 "}${L.t}</span><span class="s">${L.s}</span><span class="dots">${"●".repeat(n)}${"○".repeat(N - n)}</span>`;
+    b.addEventListener("click", () => { prog.lvl = i; save(); renderLevels(); newTask(); });
+    box.appendChild(b);
+  });
+  $("trProg").innerHTML = LEVELS.map((L, i) => `<span>${L.t}</span><span class="muted">${L.s}</span><span><b>${prog.c[i]}</b> richtig${prog.f[i] ? ` · ${prog.f[i]} ${prog.f[i] === 1 ? "Fehlversuch" : "Fehlversuche"}` : ""}</span>`).join("");
+  updProTab();
+}
+function newTask() {
+  task = makeTask(prog.lvl); task.state = "open"; task.guess = null;
+  $("trTitle").textContent = LEVELS[task.l].t + ": " + task.title;
+  $("trTask").innerHTML = task.task; $("trTask").hidden = !task.task;
+  $("trAnswer").innerHTML = task.answer;
+  $("trFb").textContent = ""; $("trFb").className = "feedback"; $("trSol").hidden = true;
+  $("trCheck").disabled = false; $("trShow").disabled = false;
+  const first = $("trAnswer").querySelector("input.in"); if (first && window.matchMedia("(pointer:fine)").matches && current === "train") first.focus();
+  drawTrain();
+}
+function fields() { const o = {}; $("trAnswer").querySelectorAll("[data-k]").forEach(el => o[el.dataset.k] = el); return o; }
+function mark(el, ok) { el.classList.toggle("ok", ok); el.classList.toggle("bad", !ok); }
+function checkTask() {
+  if (!task || task.state !== "open") return;
+  const F = fields(), fb = $("trFb");
+  let ok = true;
+  if (task.check) { ok = task.check(F, fb); if (ok === null) return; }
+  else {
+    const g = {};
+    for (const k in task.want) g[k] = parse(F[k].value);
+    if (Object.values(g).some(isNaN)) { fb.className = "feedback no"; fb.textContent = "Bitte alle Felder ausfüllen."; return; }
+    for (const k in task.want) { const good = near(g[k], task.want[k], 0.001); mark(F[k], good); ok = ok && good; }
+    task.guess = g;
+  }
+  if (ok) {
+    task.state = "done"; prog.c[task.l]++;
+    let msg = pick(["Richtig!", "Stark!", "Genau!", "Sauber gerechnet!"]);
+    if (prog.c[task.l] >= need() && task.l < NL - 1 && prog.unl <= task.l) { prog.unl = task.l + 1; msg = `Richtig! ${LEVELS[task.l + 1].t} ist jetzt frei.`; }
+    fb.className = "feedback ok"; fb.textContent = msg;
+    $("trCheck").disabled = true; $("trShow").disabled = true; $("trNext").focus();
+    if (!prog.won && prog.c.every(c => c >= need())) { prog.won = true; save(); updProTab(); setTimeout(showWin, 500); }
+  } else {
+    // Dieselbe falsche Antwort nochmal prüfen (z. B. Enter mehrfach gedrückt) zählt nicht als neuer Fehlversuch
+    const sig = JSON.stringify(Object.values(F).map(el => el.type === "checkbox" ? el.checked : el.value.trim()));
+    if (sig !== task.lastBad) prog.f[task.l]++;
+    task.lastBad = sig;
+    fb.className = "feedback no"; fb.textContent = "Noch nicht. Rot markierte Felder nochmal prüfen.";
+    const m = task.failMsg && task.failMsg(); if (m) fb.textContent = m;
+  }
+  save(); renderLevels(); drawTrain();
+}
+function showSolution() {
+  if (!task || task.state !== "open") return;
+  task.state = "shown"; $("trSol").innerHTML = task.sol(); $("trSol").hidden = false;
+  const fb = $("trFb"); fb.className = "feedback"; fb.textContent = "Lösung (zählt nicht):";
+  $("trCheck").disabled = true; $("trShow").disabled = true; drawTrain();
+}
+$("trCheck").addEventListener("click", checkTask);
+$("trShow").addEventListener("click", showSolution);
+$("trNext").addEventListener("click", newTask);
+$("trAnswer").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); task.state === "open" ? checkTask() : newTask(); } });
+$("trAnswer").addEventListener("input", () => { if (task && task.state === "open") $("trFb").textContent = ""; });
+// Zurücksetzen erst beim zweiten Klick innerhalb von 4 Sekunden
+let resetArmed = 0;
+$("trReset").addEventListener("click", () => {
+  const b = $("trReset");
+  if (Date.now() - resetArmed >= 4000) { resetArmed = Date.now(); b.textContent = "Wirklich? Nochmal klicken"; setTimeout(() => { b.textContent = "Fortschritt zurücksetzen"; }, 4000); return; }
+  resetArmed = 0; b.textContent = "Fortschritt zurücksetzen";
+  prog = freshProg(); save(); renderLevels(); newTask(); updProTab();
+});
+if (ADMIN) $("trReset").hidden = true;
+window.addEventListener("hashchange", renderLevels);
+if (!allOpen() && prog.lvl > prog.unl) prog.lvl = prog.unl;
+
+// ---------- Musterbeispiel je Stufe (Popup) ----------
+// EXAMPLES[l] = { sub, rows }; rows: [links, rechts, Kommentar, Umformung] oder {sec}, {html}
+// Der Kommentar steht in der Zeile vor dem Schritt, den er beschreibt (wie „| : 2“ bei Gleichungen).
+function exGraph(o) {
+  const u = 30, W = (o.x1 - o.x0) * u, H = (o.y1 - o.y0) * u, X = x => (x - o.x0) * u, Y = y => (o.y1 - y) * u;
+  let g = `<svg class="exsvg" viewBox="-4 -4 ${W + 8} ${H + 8}" role="img" aria-label="${o.label}">`;
+  for (let x = o.x0; x <= o.x1; x++) g += `<line x1="${X(x)}" y1="0" x2="${X(x)}" y2="${H}" style="stroke:var(--grid-strong,#2e3f50)" stroke-width="${x === 0 ? 0 : 1}"/>`;
+  for (let y = o.y0; y <= o.y1; y++) g += `<line x1="0" y1="${Y(y)}" x2="${W}" y2="${Y(y)}" style="stroke:var(--grid-strong,#2e3f50)" stroke-width="${y === 0 ? 0 : 1}"/>`;
+  g += `<line x1="0" y1="${Y(0)}" x2="${W}" y2="${Y(0)}" style="stroke:var(--ink)" stroke-width="1.6"/><line x1="${X(0)}" y1="0" x2="${X(0)}" y2="${H}" style="stroke:var(--ink)" stroke-width="1.6"/>`;
+  g += `<text x="${W - 4}" y="${Y(0) - 6}" text-anchor="end" font-size="14" style="fill:var(--muted)">x</text><text x="${X(0) + 6}" y="14" font-size="14" style="fill:var(--muted)">y</text>`;
+  for (let x = o.x0 + 1; x < o.x1; x++) if (x) g += `<text x="${X(x)}" y="${Y(0) + 14}" text-anchor="middle" font-size="11" style="fill:var(--muted)">${num(x)}</text>`;
+  for (let y = o.y0 + 1; y < o.y1; y++) if (y && (o.skipY || []).indexOf(y) < 0) g += `<text x="${X(0) - 5}" y="${Y(y) + 4}" text-anchor="end" font-size="11" style="fill:var(--muted)">${num(y)}</text>`;
+  let pts = [];
+  for (let i = 0; i <= 240; i++) { const x = o.x0 + (o.x1 - o.x0) * i / 240, y = o.f(x); if (y >= o.y0 && y <= o.y1) pts.push(X(x).toFixed(1) + "," + Y(y).toFixed(1)); }
+  g += `<polyline points="${pts.join(" ")}" fill="none" style="stroke:var(--curve)" stroke-width="3"/>`;
+  (o.path || []).forEach(p => g += `<polyline points="${p.map(([x, y]) => X(x) + "," + Y(y)).join(" ")}" fill="none" style="stroke:var(${o.pathColor || "--d"})" stroke-width="2.6" stroke-dasharray="6 4"/>`);
+  (o.dots || []).forEach(([x, y, c]) => g += `<circle cx="${X(x)}" cy="${Y(y)}" r="5.5" style="fill:var(${c})"/>`);
+  (o.labels || []).forEach(([x, y, t, c, a]) => g += `<text x="${X(x)}" y="${Y(y)}" text-anchor="${a || "middle"}" font-size="16" font-weight="700" style="fill:var(${c || "--ink"})">${t}</text>`);
+  return g + "</svg>";
+}
+function exRender(E) {
+  return E.rows.map(r => {
+    if (r.sec) return `<div class="sec">${r.sec}</div>`;
+    if (r.note) return `<div class="note">${r.note}</div>`;
+    if (r.html) return `<div class="wide">${r.html}</div>`;
+    const [l, rr, c, op] = r;
+    // Umformung („| − 2“) und Kommentar teilen sich eine Spalte, damit alle Striche untereinander stehen
+    const cc = op ? `<span class="op">${op.replace(/^\|\s*/, "")}</span>${c ? " " + c : ""}` : (c || "");
+    return `<div class="l">${l}</div><div class="r">${rr}</div><div class="c">${cc}</div>`;
+  }).join("");
+}
+let exByKey = false;
+function openEx(e) {
+  exByKey = !!e && e.detail === 0; // per Tastatur geöffnet (Enter/Leertaste)
+  const l = task ? task.l : prog.lvl, E = EXAMPLES[l];
+  $("exLvl").textContent = LEVELS[l].t + " · " + LEVELS[l].s;
+  $("exSub").innerHTML = E.sub;
+  $("exBody").innerHTML = exRender(E);
+  $("exWin").hidden = false; document.querySelector(".exbox").scrollTop = 0; $("exOk").focus({ preventScroll: true });
+}
+function closeEx() {
+  $("exWin").hidden = true; const b = $("trEx");
+  // Fokus nur nach Tastatur-Bedienung zurück auf den Knopf, sonst bleibt er hässlich blau umrandet
+  if (exByKey) b.focus(); else if (document.activeElement) document.activeElement.blur();
+}
+$("trEx").addEventListener("click", openEx);
+$("exOk").addEventListener("click", closeEx);
+$("exClose").addEventListener("click", closeEx);
+$("exWin").addEventListener("click", e => { if (e.target.id === "exWin") closeEx(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("exWin").hidden) closeEx(); });
+
+// ---------- Glückwunsch ----------
+// Ohne Profi-Tab bietet der Glückwunsch ihn auch nicht an
+if (!document.querySelector('#mainTabs [data-tab="pro"]')) { $("winPro").hidden = true; $("winProTxt").hidden = true; }
+function showWin() {
+  const tot = prog.c.reduce((s, v) => s + v, 0), bad = prog.f.reduce((s, v) => s + v, 0);
+  $("winStats").textContent = `${tot} Aufgaben richtig gelöst${bad ? `, ${bad} ${bad === 1 ? "Fehlversuch" : "Fehlversuche"} unterwegs` : ", ohne einen einzigen Fehlversuch"}.`;
+  $("winStats").hidden = tot === 0;
+  $("win").hidden = false; ($("winPro").hidden ? $("winClose") : $("winPro")).focus(); confetti();
+}
+function closeWin() { $("win").hidden = true; confettiOn = false; updProTab(); }
+$("winClose").addEventListener("click", closeWin);
+$("winPro").addEventListener("click", () => { closeWin(); show("pro"); });
+$("win").addEventListener("click", e => { if (e.target.id === "win") closeWin(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("win").hidden) closeWin(); });
+let confettiOn = false;
+function confetti() {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const c = $("confetti"), dpr = window.devicePixelRatio || 1, W = innerWidth, H = innerHeight;
+  c.width = W * dpr; c.height = H * dpr; const ctx = c.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const cols = ["--a", "--d", "--e", "--z", "--curve", "--pencil"].map(tok);
+  const Pp = Array.from({ length: 180 }, () => ({ x: Math.random() * W, y: -20 - Math.random() * H * .6, vx: (Math.random() - .5) * 3, vy: 2 + Math.random() * 3,
+    r: 5 + Math.random() * 6, a: Math.random() * 6.3, va: (Math.random() - .5) * .3, c: pick(cols) }));
+  confettiOn = true; const t0 = performance.now();
+  (function frame(t) {
+    ctx.clearRect(0, 0, W, H);
+    if (!confettiOn) return;
+    for (const p of Pp) { p.x += p.vx; p.y += p.vy; p.vy += 0.03; p.a += p.va;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.fillStyle = p.c; ctx.fillRect(-p.r / 2, -p.r / 4, p.r, p.r / 2); ctx.restore(); }
+    if (t - t0 < 6000) requestAnimationFrame(frame); else ctx.clearRect(0, 0, W, H);
+  })(t0);
+}
+
+/* =============================================================
+   OHNE PROFI (geteilt): für Labore ohne "profi" im Steckbrief.
+   Ersetzt profi.js: Rechentrainer ja, Profi-Tab nein.
+   ============================================================= */
+const PRO = [];
+const pro = { i: 0, score: 0, errs: [], answered: false };
+function renderPro() {}
+function drawPro() {}
+function updProTab() {}
+const proVisible = () => false, proLocked = () => false;
+
+/* =============================================================
+   TABS, ADRESSE, START (geteilt)
+   Das Labor liefert EXPLORE = { draw: {tab: zeichne}, canvases: [ids], init(), quiz?, fontsReady? }
+   ============================================================= */
+// Adresse merkt sich den Tab (z. B. …#rechentrainer), damit Neuladen und Links an derselben Stelle landen
+var hashOn = false;
+const SLUG = {};
+LAB.tabs.forEach(t => SLUG[t.id] = t.slug);
+if (document.querySelector('#mainTabs [data-tab="train"]')) { SLUG.train = "rechentrainer"; SLUG.pro = "profi"; }
+function setHash() {
+  const q = EXPLORE.quiz, sub = q && current === q.tab && q.on() ? "/quiz" : "";
+  const h = "#" + SLUG[current] + sub + (/alle/i.test(location.hash) ? "/alle" : "");
+  if (location.hash !== h) { try { history.replaceState(null, "", h); } catch (_) {} }
+}
+function hashTab() {
+  const h = decodeURIComponent(location.hash.slice(1)).toLowerCase().split("/");
+  for (const t in SLUG) if (h[0] === SLUG[t]) return { tab: t, quiz: h.indexOf("quiz") >= 0 };
+  return null;
+}
+const FIRST = LAB.tabs.length ? LAB.tabs[0].id : "train"; // Labor ohne Erkunden-Tabs startet im Rechentrainer
+let current = FIRST;
+const drawers = Object.assign({}, EXPLORE.draw, { train: drawTrain, pro: drawPro });
+function show(tab) {
+  if (ADMIN && tab === "pro" && proLocked()) { const f = [...document.querySelectorAll("#mainTabs button")].find(b => !b.hidden && b.dataset.tab !== "pro"); if (!f) return; tab = f.dataset.tab; }
+  current = tab; changed();
+  document.querySelectorAll("#mainTabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === tab));
+  document.querySelectorAll(".tab").forEach(s => s.hidden = s.id !== "tab-" + tab);
+  try { localStorage.setItem(KEY + "-tab", tab); } catch (_) {}
+  if (hashOn) setHash();
+  requestAnimationFrame(drawers[tab]);
+}
+document.querySelectorAll("#mainTabs button").forEach(b => b.addEventListener("click", () => {
+  if (ADMIN && b.dataset.tab === "pro" && proLocked()) { ADMIN.proLocked(); return; }
+  show(b.dataset.tab);
+}));
+const redraw = () => drawers[current]();
+[...EXPLORE.canvases, "cTrain", "cPro", "proOpts"].forEach(id => new ResizeObserver(redraw).observe($(id)));
+try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", redraw); } catch (_) {}
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (EXPLORE.fontsReady) EXPLORE.fontsReady(); redraw(); });
+
+renderLevels(); newTask(); EXPLORE.init(); renderPro(); updProTab();
+let startTab = FIRST; try { startTab = localStorage.getItem(KEY + "-tab") || FIRST; } catch (_) {}
+{ const ht = hashTab(); if (ht) startTab = ht.tab; }
+show(drawers[startTab] && (startTab !== "pro" || proVisible()) ? startTab : FIRST);
+{ const ht = hashTab(), q = EXPLORE.quiz; if (ht && ht.quiz && q && current === q.tab) q.start(); }
+hashOn = true; setHash();
+window.addEventListener("hashchange", () => {
+  const t = hashTab(), b = t && document.querySelector('#mainTabs [data-tab="' + t.tab + '"]');
+  if (b && !b.hidden && t.tab !== current) b.click();
+});
+// für Tests und die Admin-Anbindung
+window.__lab = { get task() { return task; }, prog: () => prog, pro: () => pro, current: () => current, show, updProTab, renderLevels, PRO_N: PRO.length };
+};
+</script>
+</body>
+</html>

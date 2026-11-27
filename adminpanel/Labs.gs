@@ -12,4 +12,8 @@ const LABS = {
     title: "Tangenten-Labor", file: "Tangenten", klasse: "OIIIa",
     tabs: [["tan", "1 Tangente", "Erkunden"], ["nor", "2 Steigung an y = x²", "Erkunden"], ["kub", "3 Kubische Funktionen", "Erkunden"]],
   },
+  binomi: {
+    title: "Binomi-Labor", file: "Binomi", klasse: "OIIIa",
+    tabs: [["train", "1 Rechentrainer", "Üben"]],
+  },
 };

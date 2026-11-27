@@ -2,6 +2,7 @@
   "id": "tangenten",
   "title": "Tangenten-Labor",
   "thema": "Tangenten und ihre Steigung",
+  "reihe": 3,
   "klasse": "OIIIa",
   "icon": "M7 5Q15 37 23 5M9 25L29 13",
   "ueben": false,

@@ -17,7 +17,7 @@ function hashTab() {
   for (const t in SLUG) if (h[0] === SLUG[t]) return { tab: t, quiz: h.indexOf("quiz") >= 0 };
   return null;
 }
-const FIRST = LAB.tabs[0].id;
+const FIRST = LAB.tabs.length ? LAB.tabs[0].id : "train"; // Labor ohne Erkunden-Tabs startet im Rechentrainer
 let current = FIRST;
 const drawers = Object.assign({}, EXPLORE.draw, { train: drawTrain, pro: drawPro });
 function show(tab) {

@@ -2,6 +2,7 @@
   "id": "geraden",
   "title": "Geraden-Labor",
   "thema": "Lineare Funktionen",
+  "reihe": 1,
   "klasse": "UIIIb",
   "icon": "M4 25L28 6",
   "tabs": [

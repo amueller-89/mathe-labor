@@ -1,6 +1,6 @@
 /* =============================================================
    RECHENTRAINER (geteilt)
-   Das Labor liefert: LEVELS (4 Stufen), makeTask(l), drawTrain(), EXAMPLES (je Stufe ein Musterbeispiel).
+   Das Labor liefert: LEVELS (beliebig viele Stufen), makeTask(l), drawTrain(), EXAMPLES (je Stufe ein Musterbeispiel).
    makeTask(l) gibt zurück: { l, title, task, answer, want, sol(), … }
      want  = { feldname: richtiger Wert } für die inp(…)-Felder in answer
      check(F, fb) optional statt want: eigene Prüfung, gibt true/false zurück oder null (= unvollständig)
@@ -8,7 +8,7 @@
    ============================================================= */
 // Richtige Aufgaben je Stufe: in der Version mit Anmeldung stellt das die Lehrkraft im Adminpanel ein
 const need = () => (ADMIN && ADMIN.need && ADMIN.need()) || 3, KEY = LAB.id + "-labor-v1";
-const freshProg = () => ({ c: [0, 0, 0, 0], f: [0, 0, 0, 0], unl: 0, lvl: 0, won: false });
+const NL = LEVELS.length, freshProg = () => ({ c: LEVELS.map(() => 0), f: LEVELS.map(() => 0), unl: 0, lvl: 0, won: false });
 let prog = freshProg();
 try { const s = ADMIN ? ADMIN.prog : JSON.parse(localStorage.getItem(KEY)); if (s && Array.isArray(s.c)) prog = Object.assign(prog, s); } catch (_) {}
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(prog)); } catch (_) {} changed(); };
@@ -19,7 +19,7 @@ function renderLevels() {
   const N = need();
   // Wurde die Zahl gesenkt: was jetzt reicht, wird freigeschaltet (gesperrt wird nie wieder)
   let up = false;
-  while (prog.unl < 3 && prog.c[prog.unl] >= N) { prog.unl++; up = true; }
+  while (prog.unl < NL - 1 && prog.c[prog.unl] >= N) { prog.unl++; up = true; }
   if (!prog.won && prog.c.every(c => c >= N)) { prog.won = true; up = true; setTimeout(showWin, 500); }
   if (up) save();
   document.querySelectorAll(".needN").forEach(e => e.textContent = N);
@@ -63,7 +63,7 @@ function checkTask() {
   if (ok) {
     task.state = "done"; prog.c[task.l]++;
     let msg = pick(["Richtig!", "Stark!", "Genau!", "Sauber gerechnet!"]);
-    if (prog.c[task.l] >= need() && task.l < 3 && prog.unl <= task.l) { prog.unl = task.l + 1; msg = `Richtig! ${LEVELS[task.l + 1].t} ist jetzt frei.`; }
+    if (prog.c[task.l] >= need() && task.l < NL - 1 && prog.unl <= task.l) { prog.unl = task.l + 1; msg = `Richtig! ${LEVELS[task.l + 1].t} ist jetzt frei.`; }
     fb.className = "feedback ok"; fb.textContent = msg;
     $("trCheck").disabled = true; $("trShow").disabled = true; $("trNext").focus();
     if (!prog.won && prog.c.every(c => c >= need())) { prog.won = true; save(); updProTab(); setTimeout(showWin, 500); }
@@ -152,6 +152,8 @@ $("exWin").addEventListener("click", e => { if (e.target.id === "exWin") closeEx
 document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("exWin").hidden) closeEx(); });
 
 // ---------- Glückwunsch ----------
+// Ohne Profi-Tab bietet der Glückwunsch ihn auch nicht an
+if (!document.querySelector('#mainTabs [data-tab="pro"]')) { $("winPro").hidden = true; $("winProTxt").hidden = true; }
 function showWin() {
   const tot = prog.c.reduce((s, v) => s + v, 0), bad = prog.f.reduce((s, v) => s + v, 0);
   $("winStats").textContent = `${tot} Aufgaben richtig gelöst${bad ? `, ${bad} ${bad === 1 ? "Fehlversuch" : "Fehlversuche"} unterwegs` : ", ohne einen einzigen Fehlversuch"}.`;

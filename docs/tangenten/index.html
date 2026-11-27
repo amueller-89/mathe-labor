@@ -42,6 +42,8 @@ h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,4vw,40px);lin
 .lede{margin:0;color:var(--muted);max-width:75ch}
 .stage{display:grid;grid-template-columns:minmax(0,11fr) minmax(0,10fr);gap:18px;align-items:start}
 @media (max-width:860px){.stage{grid-template-columns:minmax(0,1fr)}}
+.stage.nosketch{grid-template-columns:minmax(0,820px)}
+.stage.nosketch>section{display:none}
 canvas{display:block;width:100%;aspect-ratio:1/1;max-height:640px;border:1px solid var(--line);border-radius:12px;background:var(--paper);touch-action:none}
 .side{display:flex;flex-direction:column;gap:14px;min-width:0}
 .card{background:var(--surface);border-radius:12px;padding:14px 16px;min-width:0}
@@ -336,9 +338,9 @@ table.tt td.act input{border-color:var(--d)}
 
   <!-- ================= 2 RECHENTRAINER ================= -->
   <section id="tab-train" class="tab" hidden>
-    <p class="lede" style="margin-bottom:12px">Rechne auf Papier, tippe das Ergebnis ein und prüfe. Die Skizze zeigt danach deine  (blau) und, sobald es stimmt, die richtige (rot). <span class="needN">3</span> richtige Aufgaben schalten die nächste Stufe frei.</p>
+    <p class="lede" style="margin-bottom:12px">Rechne auf Papier, tippe das Ergebnis ein und prüfe. <span class="needN">3</span> richtige Aufgaben schalten die nächste Stufe frei.</p>
     <div class="levels" id="levels" style="margin-bottom:16px"></div>
-    <div class="stage">
+    <div class="stage nosketch">
       <section>
         <canvas id="cTrain" aria-label="Koordinatensystem zur Aufgabe"></canvas>
         <div class="legend" id="legTrain"></div>
@@ -425,7 +427,7 @@ table.tt td.act input{border-color:var(--d)}
   <div class="box">
     <div class="big" aria-hidden="true">🏆</div>
     <h2 id="winT">Glückwunsch!</h2>
-    <p><b>Du hast alle 4 Stufen geschafft.</b></p>
+    <p><b>Du hast alle Stufen geschafft.</b></p>
     <p></p>
     <p id="winProTxt"><b>Neu freigeschaltet: Tab 3 mit Profi-Aufgaben</b> zum Knobeln.</p>
     <div class="stats" id="winStats"></div>
@@ -607,7 +609,7 @@ document.addEventListener("DOMContentLoaded", () => {
 <script>
 window.__startLab = () => {
 "use strict";
-const LAB = {"id": "tangenten", "title": "Tangenten-Labor", "thema": "Tangenten und ihre Steigung", "klasse": "OIIIa", "icon": "M7 5Q15 37 23 5M9 25L29 13", "ueben": false, "tabs": [{"id": "tan", "label": "Tangente", "slug": "tangente"}, {"id": "nor", "label": "Steigung an y = x²", "slug": "normalparabel"}, {"id": "kub", "label": "Kubische Funktionen", "slug": "kubisch"}], "file": "Tangenten"};
+const LAB = {"id": "tangenten", "title": "Tangenten-Labor", "thema": "Tangenten und ihre Steigung", "reihe": 3, "klasse": "OIIIa", "icon": "M7 5Q15 37 23 5M9 25L29 13", "ueben": false, "tabs": [{"id": "tan", "label": "Tangente", "slug": "tangente"}, {"id": "nor", "label": "Steigung an y = x²", "slug": "normalparabel"}, {"id": "kub", "label": "Kubische Funktionen", "slug": "kubisch"}], "file": "Tangenten"};
 /* Geteilter Kern aller Labore: kleine Helfer, Koordinatensystem, Zahlen einlesen.
    Wird vom Build (build.py) zusammen mit dem Code des Labors in eine Datei kopiert. */
 const $ = id => document.getElementById(id);
@@ -1129,7 +1131,7 @@ function hashTab() {
   for (const t in SLUG) if (h[0] === SLUG[t]) return { tab: t, quiz: h.indexOf("quiz") >= 0 };
   return null;
 }
-const FIRST = LAB.tabs[0].id;
+const FIRST = LAB.tabs.length ? LAB.tabs[0].id : "train"; // Labor ohne Erkunden-Tabs startet im Rechentrainer
 let current = FIRST;
 const drawers = Object.assign({}, EXPLORE.draw, { train: drawTrain, pro: drawPro });
 function show(tab) {

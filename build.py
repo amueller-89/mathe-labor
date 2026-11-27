@@ -3,7 +3,7 @@
     python3 build.py
 
 Quelle (von Hand bearbeiten):
-  labs/_shared/      gemeinsames Gerüst: page.html, base.css, core.js, trainer.js, profi.js, ohne-ueben.js, app.js, admin/
+  labs/_shared/      gemeinsames Gerüst: page.html, base.css, core.js, trainer.js, profi.js, ohne-ueben.js, ohne-profi.js, app.js, admin/
   labs/<id>/         ein Labor: lab.json (Steckbrief), tabs.html, style.css, lab.js
 
 Ergebnis (nie von Hand bearbeiten, wird überschrieben):
@@ -47,7 +47,9 @@ def all_tabs(lab):
     """Erkunden-Tabs aus dem Steckbrief, dann immer Rechentrainer und Profi (Gruppe Üben)."""
     tabs = [(t['id'], t['label'], 'Erkunden') for t in lab['tabs']]
     if lab.get('ueben', True):  # "ueben": false im Steckbrief = nur Erkunden, ohne Rechentrainer und Profi
-        tabs += [('train', 'Rechentrainer', 'Üben'), ('pro', 'Profi ★', 'Üben')]
+        tabs += [('train', 'Rechentrainer', 'Üben')]
+        if lab.get('profi'):  # ohne "profi" im Steckbrief: kein Profi-Tab
+            tabs += [('pro', 'Profi ★', 'Üben')]
     return [(tid, f'{i + 1} {label}', grp) for i, (tid, label, grp) in enumerate(tabs)]
 
 
@@ -62,9 +64,11 @@ def page(d, lab, admin):
     style = read(SHARED, 'base.css') + read(LABS, d, 'style.css')
     title = html.escape(lab['title'])
     h1 = f'<h1>{title}</h1>'
+    ueben = lab.get('ueben', True)
     js = ('const LAB = ' + json.dumps(lab, ensure_ascii=False) + ';\n'
           + read(SHARED, 'core.js') + '\n' + read(LABS, d, 'lab.js') + '\n'
-          + (read(SHARED, 'trainer.js') + '\n' + read(SHARED, 'profi.js') if lab.get('ueben', True) else read(SHARED, 'ohne-ueben.js'))
+          + (read(SHARED, 'trainer.js') + '\n' + read(SHARED, 'profi.js' if lab.get('profi') else 'ohne-profi.js') if ueben
+             else read(SHARED, 'ohne-ueben.js'))
           + '\n' + read(SHARED, 'app.js'))
     extra = ''
     if admin:
@@ -77,10 +81,15 @@ def page(d, lab, admin):
         js = 'window.__startLab = () => {\n"use strict";\n' + js + '};\n'
     else:
         js = '(() => {\n"use strict";\n' + js + '})();\n'
+    # Rechentrainer ohne Skizze (kein "skizze" im Steckbrief): nur Aufgabe und Antwort, über die ganze Breite
+    sk = lab.get('skizze')
+    lede = ('Rechne auf Papier, tippe das Ergebnis ein und prüfe. '
+            + (f'Die Skizze zeigt danach deine {sk} (blau) und, sobald es stimmt, die richtige (rot). ' if sk else '')
+            + '<span class="needN">3</span> richtige Aufgaben schalten die nächste Stufe frei.')
     return fill(read(SHARED, 'page.html'),
                 ICON=lab['icon'].replace(' ', '%20'), TITLE=title, H1=h1, STYLE=style, NAV=nav,
                 TABS=read(LABS, d, 'tabs.html'), N_TRAIN=str(len(tabs) - 1), N_PRO=str(len(tabs)),
-                SKIZZE=lab.get('skizze', ''), WIN=lab.get('win', ''), ADMIN=extra, SCRIPT=js)
+                LEDE=lede, STAGE='stage' if sk else 'stage nosketch', WIN=lab.get('win', ''), ADMIN=extra, SCRIPT=js)
 
 
 labs = []
@@ -95,6 +104,9 @@ for d in sorted(os.listdir(LABS)):
     a = page(d, lab, admin=True)
     write(f'adminpanel/{lab["file"]}.html', a)
     write(f'docs/{d}/index.html', a.replace('<head>\n', '<head>\n<script src="../config.js"></script>\n', 1))
+
+# Reihenfolge (Startseite, Adminpanel): "reihe" im Steckbrief, neue Labore ohne "reihe" hinten
+labs.sort(key=lambda l: l.get('reihe', 99))
 
 # Labor-Liste für den Server
 reg = {l['id']: {'title': l['title'], 'file': l['file'], 'klasse': l['klasse'], 'tabs': [list(t) for t in all_tabs(l)]} for l in labs}
