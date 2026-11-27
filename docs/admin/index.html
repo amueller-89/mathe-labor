@@ -142,8 +142,6 @@ const call = (fn, ...args) => window.LABOR_API
     });
 let KEY = "", LAB = "geraden", data = null, busy = false, timer = null, rev = 0, pending = 0;
 const PAGES = "https://amueller-89.github.io/mathe-labore/";
-const TAB_ORDER = { parabel: ["sp", "forms", "pq", "train", "pro"] };
-const TAB_LABEL = { "sp@parabel": "1 Scheitelpunktform", "forms@parabel": "2 Drei Formen", "pq@parabel": "3 pq-Formel" };
 
 function copyText(t, btn) {
   const done = () => { btn.textContent = "Kopiert ✓"; setTimeout(() => btn.textContent = "Kopieren", 1500); };
@@ -167,13 +165,11 @@ function renderLinks(d) {
   };
   head("GitHub");
   row("Startseite", pages);
-  row("Geraden · UIIIb", pages + "geraden");
-  row("Parabel · OIIIa", pages + "parabel");
+  d.labs.forEach(l => row(l.title.replace(/-Labor$/, "") + " · " + l.klasse, pages + l.id));
   row("Admin", pages + "admin");
   if (google) {
     head("Google");
-    row("Geraden · UIIIb", google + "?lab=geraden");
-    row("Parabel · OIIIa", google + "?lab=parabel");
+    d.labs.forEach(l => row(l.title.replace(/-Labor$/, "") + " · " + l.klasse, google + "?lab=" + l.id));
     row("Admin", google + "?admin=" + KEY, google + "?admin=••••");
   }
   linksDone = true;
@@ -229,9 +225,6 @@ function render() {
   });
   // Freigaben
   const tg = $("toggles"); tg.innerHTML = "";
-  const order = TAB_ORDER[LAB] || [];
-  d.tabs.forEach(t => { if (TAB_LABEL[t.id + "@" + LAB]) t.label = TAB_LABEL[t.id + "@" + LAB]; });
-  d.tabs.sort((a, b) => (order.indexOf(a.id) + 99) % 99 - (order.indexOf(b.id) + 99) % 99);
   d.tabs.forEach(t => {
     const b = el("button", "tg", t.label); b.setAttribute("aria-pressed", t.on);
     b.addEventListener("click", () => toggle(t.id));

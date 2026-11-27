@@ -1,0 +1,80 @@
+  <!-- ================= 1 STEIGUNG & ACHSENABSCHNITT ================= -->
+  <section id="tab-mb" class="tab">
+    <div class="row" style="margin-bottom:12px;justify-content:space-between">
+      <p class="lede">Regler bewegen oder die Punkte ziehen: den <span class="cb">grünen</span> auf der y-Achse und den <span class="cm">orangen</span> am Ende des Steigungsdreiecks.</p>
+      <div class="seg" id="mbTabs">
+        <button data-m="explore" aria-selected="true">Erkunden</button>
+        <button data-m="quiz" aria-selected="false">Quiz</button>
+      </div>
+    </div>
+    <div class="stage">
+      <section>
+        <canvas id="cMb" aria-label="Koordinatensystem mit Gerade"></canvas>
+        <div class="legend">
+          <span><i style="background:var(--curve)"></i><span id="mbLegMine">Gerade</span></span>
+          <span id="mbLegTarget" hidden><i style="background:var(--pencil)"></i>Gesuchte Gerade</span>
+          <span id="mbLegTri"><i style="background:var(--d)"></i>Steigungsdreieck</span>
+        </div>
+      </section>
+      <aside class="side">
+        <div class="card" id="mbQuizCard" hidden>
+          <p class="label">Quiz</p>
+          <p style="margin:0 0 10px">Stellt die Regler so ein, dass eure Gerade genau auf der <b style="color:var(--pencil)">roten</b> liegt. Wie lautet ihre Gleichung?</p>
+          <div class="row">
+            <button class="btn primary" id="mbCheck">Prüfen</button>
+            <button class="btn" id="mbSolve">Auflösen</button>
+            <button class="btn" id="mbNext">Neue Gerade</button>
+          </div>
+          <div class="feedback" id="mbFb" aria-live="polite"></div>
+          <p class="hint" id="mbScore">Treffer: 0 von 0</p>
+        </div>
+        <div class="card">
+          <p class="label">Normalform &nbsp; y = <span class="cm">m</span>·x + <span class="cb">b</span></p>
+          <div class="formula" id="mbForm"></div>
+          <div class="info" id="mbInfoM"></div>
+          <div class="info" id="mbInfoB" style="margin-top:0"></div>
+        </div>
+        <div class="card">
+          <div class="sl"><b class="cm">m</b><input type="range" id="mbM" class="rm" min="-4" max="4" step="0.05" value="0.5"><output id="mbMo" class="cm"></output></div>
+          <div class="sl"><b class="cb">b</b><input type="range" id="mbB" class="rb" min="-6" max="6" step="0.05" value="1"><output id="mbBo" class="cb"></output></div>
+          <div class="row" style="margin-top:4px"><button class="btn" id="mbReset">Zurücksetzen</button></div>
+        </div>
+        <div class="card" id="mbTableCard">
+          <p class="label">Wertetabelle</p>
+          <table class="wt" id="mbTable"></table>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= 2 ZWEI PUNKTE ================= -->
+  <section id="tab-pts" class="tab" hidden>
+    <p class="lede" style="margin-bottom:12px">Zieh die Punkte <span class="cz">P</span> und <span class="cz">Q</span>. Die Steigung kommt aus dem Steigungsdreieck zwischen ihnen: so viel geht es hoch (oder runter), geteilt durch so viel geht es nach rechts.</p>
+    <div class="stage">
+      <section>
+        <canvas id="cPts" aria-label="Gerade durch zwei ziehbare Punkte"></canvas>
+        <div class="legend">
+          <span><i style="background:var(--z)"></i>P und Q (ziehbar)</span>
+          <span><i style="background:var(--d)"></i>Steigungsdreieck</span>
+        </div>
+      </section>
+      <aside class="side">
+        <div class="card">
+          <p class="label">Punkte</p>
+          <div class="formula mid" id="ptsPQ"></div>
+        </div>
+        <div class="card">
+          <p class="label">Steigung &nbsp; m = <span class="frac" style="border-color:currentColor"><span>Δy</span><span>Δx</span></span> = <span class="frac" style="border-color:currentColor"><span>f(x₂) − f(x₁)</span><span>x₂ − x₁</span></span></p>
+          <div class="dq" id="ptsM"></div>
+        </div>
+        <div class="card">
+          <p class="label">y-Achsenabschnitt: P einsetzen &nbsp; f(x₁) = m · x₁ + b</p>
+          <div class="dq" id="ptsB"></div>
+        </div>
+        <div class="card">
+          <p class="label">Geradengleichung</p>
+          <div class="formula" id="ptsEq"></div>
+        </div>
+      </aside>
+    </div>
+  </section>

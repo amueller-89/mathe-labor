@@ -1,18 +1,66 @@
 # Mathe-Labore
 
-Interaktive HTML-Visualisierungen für den Mathematikunterricht (Klasse 8 und 9). Jede Datei ist eigenständig und läuft ohne Server direkt im Browser.
+Interaktive HTML-Labore für den Mathematikunterricht (Klasse 8 und 9). Alle Labore teilen sich ein Gerüst und werden mit `build.py` zu eigenständigen Dateien gebaut.
+
+## Aufbau
+
+```
+labs/                  Quelle: hier wird gearbeitet
+  _shared/             gemeinsames Gerüst aller Labore
+    page.html          Seitenvorlage (Kopf, Tab-Leiste, Rechentrainer, Profi, Popups)
+    base.css           Farben, Layout, Karten, Regler, Popups
+    core.js            Helfer, Koordinatensystem (Board), Ziehen, Zahlen einlesen
+    trainer.js         Rechentrainer: 4 Stufen, Fortschritt, Prüfen, Musterbeispiel, Glückwunsch
+    profi.js           Profi-Quiz
+    app.js             Tabs, Adresse (#rechentrainer …), Start
+    admin/             Anmeldung + Verbindung zum Apps Script (nur Admin-Version)
+    start.html         Startseite für GitHub Pages
+  geraden/, parabel/   je ein Labor (siehe unten)
+build.py               baut alles in labore/, adminpanel/ und docs/
+labore/                fertige eigenständige Dateien (erzeugt)
+adminpanel/            Server (Code.gs), Lehrer-Oberfläche (Admin.html), Admin-Versionen (erzeugt)
+docs/                  GitHub Pages (erzeugt, bis auf config.js)
+```
+
+Nach jeder Änderung in `labs/` oder an `adminpanel/Admin.html`:
+
+```sh
+python3 build.py
+```
+
+Erzeugte Dateien nie von Hand ändern, sie werden überschrieben.
 
 ## `labore/`
 
 | Datei | Klasse | Inhalt |
 |---|---|---|
 | `Geraden-Labor.html` | 8 | Lineare Funktionen: Steigung und y-Achsenabschnitt erkunden, Gerade durch zwei Punkte, Rechentrainer mit 4 Stufen, Profi-Fragen |
-| `Parabel-Labor.html` | 9 | Quadratische Funktionen: pq-Formel, drei Formen (Normal-, Scheitelpunkt-, Nullstellenform), Scheitelpunktform, Rechentrainer, Profi-Fragen |
-| `Scheitelpunktform.html` | 9 | Scheitelpunktform mit Reglern und Quiz |
+| `Parabel-Labor.html` | 9 | Quadratische Funktionen: Scheitelpunktform, drei Formen (Normal-, Scheitelpunkt-, Nullstellenform), pq-Formel, Rechentrainer, Profi-Fragen |
+| `Scheitelpunktform.html` | 9 | ältere Einzeldatei, nicht Teil des Builds |
 
-Gestaltung: Dark Mode, Regler in kleinen Schritten, Farbcode für die Parameter.
+Jede Datei ist eigenständig und läuft ohne Server direkt im Browser.
 Im Rechentrainer schalten 3 richtige Aufgaben die nächste Stufe frei. Danach öffnet sich der Profi-Tab mit Multiple-Choice-Verständnisfragen.
 Mit `#alle` am Ende der Adresse sind alle Stufen und der Profi-Tab sofort offen (für die Lehrkraft).
+
+## Neues Labor anlegen
+
+1. Ordner `labs/<id>/` anlegen (`<id>` klein, ohne Umlaute, z. B. `potenzen`). Am einfachsten `labs/geraden/` kopieren.
+2. `lab.json` (Steckbrief):
+   - `id` wie der Ordner, `title` (z. B. „Potenz-Labor“), `thema`, `klasse` (für das Adminpanel)
+   - `icon`: SVG-Pfad für das Symbol, 32×32
+   - `tabs`: die Erkunden-Tabs mit `id`, `label`, `slug` (für die Adresse). Rechentrainer und Profi kommen automatisch dahinter.
+   - `skizze` („Gerade“, „Parabel“ …), `win` (Text im Glückwunsch-Popup), `profi` (Titel bei fast allen Profi-Fragen richtig)
+3. `tabs.html`: je Erkunden-Tab eine `<section id="tab-<id>" class="tab">`.
+4. `style.css`: nur was dieses Labor zusätzlich braucht (Farbklassen, Formeln).
+5. `lab.js`, in dieser Reihenfolge:
+   - Code der Erkunden-Tabs (`new Board($("cXy"))`, Regler, Zeichenfunktionen)
+   - `LEVELS` (4 Stufen), `makeTask(l)`, `drawTrain()` und `EXAMPLES` (Musterbeispiel je Stufe), Format oben in `_shared/trainer.js`
+   - `PRO` (Profi-Fragen), Format oben in `_shared/profi.js`
+   - zum Schluss `EXPLORE = { draw, canvases, init, quiz }`, damit das Gerüst die Tabs zeichnen und starten kann
+6. `python3 build.py`. Das Labor erscheint in `labore/`, auf GitHub Pages, auf der Startseite und im Adminpanel (die Labor-Liste `adminpanel/Labs.gs` wird mit erzeugt).
+7. Für die Google-Version zusätzlich `adminpanel/<Id>.html` in den Drive-Ordner *Adminpanel* legen.
+
+Was in mehr als einem Labor gebraucht wird, gehört nach `labs/_shared/`.
 
 ## `adminpanel/`
 
@@ -27,15 +75,12 @@ Einrichtung: siehe [`adminpanel/ANLEITUNG.md`](adminpanel/ANLEITUNG.md).
 Die Seiten für die Kinder und das Adminpanel laufen über GitHub Pages aus `docs/`:
 [amueller-89.github.io/mathe-labore](https://amueller-89.github.io/mathe-labore/) (`/geraden`, `/parabel`, `/admin`).
 Sie sprechen das Apps Script über `doPost` an. Dessen Adresse steht in `docs/config.js`.
-`docs/` wird von `build_labs.py` erzeugt.
+`docs/` wird von `build.py` erzeugt (bis auf `config.js`).
 
-- `Code.gs`: Server (Google Apps Script, Daten in einer Google-Tabelle)
+- `Code.gs`: Server (Google Apps Script, Daten in den Skripteigenschaften)
 - `Admin.html`: Lehrer-Oberfläche
-- `Geraden.html`, `Parabel.html`: werden von `build_labs.py` aus den Dateien in `labore/` erzeugt. Nicht von Hand ändern, sondern das Original ändern und neu bauen:
-
-```sh
-python3 adminpanel/build_labs.py
-```
+- `Labs.gs`: Labor-Liste für den Server, von `build.py` aus den Steckbriefen erzeugt
+- `Geraden.html`, `Parabel.html`: Admin-Versionen der Labore, von `build.py` erzeugt
 
 ### Lokal testen
 

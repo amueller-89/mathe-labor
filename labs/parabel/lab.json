@@ -1,0 +1,15 @@
+{
+  "id": "parabel",
+  "title": "Parabel-Labor",
+  "thema": "Quadratische Funktionen",
+  "klasse": "OIIIa",
+  "icon": "M8 4Q17 34 26 4",
+  "tabs": [
+    { "id": "sp", "label": "Scheitelpunktform", "slug": "scheitelpunktform" },
+    { "id": "forms", "label": "Drei Formen", "slug": "drei-formen" },
+    { "id": "pq", "label": "pq-Formel", "slug": "pq-formel" }
+  ],
+  "skizze": "Parabel",
+  "win": "Scheitelpunktform, Nullstellenform, pq-Formel und Ablesen aus der Skizze: Du kannst Parabeln jetzt in allen Formen. Richtig gut gemacht!",
+  "profi": "Parabel-Profi!"
+}

@@ -46,26 +46,18 @@ canvas{display:block;width:100%;aspect-ratio:1/1;max-height:640px;border:1px sol
 .side{display:flex;flex-direction:column;gap:14px;min-width:0}
 .card{background:var(--surface);border-radius:12px;padding:14px 16px;min-width:0}
 .label{font-size:13px;color:var(--muted);margin:0 0 4px}
-.formula{font-family:var(--display);font-weight:800;font-size:clamp(24px,3vw,36px);line-height:1.2;white-space:nowrap;overflow-x:auto}
 .formula.mid{font-size:clamp(20px,2.4vw,28px)}
 .formula.small{font-size:clamp(17px,2vw,22px);font-weight:600}
-.formula.off{color:var(--muted);font-weight:600;font-size:17px;white-space:normal}
-.ca{color:var(--a)} .cd{color:var(--d)} .ce{color:var(--e)} .cz{color:var(--z)}
-.vertex{font-size:19px;font-weight:700;margin-top:6px;white-space:nowrap;overflow:hidden;font-variant-numeric:tabular-nums}
-.vertex .gap{display:inline-block;width:1.2em}
-.vertex.probe{position:fixed;left:0;top:0;visibility:hidden;overflow:visible;margin:0;pointer-events:none}
 .sl{display:grid;grid-template-columns:28px minmax(0,1fr) 72px;align-items:center;gap:10px;margin:8px 0}
 .sl b{font-family:var(--display);font-size:22px}
 .sl input{width:100%;min-width:0}
 .sl output{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
-input.ra{accent-color:var(--a)} input.rd{accent-color:var(--d)} input.re{accent-color:var(--e)} input.rz{accent-color:var(--z)}
 .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 button.btn{font:inherit;font-size:15px;padding:8px 14px;border-radius:8px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
 button.btn.primary{background:var(--curve);border-color:var(--curve);color:#fff;font-weight:700}
 button.btn:disabled{opacity:.45;cursor:default}
 button.btn.small{font-size:13px;padding:4px 10px}
 button:focus-visible,input:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
-label.chk{display:inline-flex;gap:6px;align-items:center;font-size:15px;color:var(--muted);cursor:pointer}
 .feedback{font-family:var(--display);font-weight:800;font-size:21px;min-height:30px;margin-top:8px}
 .feedback.ok{color:var(--e)} .feedback.no{color:var(--pencil)}
 .legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px;color:var(--muted);margin-top:8px}
@@ -80,20 +72,13 @@ label.chk{display:inline-flex;gap:6px;align-items:center;font-size:15px;color:va
 .lvl .t{font-weight:700;display:block}
 .lvl .s{font-size:13px;color:var(--muted);display:block}
 .dots{letter-spacing:3px;color:var(--e);font-size:14px}
-.eqgrid{display:grid;grid-template-columns:repeat(7,auto);justify-content:start;align-items:baseline;column-gap:10px;row-gap:2px;font-family:var(--display);font-weight:800;font-size:clamp(24px,3vw,34px);line-height:1.25}
-.eqgrid .v{text-align:center;min-width:1.2em}
-.eqgrid span:nth-child(-n+7){font-size:.8em;font-weight:600;color:var(--muted)}
-.eqgrid span.v:nth-child(-n+7){color:inherit}
-.eqgrid span.cd:nth-child(-n+7){color:var(--d)} .eqgrid span.ca:nth-child(-n+7){color:var(--a)}
-.slots{display:grid;grid-template-columns:repeat(6,auto);justify-content:start;align-items:center;column-gap:6px;line-height:1.3;row-gap:6px}
-.slots .p{text-align:center;font-size:1.3em}
 .answer{font-family:var(--display);font-weight:800;font-size:clamp(20px,2.4vw,28px);line-height:2.1;display:flex;flex-wrap:wrap;align-items:center;gap:2px 6px}
 .answer input.in{font:inherit;font-family:var(--body);font-weight:700;font-size:22px;width:4.2em;padding:2px 6px;text-align:center;border:2px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink)}
 .answer input.in.ok{border-color:var(--e);background:var(--ok-bg)}
 .answer input.in.bad{border-color:var(--pencil);background:var(--bad-bg)}
+.slots .p{text-align:center;font-size:1.3em}
 .prog{display:grid;grid-template-columns:auto 1fr auto;gap:2px 12px;font-size:15px;font-variant-numeric:tabular-nums}
 .prog .muted{color:var(--muted)}
-.steps div{white-space:nowrap}
 .prowrap{max-width:860px;display:flex;flex-direction:column;gap:14px}
 .proq{font-family:var(--display);font-weight:800;font-size:clamp(21px,2.6vw,28px);line-height:1.25;margin:2px 0 12px}
 canvas.procan{max-width:400px;margin:0 0 14px}
@@ -111,17 +96,15 @@ canvas.procan{max-width:400px;margin:0 0 14px}
 .opts.graphs .opt:disabled:not(.wrong){opacity:.8}
 .opts.graphs canvas{max-height:none;border:0}
 .optwrap{position:relative}
+.lock{position:absolute;inset:-6px;display:grid;place-items:center;text-align:center;padding:12px;border-radius:12px;border:2px solid var(--pencil);background:var(--bad-bg);color:var(--pencil);font-family:var(--display);font-size:clamp(20px,2.6vw,26px);line-height:1.3;z-index:2}
+.lock .count{font-size:38px;font-weight:800;line-height:1.1;margin:2px 0}
 .revlist{display:flex;flex-direction:column;gap:6px;text-align:left}
 .revitem{font:inherit;font-size:15px;display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);cursor:pointer;text-align:left}
 .revitem:hover{border-color:var(--curve)}
 .revitem .nr{font-weight:700;color:var(--muted)}
 .revitem .er{font-weight:700;color:var(--e);white-space:nowrap}
 .revitem.had .er{color:var(--pencil)}
-.lock{position:absolute;inset:-6px;display:grid;place-items:center;text-align:center;padding:12px;border-radius:12px;border:2px solid var(--pencil);background:var(--bad-bg);color:var(--pencil);font-family:var(--display);font-size:clamp(20px,2.6vw,26px);line-height:1.3;z-index:2}
-.lock .count{font-size:38px;font-weight:800;line-height:1.1;margin:2px 0}
-.lock small{display:block;font-family:var(--body);font-size:14px;color:var(--muted)}
 .proex{margin:4px 0 0;padding:10px 12px;border-left:4px solid var(--e);background:var(--paper);border-radius:6px}
-[hidden]{display:none!important}
 .win{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:16px;background:rgb(10 16 24 / .55)}
 .win canvas{position:fixed;inset:0;width:100%;height:100%;aspect-ratio:auto;max-height:none;border:0;border-radius:0;background:transparent;pointer-events:none}
 .win .box{position:relative;background:var(--paper);color:var(--ink);border-radius:18px;padding:28px 28px 22px;max-width:520px;width:100%;text-align:center;box-shadow:0 20px 60px rgb(0 0 0 / .35);animation:pop .45s cubic-bezier(.2,1.4,.4,1)}
@@ -131,7 +114,7 @@ canvas.procan{max-width:400px;margin:0 0 14px}
 .win .stats{color:var(--muted);font-size:15px;margin:10px 0 18px}
 @keyframes pop{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
 @media (prefers-reduced-motion: reduce){.win .box{animation:none}}
-footer{font-size:13px;color:var(--muted)}
+[hidden]{display:none!important}
 
 /* Musterbeispiel */
 .win .box.exbox{max-width:780px;text-align:left;max-height:calc(100vh - 32px);overflow:auto;padding:22px 24px 18px}
@@ -159,7 +142,23 @@ footer{font-size:13px;color:var(--muted)}
   .exg .c{grid-column:1/-1;margin:0 0 6px}
   .exg .l,.exg .r{font-size:17px;white-space:normal}
 }
-
+.formula{font-family:var(--display);font-weight:800;font-size:clamp(24px,3vw,36px);line-height:1.2;white-space:nowrap;overflow-x:auto}
+.formula.off{color:var(--muted);font-weight:600;font-size:17px;white-space:normal}
+.ca{color:var(--a)} .cd{color:var(--d)} .ce{color:var(--e)} .cz{color:var(--z)}
+.vertex{font-size:19px;font-weight:700;margin-top:6px;white-space:nowrap;overflow:hidden;font-variant-numeric:tabular-nums}
+.vertex .gap{display:inline-block;width:1.2em}
+.vertex.probe{position:fixed;left:0;top:0;visibility:hidden;overflow:visible;margin:0;pointer-events:none}
+input.ra{accent-color:var(--a)} input.rd{accent-color:var(--d)} input.re{accent-color:var(--e)} input.rz{accent-color:var(--z)}
+label.chk{display:inline-flex;gap:6px;align-items:center;font-size:15px;color:var(--muted);cursor:pointer}
+.eqgrid{display:grid;grid-template-columns:repeat(7,auto);justify-content:start;align-items:baseline;column-gap:10px;row-gap:2px;font-family:var(--display);font-weight:800;font-size:clamp(24px,3vw,34px);line-height:1.25}
+.eqgrid .v{text-align:center;min-width:1.2em}
+.eqgrid span:nth-child(-n+7){font-size:.8em;font-weight:600;color:var(--muted)}
+.eqgrid span.v:nth-child(-n+7){color:inherit}
+.eqgrid span.cd:nth-child(-n+7){color:var(--d)} .eqgrid span.ca:nth-child(-n+7){color:var(--a)}
+.slots{display:grid;grid-template-columns:repeat(6,auto);justify-content:start;align-items:center;column-gap:6px;line-height:1.3;row-gap:6px}
+.steps div{white-space:nowrap}
+.lock small{display:block;font-family:var(--body);font-size:14px;color:var(--muted)}
+footer{font-size:13px;color:var(--muted)}
 #mainTabs button.locked{opacity:.55}
 #mainTabs button.locked::before{content:"\1F512\00A0"}
 .proToast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:70;background:var(--surface);color:var(--ink);border:2px solid var(--line);border-radius:12px;padding:12px 18px;box-shadow:0 12px 40px rgb(0 0 0 / .4);max-width:calc(100vw - 32px);text-align:center}
@@ -191,140 +190,8 @@ footer{font-size:13px;color:var(--muted)}
     </nav>
   </header>
 
-  <!-- ================= 5 PROFI ================= -->
-  <section id="tab-pro" class="tab" hidden>
-    <div class="prowrap">
-      <p class="lede">Profi-Aufgaben für alle, die den Rechentrainer geschafft haben. Erst nachdenken, dann klicken.</p>
-      <div id="proQuiz" class="card">
-        <p class="label" id="proHead"></p>
-        <div class="proq" id="proQ"></div>
-        <canvas id="cPro" class="procan" aria-label="Skizze zur Frage"></canvas>
-        <p class="hint" id="proCap" style="margin:-8px 0 14px" hidden></p>
-        <div class="optwrap">
-          <div class="opts" id="proOpts"></div>
-          <div class="lock" id="proLock" hidden aria-live="assertive"><div><b>Leider nicht. Überleg nochmal …</b><small id="proPicked"></small><div class="count" id="proCount">3</div></div></div>
-        </div>
-        <div class="feedback" id="proFb" aria-live="polite"></div>
-        <p class="proex" id="proEx" hidden></p>
-        <div class="row" style="margin-top:10px"><button class="btn primary" id="proNext" hidden>Nächste Frage</button></div>
-      </div>
-      <div id="proDone" class="card" hidden style="text-align:center;padding:28px 16px">
-        <h2 class="proq" id="proDoneT" style="font-size:34px;margin:0 0 8px"></h2>
-        <p id="proDoneS" style="margin:0 0 16px"></p>
-        <button class="btn primary" id="proAgain">Nochmal von vorn</button>
-        <p class="label" style="text-align:left;margin:24px 0 8px">Alle Fragen zum Nachschauen (Fehler pro Frage):</p>
-        <div class="revlist" id="proList"></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= 1 RECHENTRAINER ================= -->
-  <section id="tab-train" class="tab">
-    <p class="lede" style="margin-bottom:12px">Rechne auf Papier, tippe das Ergebnis ein und prüfe. Die Skizze zeigt danach deine Parabel (blau) und, sobald es stimmt, die richtige (rot). 3 richtige Aufgaben schalten die nächste Stufe frei.</p>
-    <div class="levels" id="levels" style="margin-bottom:16px"></div>
-    <div class="stage">
-      <section>
-        <canvas id="cTrain" aria-label="Koordinatensystem zur Aufgabe"></canvas>
-        <div class="legend" id="legTrain"></div>
-      </section>
-      <aside class="side">
-        <div class="card">
-          <p class="label" id="trTitle"></p>
-          <div class="formula" id="trTask"></div>
-          <p class="hint" id="trHint"></p>
-          <button class="btn small" id="trEx" type="button">📘 Musterbeispiel ansehen</button>
-        </div>
-        <div class="card">
-          <p class="label">Deine Antwort</p>
-          <div class="answer" id="trAnswer"></div>
-          <div class="row" style="margin-top:8px">
-            <button class="btn primary" id="trCheck">Prüfen</button>
-            <button class="btn" id="trShow">Lösung zeigen</button>
-            <button class="btn" id="trNext">Nächste Aufgabe</button>
-          </div>
-          <div class="feedback" id="trFb" aria-live="polite"></div>
-          <div class="formula small" id="trSol" hidden></div>
-        </div>
-        <div class="card">
-          <p class="label">Dein Fortschritt</p>
-          <div class="prog" id="trProg"></div>
-          <div class="row" style="margin-top:8px"><button class="btn small" id="trReset" hidden>Fortschritt zurücksetzen</button></div>
-        </div>
-      </aside>
-    </div>
-  </section>
-
-  <!-- ================= 2 PQ-FORMEL ================= -->
-  <section id="tab-pq" class="tab" hidden>
-    <p class="lede" style="margin-bottom:12px">Die pq-Formel liest man an der Parabel y = x² + px + q ab: <span class="cd">−p/2</span> ist die Mitte (x-Wert des Scheitels), <span class="ce">√D</span> ist, wie weit die Nullstellen links und rechts davon liegen. D sagt außerdem, wie tief der Scheitel unter der x-Achse liegt.</p>
-    <div class="stage">
-      <section>
-        <canvas id="cPq" aria-label="Parabel zur pq-Formel"></canvas>
-        <div class="legend">
-          <span><i style="background:var(--curve)"></i>y = x² + px + q</span>
-          <span><i style="background:var(--d)"></i>Mitte −p/2</span>
-          <span><i style="background:var(--e)"></i>±√D und Tiefe D</span>
-        </div>
-      </section>
-      <aside class="side">
-        <div class="card">
-          <p class="label">Gleichung</p>
-          <div class="eqgrid" id="pqEq"></div>
-        </div>
-        <div class="card">
-          <p class="label">pq-Formel &nbsp; x₁,₂ = <span class="cd">−p/2</span> ± √((<span class="cd">p/2</span>)² − <span class="ca">q</span>)</p>
-          <div class="formula small steps" id="pqSteps"></div>
-          <div class="feedback" id="pqRes"></div>
-        </div>
-        <div class="card">
-          <div class="sl"><b class="cd">p</b><input type="range" id="pqP" class="rd" min="-8" max="8" step="0.1" value="-2"><output id="pqPo" class="cd"></output></div>
-          <div class="sl"><b class="ca">q</b><input type="range" id="pqQ" class="ra" min="-8" max="8" step="0.1" value="-3"><output id="pqQo" class="ca"></output></div>
-        </div>
-        <p class="hint">Zum Üben: Tab 4 Rechentrainer, Stufe 3.</p>
-      </aside>
-    </div>
-  </section>
-
-  <!-- ================= 3 DREI FORMEN ================= -->
-  <section id="tab-forms" class="tab" hidden>
-    <p class="lede" style="margin-bottom:12px">Zieh die <span class="cz">Nullstellen</span> oder den <b>Scheitel</b> mit der Maus, oder benutze die Regler. Alle drei Schreibweisen beschreiben dieselbe Parabel.</p>
-    <div class="stage">
-      <section>
-        <canvas id="cForms" aria-label="Parabel mit ziehbaren Nullstellen und Scheitel"></canvas>
-        <div class="legend">
-          <span><i style="background:var(--z)"></i>Nullstellen (ziehbar)</span>
-          <span><i style="background:var(--curve)"></i>Scheitel (ziehbar)</span>
-        </div>
-      </section>
-      <aside class="side">
-        <div class="card">
-          <p class="label">Nullstellenform &nbsp; y = <span class="ca">a</span>·(x − <span class="cz">x₁</span>)·(x − <span class="cz">x₂</span>)</p>
-          <div class="formula mid" id="fmNull"></div>
-          <div class="hint" id="fmMid" style="font-size:15px"></div>
-        </div>
-        <div class="card">
-          <p class="label">Scheitelpunktform &nbsp; y = <span class="ca">a</span>·(x − <span class="cd">d</span>)² + <span class="ce">e</span></p>
-          <div class="formula mid" id="fmSp"></div>
-        </div>
-        <div class="card">
-          <p class="label">Normalform &nbsp; y = ax² + bx + c</p>
-          <div class="formula mid" id="fmNf"></div>
-        </div>
-        <div class="card">
-          <div class="sl"><b class="ca">a</b><input type="range" id="fmA" class="ra" min="-3" max="3" step="0.05" value="1"><output id="fmAo"></output></div>
-          <div class="sl"><b class="cz">x₁</b><input type="range" id="fmX1" class="rz" min="-7" max="7" step="0.05" value="-1"><output id="fmX1o" class="cz"></output></div>
-          <div class="sl"><b class="cz">x₂</b><input type="range" id="fmX2" class="rz" min="-7" max="7" step="0.05" value="3"><output id="fmX2o" class="cz"></output></div>
-          <p class="hint" id="fmZoff" hidden style="margin:0 0 8px">Keine Nullstellen: Zieh den Scheitel unter (bzw. über) die x-Achse, dann gehen die Regler wieder.</p>
-          <div class="row">
-            <button class="btn small" id="fmReset">Zurücksetzen</button>
-          </div>
-        </div>
-      </aside>
-    </div>
-  </section>
-
-  <!-- ================= 4 SCHEITELPUNKTFORM ================= -->
-  <section id="tab-sp" class="tab" hidden>
+  <!-- ================= 1 SCHEITELPUNKTFORM ================= -->
+  <section id="tab-sp" class="tab">
     <div class="row" style="margin-bottom:12px;justify-content:space-between">
       <p class="lede">Regler bewegen oder den Scheitel direkt mit der Maus ziehen.</p>
       <div class="seg" id="spTabs">
@@ -377,6 +244,138 @@ footer{font-size:13px;color:var(--muted)}
     </div>
   </section>
 
+  <!-- ================= 2 DREI FORMEN ================= -->
+  <section id="tab-forms" class="tab" hidden>
+    <p class="lede" style="margin-bottom:12px">Zieh die <span class="cz">Nullstellen</span> oder den <b>Scheitel</b> mit der Maus, oder benutze die Regler. Alle drei Schreibweisen beschreiben dieselbe Parabel.</p>
+    <div class="stage">
+      <section>
+        <canvas id="cForms" aria-label="Parabel mit ziehbaren Nullstellen und Scheitel"></canvas>
+        <div class="legend">
+          <span><i style="background:var(--z)"></i>Nullstellen (ziehbar)</span>
+          <span><i style="background:var(--curve)"></i>Scheitel (ziehbar)</span>
+        </div>
+      </section>
+      <aside class="side">
+        <div class="card">
+          <p class="label">Nullstellenform &nbsp; y = <span class="ca">a</span>·(x − <span class="cz">x₁</span>)·(x − <span class="cz">x₂</span>)</p>
+          <div class="formula mid" id="fmNull"></div>
+          <div class="hint" id="fmMid" style="font-size:15px"></div>
+        </div>
+        <div class="card">
+          <p class="label">Scheitelpunktform &nbsp; y = <span class="ca">a</span>·(x − <span class="cd">d</span>)² + <span class="ce">e</span></p>
+          <div class="formula mid" id="fmSp"></div>
+        </div>
+        <div class="card">
+          <p class="label">Normalform &nbsp; y = ax² + bx + c</p>
+          <div class="formula mid" id="fmNf"></div>
+        </div>
+        <div class="card">
+          <div class="sl"><b class="ca">a</b><input type="range" id="fmA" class="ra" min="-3" max="3" step="0.05" value="1"><output id="fmAo"></output></div>
+          <div class="sl"><b class="cz">x₁</b><input type="range" id="fmX1" class="rz" min="-7" max="7" step="0.05" value="-1"><output id="fmX1o" class="cz"></output></div>
+          <div class="sl"><b class="cz">x₂</b><input type="range" id="fmX2" class="rz" min="-7" max="7" step="0.05" value="3"><output id="fmX2o" class="cz"></output></div>
+          <p class="hint" id="fmZoff" hidden style="margin:0 0 8px">Keine Nullstellen: Zieh den Scheitel unter (bzw. über) die x-Achse, dann gehen die Regler wieder.</p>
+          <div class="row">
+            <button class="btn small" id="fmReset">Zurücksetzen</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= 3 PQ-FORMEL ================= -->
+  <section id="tab-pq" class="tab" hidden>
+    <p class="lede" style="margin-bottom:12px">Die pq-Formel liest man an der Parabel y = x² + px + q ab: <span class="cd">−p/2</span> ist die Mitte (x-Wert des Scheitels), <span class="ce">√D</span> ist, wie weit die Nullstellen links und rechts davon liegen. D sagt außerdem, wie tief der Scheitel unter der x-Achse liegt.</p>
+    <div class="stage">
+      <section>
+        <canvas id="cPq" aria-label="Parabel zur pq-Formel"></canvas>
+        <div class="legend">
+          <span><i style="background:var(--curve)"></i>y = x² + px + q</span>
+          <span><i style="background:var(--d)"></i>Mitte −p/2</span>
+          <span><i style="background:var(--e)"></i>±√D und Tiefe D</span>
+        </div>
+      </section>
+      <aside class="side">
+        <div class="card">
+          <p class="label">Gleichung</p>
+          <div class="eqgrid" id="pqEq"></div>
+        </div>
+        <div class="card">
+          <p class="label">pq-Formel &nbsp; x₁,₂ = <span class="cd">−p/2</span> ± √((<span class="cd">p/2</span>)² − <span class="ca">q</span>)</p>
+          <div class="formula small steps" id="pqSteps"></div>
+          <div class="feedback" id="pqRes"></div>
+        </div>
+        <div class="card">
+          <div class="sl"><b class="cd">p</b><input type="range" id="pqP" class="rd" min="-8" max="8" step="0.1" value="-2"><output id="pqPo" class="cd"></output></div>
+          <div class="sl"><b class="ca">q</b><input type="range" id="pqQ" class="ra" min="-8" max="8" step="0.1" value="-3"><output id="pqQo" class="ca"></output></div>
+        </div>
+        <p class="hint">Zum Üben: Tab 4 Rechentrainer, Stufe 3.</p>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= 4 RECHENTRAINER ================= -->
+  <section id="tab-train" class="tab" hidden>
+    <p class="lede" style="margin-bottom:12px">Rechne auf Papier, tippe das Ergebnis ein und prüfe. Die Skizze zeigt danach deine Parabel (blau) und, sobald es stimmt, die richtige (rot). 3 richtige Aufgaben schalten die nächste Stufe frei.</p>
+    <div class="levels" id="levels" style="margin-bottom:16px"></div>
+    <div class="stage">
+      <section>
+        <canvas id="cTrain" aria-label="Koordinatensystem zur Aufgabe"></canvas>
+        <div class="legend" id="legTrain"></div>
+      </section>
+      <aside class="side">
+        <div class="card">
+          <p class="label" id="trTitle"></p>
+          <div class="formula" id="trTask"></div>
+          <p class="hint" id="trHint"></p>
+          <button class="btn small" id="trEx" type="button">📘 Musterbeispiel ansehen</button>
+        </div>
+        <div class="card">
+          <p class="label">Deine Antwort</p>
+          <div class="answer" id="trAnswer"></div>
+          <div class="row" style="margin-top:8px">
+            <button class="btn primary" id="trCheck">Prüfen</button>
+            <button class="btn" id="trShow">Lösung zeigen</button>
+            <button class="btn" id="trNext">Nächste Aufgabe</button>
+          </div>
+          <div class="feedback" id="trFb" aria-live="polite"></div>
+          <div class="formula small" id="trSol" hidden></div>
+        </div>
+        <div class="card">
+          <p class="label">Dein Fortschritt</p>
+          <div class="prog" id="trProg"></div>
+          <div class="row" style="margin-top:8px"><button class="btn small" id="trReset">Fortschritt zurücksetzen</button></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= 5 PROFI ================= -->
+  <section id="tab-pro" class="tab" hidden>
+    <div class="prowrap">
+      <p class="lede">Profi-Aufgaben für alle, die den Rechentrainer geschafft haben. Erst nachdenken, dann klicken.</p>
+      <div id="proQuiz" class="card">
+        <p class="label" id="proHead"></p>
+        <div class="proq" id="proQ"></div>
+        <div id="proTable" style="margin:0 0 14px;max-width:420px" hidden></div>
+        <canvas id="cPro" class="procan" aria-label="Skizze zur Frage"></canvas>
+        <p class="hint" id="proCap" style="margin:-8px 0 14px" hidden></p>
+        <div class="optwrap">
+          <div class="opts" id="proOpts"></div>
+          <div class="lock" id="proLock" hidden aria-live="assertive"><div><b>Leider nicht. Überleg nochmal …</b><small id="proPicked"></small><div class="count" id="proCount">3</div></div></div>
+        </div>
+        <div class="feedback" id="proFb" aria-live="polite"></div>
+        <p class="proex" id="proEx" hidden></p>
+        <div class="row" style="margin-top:10px"><button class="btn primary" id="proNext" hidden>Nächste Frage</button></div>
+      </div>
+      <div id="proDone" class="card" hidden style="text-align:center;padding:28px 16px">
+        <h2 class="proq" id="proDoneT" style="font-size:34px;margin:0 0 8px"></h2>
+        <p id="proDoneS" style="margin:0 0 16px"></p>
+        <button class="btn primary" id="proAgain">Nochmal von vorn</button>
+        <p class="label" style="text-align:left;margin:24px 0 8px">Alle Fragen zum Nachschauen (Fehler pro Frage):</p>
+        <div class="revlist" id="proList"></div>
+      </div>
+    </div>
+  </section>
 </div>
 
 <div class="win" id="exWin" hidden role="dialog" aria-modal="true" aria-labelledby="exT">
@@ -405,7 +404,6 @@ footer{font-size:13px;color:var(--muted)}
   </div>
 </div>
 
-
 <div class="gate" id="gate">
   <div class="box">
     <h2>Parabel-Labor</h2>
@@ -425,6 +423,8 @@ footer{font-size:13px;color:var(--muted)}
 </div>
 
 <script>
+/* Anmeldung + Verbindung zum Apps Script, nur in der Admin-Version (adminpanel/, docs/).
+   parabel ersetzt der Build durch die Labor-ID. */
 (() => {
 "use strict";
 const LAB = "parabel", IDKEY = "labor-" + LAB + "-name", SESS = "labor-" + LAB + "-sitzung";
@@ -451,14 +451,21 @@ const errMsg = e => {
   const m = e && e.message ? String(e.message).replace(/^(Exception|Error):\s*/, "") : "";
   return /Namen|Labor/.test(m) ? m : "Die Verbindung klappt gerade nicht. Versuch es gleich nochmal.";
 };
-let me = null, allowed = [], started = false, pingTimer = null, debounce = null, online = true, epoch = 0;
-window.__tabOk = t => allowed.indexOf(t) >= 0;
+let me = null, allowed = [], alle = false, started = false, pingTimer = null, debounce = null, online = true, epoch = 0;
+const tabOk = t => allowed.indexOf(t) >= 0;
 let toastT = null;
-window.__proLocked = () => {
-  let t = document.querySelector(".proToast");
-  if (!t) { t = document.createElement("div"); t.className = "proToast"; t.setAttribute("role", "status"); document.body.appendChild(t); }
-  t.textContent = "Der Profi-Tab öffnet sich, sobald du alle Stufen im Rechentrainer geschafft hast.";
-  t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 3500);
+// Haken für das Labor (labs/_shared/core.js liest window.LAB_ADMIN)
+window.LAB_ADMIN = {
+  alle: () => alle,
+  tabOk,
+  prog: null,
+  changed: () => { clearTimeout(debounce); debounce = setTimeout(ping, 2000); },
+  proLocked() {
+    let t = document.querySelector(".proToast");
+    if (!t) { t = document.createElement("div"); t.className = "proToast"; t.setAttribute("role", "status"); document.body.appendChild(t); }
+    t.textContent = "Der Profi-Tab öffnet sich, sobald du alle Stufen im Rechentrainer geschafft hast.";
+    t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 3500);
+  },
 };
 
 function gate(which) {
@@ -481,7 +488,7 @@ async function login(name) {
         await new Promise(ok => setTimeout(ok, 1500 + Math.random() * 2500 * (i + 1)));
       }
     }
-    me = { id: r.id, name: r.name }; store.set(IDKEY, r.name); sess.set(r.name); allowed = r.tabs || []; window.__alle = !!r.alle; epoch = r.epoch || 0;
+    me = { id: r.id, name: r.name }; store.set(IDKEY, r.name); sess.set(r.name); allowed = r.tabs || []; alle = !!r.alle; epoch = r.epoch || 0;
     start(r.prog);
   } catch (e) {
     $("gLoad").hidden = true; $("gErr").textContent = errMsg(e);
@@ -490,7 +497,7 @@ async function login(name) {
 function start(prog) {
   if (started) return;
   started = true;
-  window.__initProg = prog || {};
+  window.LAB_ADMIN.prog = prog || {};
   window.__startLab();
   $("whoName").textContent = me.name;
   $("who").hidden = false;
@@ -499,7 +506,7 @@ function start(prog) {
   setTimeout(ping, 1500);
 }
 function snap() {
-  const L = window.__lab2; if (!L) return null;
+  const L = window.__lab; if (!L) return null;
   const p = L.prog(), q = L.pro();
   return {
     tab: L.current(),
@@ -518,16 +525,15 @@ async function ping() {
     if (!r.known) { clearInterval(pingTimer); me = null; store.del(IDKEY); sess.del(); gate("gBye"); return; }
     // Lehrkraft hat alle zurückgesetzt: neu laden, dann startet alles bei null (Anmeldung bleibt)
     if (r.epoch && epoch && r.epoch !== epoch) { clearInterval(pingTimer); location.reload(); return; }
-    if (JSON.stringify(r.tabs) !== JSON.stringify(allowed) || !!r.alle !== !!window.__alle) { allowed = r.tabs || []; window.__alle = !!r.alle; apply(); }
+    if (JSON.stringify(r.tabs) !== JSON.stringify(allowed) || !!r.alle !== alle) { allowed = r.tabs || []; alle = !!r.alle; apply(); }
   } catch (e) { setOnline(false); }
 }
 function setOnline(v) { online = v; $("whoDot").classList.toggle("off", !v); $("whoDot").title = v ? "verbunden" : "keine Verbindung"; }
-window.__changed = () => { clearTimeout(debounce); debounce = setTimeout(ping, 2000); };
 function apply() {
-  const L = window.__lab2; if (!L) return;
-  document.querySelectorAll("#mainTabs button").forEach(b => { if (b.dataset.tab !== "pro") b.hidden = !window.__tabOk(b.dataset.tab); });
+  const L = window.__lab; if (!L) return;
+  document.querySelectorAll("#mainTabs button").forEach(b => { if (b.dataset.tab !== "pro") b.hidden = !tabOk(b.dataset.tab); });
   L.updProTab(); L.renderLevels();
-  $("winPro").hidden = !window.__tabOk("pro"); $("winProTxt").hidden = !window.__tabOk("pro");
+  $("winPro").hidden = !tabOk("pro"); $("winProTxt").hidden = !tabOk("pro");
   const vis = [...document.querySelectorAll("#mainTabs button")].filter(b => !b.hidden);
   if (!vis.length) { gate("gWait"); return; }
   if (!$("gWait").hidden || !$("gLogin").hidden || !$("gAgain").hidden) gate(null);
@@ -550,6 +556,9 @@ document.addEventListener("DOMContentLoaded", () => {
 <script>
 window.__startLab = () => {
 "use strict";
+const LAB = {"id": "parabel", "title": "Parabel-Labor", "thema": "Quadratische Funktionen", "klasse": "OIIIa", "icon": "M8 4Q17 34 26 4", "tabs": [{"id": "sp", "label": "Scheitelpunktform", "slug": "scheitelpunktform"}, {"id": "forms", "label": "Drei Formen", "slug": "drei-formen"}, {"id": "pq", "label": "pq-Formel", "slug": "pq-formel"}], "skizze": "Parabel", "win": "Scheitelpunktform, Nullstellenform, pq-Formel und Ablesen aus der Skizze: Du kannst Parabeln jetzt in allen Formen. Richtig gut gemacht!", "profi": "Parabel-Profi!", "file": "Parabel"};
+/* Geteilter Kern aller Labore: kleine Helfer, Koordinatensystem, Zahlen einlesen.
+   Wird vom Build (build.py) zusammen mit dem Code des Labors in eine Datei kopiert. */
 const $ = id => document.getElementById(id);
 const tok = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 const r6 = v => Math.round(v * 1e6) / 1e6;
@@ -558,41 +567,13 @@ const sp = (cls, t) => cls ? `<span class="${cls}">${t}</span>` : t;
 const rnd = n => Math.floor(Math.random() * n);
 const pick = arr => arr[rnd(arr.length)];
 const near = (u, v, tol = 1e-6) => Math.abs(u - v) <= tol;
-
-// ---------- Formeln als HTML ----------
-function aPre(a, cls) { return a === 1 ? "" : a === -1 ? sp(cls, "−") : sp(cls, num(a)); }
-function shiftHTML(v, cls) { return v === 0 ? "x" : v > 0 ? `x − ${sp(cls, num(v))}` : `x + ${sp(cls, num(-v))}`; }
-function scheitelHTML(a, d, e, col = true) {
-  const ca = col ? "ca" : "", cd = col ? "cd" : "", ce = col ? "ce" : "";
-  const sq = d === 0 ? `${aPre(a, ca)}x²` : `${aPre(a, ca)}(${shiftHTML(d, cd)})²`;
-  const eP = e === 0 ? "" : e > 0 ? ` + ${sp(ce, num(e))}` : ` − ${sp(ce, num(-e))}`;
-  return `y = ${sq}${eP}`;
-}
-function polyBody(A, B, C) {
-  const t = [];
-  const co = (k, s) => k === 1 ? s : k === -1 ? "−" + s : num(k) + s;
-  if (A) t.push(co(A, "x²"));
-  if (B) t.push(t.length ? (B > 0 ? " + " : " − ") + co(Math.abs(B), "x") : co(B, "x"));
-  if (C) t.push(t.length ? (C > 0 ? " + " : " − ") + num(Math.abs(C)) : num(C));
-  return t.join("") || "0";
-}
-const polyHTML = (A, B, C) => "y = " + polyBody(A, B, C);
-function zfmt(v) { const z = Math.round(v * 100) / 100; return (Math.abs(z - v) > 1e-9 ? "≈ " : "") + num(z); }
-function factor(x0, cls, approx) {
-  if (near(x0, 0)) return "x";
-  const s = approx ? zfmt(Math.abs(x0)) : num(Math.abs(x0));
-  return `(x ${x0 > 0 ? "−" : "+"} ${sp(cls, s)})`;
-}
-function nullHTML(a, x1, x2, col = true, approx = false) {
-  const ca = col ? "ca" : "", cz = col ? "cz" : "";
-  if (near(x1, x2)) {
-    const f = near(x1, 0) ? "x²" : factor(x1, cz, approx) + "²";
-    return `y = ${aPre(a, ca)}${f}`;
-  }
-  let f1 = factor(x1, cz, approx), f2 = factor(x2, cz, approx);
-  if (f2 === "x") [f1, f2] = [f2, f1];
-  return `y = ${aPre(a, ca)}${f1}${f2}`;
-}
+const paren = v => r6(v) < 0 ? `(${num(v)})` : num(v);
+const frac = (a, b) => `<span class="frac"><span>${a}</span><span>${b}</span></span>`;
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+function nz(lo, hi) { let v; do v = lo + rnd(hi - lo + 1); while (v === 0); return v; }
+function shuffle(n) { const a = [...Array(n).keys()]; for (let i = n - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+// Eingabefeld für den Rechentrainer; data-k ist der Schlüssel in task.want
+const inp = k => `<input class="in" data-k="${k}" inputmode="decimal" autocomplete="off" spellcheck="false" aria-label="${k}">`;
 
 // ---------- Koordinatensystem ----------
 class Board {
@@ -660,7 +641,8 @@ class Board {
     const tw = parts.reduce((s, p) => s + c.measureText(p[0]).width, 0);
     let x = align === "left" ? px : align === "right" ? px - tw : px - tw / 2;
     x = Math.max(4, Math.min(this.w - tw - 4, x));
-    const y = base === "top" ? py + size : base === "bottom" ? py - 4 : py + size / 2 - 2;
+    let y = base === "top" ? py + size : base === "bottom" ? py - 4 : py + size / 2 - 2;
+    y = Math.max(size + 2, Math.min(this.h - 6, y));
     c.fillStyle = tok("--paper"); c.globalAlpha = .85; c.fillRect(x - 3, y - size, tw + 6, size + 6); c.globalAlpha = 1;
     for (const [t, col] of parts) { c.fillStyle = col; c.fillText(t, x, y); x += c.measureText(t).width; }
   }
@@ -668,20 +650,20 @@ class Board {
 }
 
 // Ziehen: hit(x,y,px,py) liefert Griff oder null; move(griff,x,y)
-function draggable(board, hit, move, redraw) {
+function draggable(board, hit, move, redraw) { // redraw optional
   const c = board.c; let grab = null;
   c.addEventListener("pointerdown", e => { const [x, y, px, py] = board.pointer(e); grab = hit(x, y, px, py); if (grab) { c.setPointerCapture(e.pointerId); e.preventDefault(); } });
   c.addEventListener("pointermove", e => {
     const [x, y, px, py] = board.pointer(e);
-    if (grab) { move(grab, x, y); redraw(); } else c.style.cursor = hit(x, y, px, py) ? "grab" : "default";
+    if (grab) { move(grab, x, y); if (redraw) redraw(); } else c.style.cursor = hit(x, y, px, py) ? "grab" : "default";
   });
   const end = () => { grab = null; };
   c.addEventListener("pointerup", end); c.addEventListener("pointercancel", end);
 }
 const nearPx = (board, x, y, px, py, r = 16) => Math.hypot(board.X(x) - px, board.Y(y) - py) <= r;
-const snapTo = (v, s) => Math.round(v / s) * s;
+const snapTo = (v, s) => r6(Math.round(v / s) * s);
 
-// ---------- Zahlen einlesen ----------
+// ---------- Zahlen einlesen (Komma, Minuszeichen, Brüche wie 3/4) ----------
 function parse(str) {
   let s = String(str).trim().replace(/[−–—]/g, "-").replace(/\s/g, "").replace(",", ".");
   if (s === "") return NaN;
@@ -693,312 +675,48 @@ function parse(str) {
   return Number(s);
 }
 
-/* =============================================================
-   1 RECHENTRAINER
-   ============================================================= */
-const LEVELS = [
-  { t: "Stufe 1", s: "Scheitelpunktform → Normalform" },
-  { t: "Stufe 2", s: "Nullstellenform → Normalform" },
-  { t: "Stufe 3", s: "Nullstellen mit der pq-Formel" },
-  { t: "Stufe 4", s: "Gleichung aus der Skizze" },
-];
-const NEED = 3, KEY = "parabel-labor-v1";
-let prog = { c: [0, 0, 0, 0], f: [0, 0, 0, 0], unl: 0, lvl: 0 };
-try { const s = window.__initProg; if (s && Array.isArray(s.c)) prog = Object.assign(prog, s); } catch (_) {}
-const allOpen = () => !!window.__alle;
-const save = () => { try { localStorage.setItem(KEY, JSON.stringify(prog)); } catch (_) {} if (window.__changed) window.__changed(); };
-const bTrain = new Board($("cTrain"));
-let task = null;
+// ---------- Admin-Version ----------
+// Die Version mit Anmeldung (adminpanel/, docs/) setzt vorher window.LAB_ADMIN, sonst ist es null.
+// alle(): Lehrkraft hat für dieses Kind alles geöffnet · tabOk(t): Tab freigegeben · prog: gespeicherter Fortschritt
+// changed(): Fortschritt geändert (wird gebündelt an den Server geschickt) · proLocked(): Hinweis „Profi noch zu“
+const ADMIN = window.LAB_ADMIN || null;
+const changed = () => { if (ADMIN) ADMIN.changed(); };
+// #alle in der Adresse öffnet alle Stufen und den Profi-Tab (für die Lehrkraft)
+const allOpen = () => ADMIN ? ADMIN.alle() : /alle/i.test(location.hash);
 
-const inp = k => `<input class="in" data-k="${k}" inputmode="decimal" autocomplete="off" spellcheck="false" aria-label="${k}">`;
-function nz(lo, hi) { let v; do v = lo + rnd(hi - lo + 1); while (v === 0); return v; }
-
-function makeTask(l) {
-  if (l === 0) {
-    const a = pick([1, 1, -1, 2, -2, 3]), d = nz(-5, 5), e = rnd(13) - 6;
-    return { l, a, d, e, want: { A: a, B: -2 * a * d, C: a * d * d + e },
-      title: "Schreibe in Normalform um.", task: scheitelHTML(a, d, e),
-      hint: "Erst die Klammer mit der binomischen Formel auflösen, dann mit a malnehmen. Negative Zahlen mit Minus eintippen.",
-      answer: `<div class="slots"><span>y =</span><span class="p">a</span><span>x² +</span><span class="p">b</span><span>x +</span><span class="p">c</span>
-      <span>y =</span>${inp("A")}<span>x² +</span>${inp("B")}<span>x +</span>${inp("C")}</div>`,
-      f: x => a * (x - d) ** 2 + e, sol: () => `${scheitelHTML(a, d, e, false)} = ${polyBody(a, -2 * a * d, a * d * d + e)}` };
+// ---------- Formeln als HTML ----------
+function aPre(a, cls) { return a === 1 ? "" : a === -1 ? sp(cls, "−") : sp(cls, num(a)); }
+function shiftHTML(v, cls) { return v === 0 ? "x" : v > 0 ? `x − ${sp(cls, num(v))}` : `x + ${sp(cls, num(-v))}`; }
+function scheitelHTML(a, d, e, col = true) {
+  const ca = col ? "ca" : "", cd = col ? "cd" : "", ce = col ? "ce" : "";
+  const sq = d === 0 ? `${aPre(a, ca)}x²` : `${aPre(a, ca)}(${shiftHTML(d, cd)})²`;
+  const eP = e === 0 ? "" : e > 0 ? ` + ${sp(ce, num(e))}` : ` − ${sp(ce, num(-e))}`;
+  return `y = ${sq}${eP}`;
+}
+function polyBody(A, B, C) {
+  const t = [];
+  const co = (k, s) => k === 1 ? s : k === -1 ? "−" + s : num(k) + s;
+  if (A) t.push(co(A, "x²"));
+  if (B) t.push(t.length ? (B > 0 ? " + " : " − ") + co(Math.abs(B), "x") : co(B, "x"));
+  if (C) t.push(t.length ? (C > 0 ? " + " : " − ") + num(Math.abs(C)) : num(C));
+  return t.join("") || "0";
+}
+const polyHTML = (A, B, C) => "y = " + polyBody(A, B, C);
+function zfmt(v) { const z = Math.round(v * 100) / 100; return (Math.abs(z - v) > 1e-9 ? "≈ " : "") + num(z); }
+function factor(x0, cls, approx) {
+  if (near(x0, 0)) return "x";
+  const s = approx ? zfmt(Math.abs(x0)) : num(Math.abs(x0));
+  return `(x ${x0 > 0 ? "−" : "+"} ${sp(cls, s)})`;
+}
+function nullHTML(a, x1, x2, col = true, approx = false) {
+  const ca = col ? "ca" : "", cz = col ? "cz" : "";
+  if (near(x1, x2)) {
+    const f = near(x1, 0) ? "x²" : factor(x1, cz, approx) + "²";
+    return `y = ${aPre(a, ca)}${f}`;
   }
-  if (l === 1) {
-    const a = pick([1, 1, -1, 2, -2]); let x1 = rnd(13) - 6, x2 = rnd(13) - 6; if (x1 > x2) [x1, x2] = [x2, x1];
-    return { l, a, x1, x2, want: { A: a, B: -a * (x1 + x2), C: a * x1 * x2 },
-      title: "Schreibe in Normalform um.", task: nullHTML(a, x1, x2),
-      hint: "Klammern ausmultiplizieren (jedes mit jedem), dann mit a malnehmen.",
-      answer: `<div class="slots"><span>y =</span><span class="p">a</span><span>x² +</span><span class="p">b</span><span>x +</span><span class="p">c</span>
-      <span>y =</span>${inp("A")}<span>x² +</span>${inp("B")}<span>x +</span>${inp("C")}</div>`,
-      f: x => a * (x - x1) * (x - x2), sol: () => `${nullHTML(a, x1, x2, false)} = ${polyBody(a, -a * (x1 + x2), a * x1 * x2)}` };
-  }
-  if (l === 2) {
-    const k = pick([1, 1, 1, 2, -1, 3]);
-    let p, q, roots;
-    if (Math.random() < 0.18) { const h = rnd(7) - 3; p = 2 * h; q = h * h + 1 + rnd(5); roots = []; }
-    else { let r1 = rnd(15) - 7, r2 = rnd(15) - 7; if (r1 > r2) [r1, r2] = [r2, r1]; p = -(r1 + r2); q = r1 * r2; roots = r1 === r2 ? [r1] : [r1, r2]; }
-    return { l, k, p, q, roots,
-      title: "Berechne die Lösungen.", task: polyBody(k, k * p, k * q) + " = 0",
-      hint: k === 1 ? "pq-Formel: x = −p/2 ± √((p/2)² − q). Gibt es nur eine Lösung, trag sie in beide Felder ein." : "Erst durch den Faktor vor x² teilen, dann die pq-Formel. Gibt es nur eine Lösung, trag sie in beide Felder ein.",
-      answer: `x₁ = ${inp("x1")} &nbsp; x₂ = ${inp("x2")} <label class="chk" style="font-size:17px;font-weight:700"><input type="checkbox" data-k="none"> keine Lösung</label>`,
-      f: x => k * (x * x + p * x + q),
-      sol: () => roots.length === 0 ? `D = (p/2)² − q = ${num((p / 2) ** 2 - q)} &lt; 0 → keine Lösung` : roots.length === 1 ? `x = ${num(roots[0])} (nur eine Lösung)` : `x₁ = ${num(roots[0])}, &nbsp; x₂ = ${num(roots[1])}` };
-  }
-  const a = pick([1, -1, 2, -2, 0.5, -0.5]), d = rnd(11) - 5, e = rnd(11) - 5;
-  return { l, a, d, e, want: { a, d, e },
-    title: "Lies die Scheitelpunktform aus der Skizze ab.", task: "",
-    hint: "Scheitel S(d | e) ablesen. Für a: vom Scheitel 1 nach rechts, wie viel geht es hoch oder runter? Bei S(−3 | …) ist d = −3.",
-    answer: `<div class="slots"><span>y =</span><span class="p ca">a</span><span>·(x −</span><span class="p cd">d</span><span>)² +</span><span class="p ce">e</span>
-      <span>y =</span>${inp("a")}<span>·(x −</span>${inp("d")}<span>)² +</span>${inp("e")}</div>`,
-    f: x => a * (x - d) ** 2 + e, sol: () => scheitelHTML(a, d, e, false) };
-}
-
-function renderLevels() {
-  const box = $("levels"); box.innerHTML = "";
-  LEVELS.forEach((L, i) => {
-    const b = document.createElement("button"); b.className = "lvl";
-    const open = allOpen() || i <= prog.unl;
-    b.disabled = !open; b.setAttribute("aria-pressed", i === prog.lvl);
-    const n = Math.min(prog.c[i], NEED);
-    b.innerHTML = `<span class="t">${open ? "" : "🔒 "}${L.t}</span><span class="s">${L.s}</span><span class="dots">${"●".repeat(n)}${"○".repeat(NEED - n)}</span>`;
-    b.addEventListener("click", () => { prog.lvl = i; save(); renderLevels(); newTask(); });
-    box.appendChild(b);
-  });
-  $("trProg").innerHTML = LEVELS.map((L, i) => `<span>${L.t}</span><span class="muted">${L.s}</span><span><b>${prog.c[i]}</b> richtig${prog.f[i] ? ` · ${prog.f[i]} ${prog.f[i] === 1 ? "Fehlversuch" : "Fehlversuche"}` : ""}</span>`).join("");
-}
-
-function newTask() {
-  task = makeTask(prog.lvl); task.state = "open"; task.counted = false; task.guess = null;
-  $("trTitle").textContent = LEVELS[task.l].t + ": " + task.title;
-  $("trTask").innerHTML = task.task; $("trTask").hidden = !task.task; $("trHint").textContent = task.hint;
-  $("trAnswer").innerHTML = task.answer;
-  $("trFb").textContent = ""; $("trFb").className = "feedback"; $("trSol").hidden = true;
-  $("trCheck").disabled = false; $("trShow").disabled = false;
-  const first = $("trAnswer").querySelector("input.in"); if (first && window.matchMedia("(pointer:fine)").matches) first.focus();
-  drawTrain();
-}
-
-function fields() { const o = {}; $("trAnswer").querySelectorAll("[data-k]").forEach(el => o[el.dataset.k] = el); return o; }
-function mark(el, ok) { el.classList.toggle("ok", ok); el.classList.toggle("bad", !ok); }
-
-function checkTask() {
-  if (!task || task.state !== "open") return;
-  const F = fields(), fb = $("trFb");
-  let ok = true;
-  if (task.l === 2) {
-    if (F.none.checked) {
-      ok = task.roots.length === 0; task.guess = { none: true };
-      [F.x1, F.x2].forEach(el => el.classList.remove("ok", "bad"));
-    } else {
-      const g = [parse(F.x1.value), parse(F.x2.value)];
-      if (g.some(isNaN)) { fb.className = "feedback no"; fb.textContent = "Bitte beide Felder ausfüllen (oder „keine Lösung“)."; return; }
-      const want = task.roots.length === 1 ? [task.roots[0], task.roots[0]] : task.roots.slice();
-      if (want.length === 0) { ok = false; mark(F.x1, false); mark(F.x2, false); }
-      else {
-        const straight = near(g[0], want[0], 0.01) && near(g[1], want[1], 0.01), cross = near(g[0], want[1], 0.01) && near(g[1], want[0], 0.01);
-        ok = straight || cross;
-        if (!ok) { mark(F.x1, want.some(w => near(w, g[0], 0.01))); mark(F.x2, want.some(w => near(w, g[1], 0.01))); }
-        else { mark(F.x1, true); mark(F.x2, true); }
-      }
-      task.guess = { xs: g };
-    }
-  } else {
-    const g = {};
-    for (const k in task.want) { g[k] = parse(F[k].value); }
-    if (Object.values(g).some(isNaN)) { fb.className = "feedback no"; fb.textContent = "Bitte alle Felder ausfüllen."; return; }
-    for (const k in task.want) { const good = near(g[k], task.want[k], 0.001); mark(F[k], good); ok = ok && good; }
-    task.guess = g;
-  }
-  if (ok) {
-    task.state = "done"; prog.c[task.l]++;
-    let msg = pick(["Richtig!", "Stark!", "Genau!", "Sauber gerechnet!"]);
-    if (prog.c[task.l] === NEED && task.l < 3 && prog.unl <= task.l) { prog.unl = task.l + 1; msg = `Richtig! ${LEVELS[task.l + 1].t} ist jetzt frei.`; }
-    fb.className = "feedback ok"; fb.textContent = msg;
-    $("trCheck").disabled = true; $("trShow").disabled = true;
-    $("trNext").focus();
-    if (!prog.won && prog.c.every(c => c >= NEED)) { prog.won = true; save(); updProTab(); setTimeout(showWin, 500); }
-  } else {
-    prog.f[task.l]++;
-    fb.className = "feedback no"; fb.textContent = "Noch nicht. Rot markierte Felder nochmal prüfen.";
-    if (task.l === 2 && task.guess.none) fb.textContent = "Doch, es gibt Lösungen. Rechne D = (p/2)² − q nochmal nach.";
-    if (task.l === 2 && !task.guess.none && task.roots.length === 0) fb.textContent = "Schau auf D = (p/2)² − q. Was ist, wenn D negativ ist?";
-  }
-  save(); renderLevels(); drawTrain();
-}
-
-function showSolution() {
-  if (!task || task.state !== "open") return;
-  task.state = "shown"; $("trSol").innerHTML = task.sol(); $("trSol").hidden = false;
-  const fb = $("trFb"); fb.className = "feedback"; fb.textContent = "Lösung (zählt nicht):";
-  $("trCheck").disabled = true; $("trShow").disabled = true; drawTrain();
-}
-
-function drawTrain() {
-  const B = bTrain; B.begin(); if (!task) return;
-  const reveal = task.state !== "open"; // richtige Skizze erst nach richtiger Antwort oder „Lösung zeigen“, sonst könnte man ablesen
-  const leg = [];
-  if (task.l === 3) {
-    B.curve(task.f, tok("--pencil"), 5); leg.push(["--pencil", "Gegebene Parabel"]);
-    if (task.state !== "open") B.dot(task.d, task.e, tok("--pencil"), 6);
-  } else if (reveal) {
-    B.curve(task.f, tok("--pencil"), 5); leg.push(["--pencil", "Richtige Parabel"]);
-    if (task.l === 2) (task.roots).forEach(r => B.dot(r, 0, tok("--pencil"), 7));
-  }
-  const g = task.guess;
-  if (g && task.state !== "shown") {
-    if (task.l === 0 || task.l === 1) { B.curve(x => g.A * x * x + g.B * x + g.C, tok("--curve"), 3); leg.push(["--curve", "Deine Parabel"]); }
-    if (task.l === 3) { B.curve(x => g.a * (x - g.d) ** 2 + g.e, tok("--curve"), 3); leg.push(["--curve", "Deine Parabel"]); }
-    if (task.l === 2 && g.xs) { g.xs.forEach(x => B.dot(x, 0, tok("--curve"), 5)); leg.push(["--curve", "Deine Lösungen"]); }
-  }
-  if (!reveal && task.l !== 3) {
-    const c = B.ctx; c.font = `15px ${tok("--body")}`; c.fillStyle = tok("--muted"); c.textAlign = "center";
-    B.tag([[task.guess ? "Die richtige Skizze kommt, sobald es stimmt" : "Skizze erscheint nach dem Prüfen", tok("--muted")]], B.w / 2, B.Y(-6), { align: "center", base: "middle" });
-  }
-  $("legTrain").innerHTML = leg.map(([c, t]) => `<span><i style="background:var(${c})"></i>${t}</span>`).join("");
-}
-
-$("trCheck").addEventListener("click", checkTask);
-$("trShow").addEventListener("click", showSolution);
-$("trNext").addEventListener("click", newTask);
-$("trAnswer").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); task.state === "open" ? checkTask() : newTask(); } });
-$("trAnswer").addEventListener("input", () => { if (task && task.state === "open") { $("trFb").textContent = ""; } });
-$("trReset").addEventListener("click", () => {
-  if (!confirmReset()) return;
-  prog = { c: [0, 0, 0, 0], f: [0, 0, 0, 0], unl: 0, lvl: 0, won: false }; save(); renderLevels(); newTask(); updProTab();
-});
-let resetArmed = 0;
-function confirmReset() {
-  const b = $("trReset");
-  if (Date.now() - resetArmed < 4000) { b.textContent = "Fortschritt zurücksetzen"; resetArmed = 0; return true; }
-  resetArmed = Date.now(); b.textContent = "Wirklich? Nochmal klicken"; setTimeout(() => { b.textContent = "Fortschritt zurücksetzen"; }, 4000); return false;
-}
-window.addEventListener("hashchange", renderLevels);
-if (!allOpen() && prog.lvl > prog.unl) prog.lvl = prog.unl;
-
-
-const EXAMPLES = [
-  { sub: "Schreibe y = −2(x − 3)² + 4 in Normalform y = ax² + bx + c um.", rows: [
-    ["y", "= −2(x − 3)² + 4", "Aufgabe"],
-    ["", "= −2 · (x² − 2 · x · 3 + 3²) + 4", "2. binomische Formel: (a − b)² = a² − 2ab + b²"],
-    ["", "= −2 · (x² − 6x + 9) + 4", "In der Klammer ausrechnen"],
-    ["", "= −2x² + 12x − 18 + 4", "−2 mal jeden Summanden. Achtung: −2 · (−6x) = +12x"],
-    ["", "= <span class=\"res\">−2x² + 12x − 14</span>", "Zahlen zusammenfassen: −18 + 4 = −14"],
-    { note: "Eintippen: a = −2, b = 12, c = −14. Erst die Klammer auflösen, dann mit a malnehmen, dann e dazurechnen." },
-  ] },
-  { sub: "Schreibe y = 2(x + 1)(x − 4) in Normalform um.", rows: [
-    ["y", "= 2(x + 1)(x − 4)", "Aufgabe"],
-    ["", "= 2 · (x · x − x · 4 + 1 · x − 1 · 4)", "Die beiden Klammern ausmultiplizieren: jedes mit jedem"],
-    ["", "= 2 · (x² − 4x + x − 4)", "Ausrechnen"],
-    ["", "= 2 · (x² − 3x − 4)", "x-Terme zusammenfassen: −4x + x = −3x"],
-    ["", "= <span class=\"res\">2x² − 6x − 8</span>", "Mal 2: jeden Summanden in der Klammer"],
-    { note: "Eintippen: a = 2, b = −6, c = −8. Die Zahl vor den Klammern erst ganz am Ende malnehmen." },
-  ] },
-  { sub: "Löse 2x² − 4x − 6 = 0 mit der pq-Formel.", rows: [
-    { sec: "1. Vor x² muss eine 1 stehen" },
-    ["2x² − 4x − 6", "= 0", "Alles durch 2 teilen", "| : 2"],
-    ["x² − 2x − 3", "= 0", "Jetzt passt die Form x² + px + q = 0"],
-    { sec: "2. p und q ablesen" },
-    ['<span class="cd">p</span>', '= <span class="cd">−2</span>', "Zahl vor dem x, mit Vorzeichen"],
-    ['<span class="ca">q</span>', '= <span class="ca">−3</span>', "Zahl ohne x, mit Vorzeichen"],
-    { sec: "3. pq-Formel" },
-    ["x", '= −<span class="cd">p</span>/2 ± √((<span class="cd">p</span>/2)² − <span class="ca">q</span>)', "Formel hinschreiben"],
-    ["x", '= −(<span class="cd">−2</span>)/2 ± √(((<span class="cd">−2</span>)/2)² − (<span class="ca">−3</span>))', "Einsetzen, negative Zahlen in Klammern"],
-    ["x", "= 1 ± √((−1)² + 3)", "−(−2)/2 = 2/2 = 1 und − (−3) = + 3"],
-    ["x", "= 1 ± √(1 + 3)", "(−1)² = 1"],
-    ["x", "= 1 ± √4", "Unter der Wurzel zusammenrechnen"],
-    ["x", "= 1 ± 2", "√4 = 2"],
-    { sec: "4. Die zwei Lösungen" },
-    ["x₁", "= 1 − 2 = <span class=\"res\">−1</span>", "Mit Minus"],
-    ["x₂", "= 1 + 2 = <span class=\"res\">3</span>", "Mit Plus"],
-    ["Probe:", "(−1)² − 2 · (−1) − 3 = 1 + 2 − 3 = 0", "x₁ einsetzen: passt ✓"],
-    { note: "Ist die Zahl unter der Wurzel negativ, gibt es keine Lösung. Ist sie genau 0, gibt es nur eine Lösung (in beide Felder eintragen)." },
-  ] },
-  { sub: "Lies die Scheitelpunktform y = a(x − d)² + e der blauen Parabel ab.", rows: [
-    { html: exGraph({ x0: -6, x1: 3, y0: -5, y1: 5, f: x => -2 * (x + 2) ** 2 + 3, label: "Parabel mit Scheitel und Schritt", skipY: [3],
-        path: [[[-2, 3], [-1, 3], [-1, 1]]], dots: [[-2, 3, "--pencil"], [-1, 1, "--d"]],
-        labels: [[-1.5, 3.3, "1", "--d"], [-0.75, 2.2, "2", "--d", "start"], [-2.3, 3.6, "S", "--pencil", "end"]] }) },
-    { sec: "1. Scheitel ablesen" },
-    ["S", "= (−2 | 3)", "Der höchste (oder tiefste) Punkt"],
-    ['<span class="cd">d</span>', '= <span class="cd">−2</span>', "x-Wert des Scheitels"],
-    ['<span class="ce">e</span>', '= <span class="ce">3</span>', "y-Wert des Scheitels"],
-    { sec: "2. a bestimmen" },
-    ['<span class="ca">a</span>', '= <span class="ca">−2</span>', "Vom Scheitel 1 nach rechts: die Parabel geht 2 nach unten. Nach unten offen, also a negativ."],
-    { sec: "3. In y = a(x − d)² + e einsetzen" },
-    ["y", '= <span class="ca">−2</span>(x − (<span class="cd">−2</span>))² + <span class="ce">3</span>', "a, d und e einsetzen"],
-    ["y", "= <span class=\"res\">−2(x + 2)² + 3</span>", "− (−2) = + 2"],
-    { note: "Eintippen: a = −2, d = −2, e = 3. Ins Feld d kommt die −2, nicht die +2 aus der Klammer! Bei a = 0,5 geht man besser 2 nach rechts: dann geht es 2 hoch (0,5 · 2² = 2)." },
-  ] },
-];
-
-/* ---------- Musterbeispiel je Stufe (Popup) ---------- */
-function exGraph(o) {
-  const u = 30, W = (o.x1 - o.x0) * u, H = (o.y1 - o.y0) * u, X = x => (x - o.x0) * u, Y = y => (o.y1 - y) * u;
-  let g = `<svg class="exsvg" viewBox="-4 -4 ${W + 8} ${H + 8}" role="img" aria-label="${o.label}">`;
-  for (let x = o.x0; x <= o.x1; x++) g += `<line x1="${X(x)}" y1="0" x2="${X(x)}" y2="${H}" style="stroke:var(--grid-strong,#2e3f50)" stroke-width="${x === 0 ? 0 : 1}"/>`;
-  for (let y = o.y0; y <= o.y1; y++) g += `<line x1="0" y1="${Y(y)}" x2="${W}" y2="${Y(y)}" style="stroke:var(--grid-strong,#2e3f50)" stroke-width="${y === 0 ? 0 : 1}"/>`;
-  g += `<line x1="0" y1="${Y(0)}" x2="${W}" y2="${Y(0)}" style="stroke:var(--ink)" stroke-width="1.6"/><line x1="${X(0)}" y1="0" x2="${X(0)}" y2="${H}" style="stroke:var(--ink)" stroke-width="1.6"/>`;
-  g += `<text x="${W - 4}" y="${Y(0) - 6}" text-anchor="end" font-size="14" style="fill:var(--muted)">x</text><text x="${X(0) + 6}" y="14" font-size="14" style="fill:var(--muted)">y</text>`;
-  for (let x = o.x0 + 1; x < o.x1; x++) if (x) g += `<text x="${X(x)}" y="${Y(0) + 14}" text-anchor="middle" font-size="11" style="fill:var(--muted)">${num(x)}</text>`;
-  for (let y = o.y0 + 1; y < o.y1; y++) if (y && (o.skipY || []).indexOf(y) < 0) g += `<text x="${X(0) - 5}" y="${Y(y) + 4}" text-anchor="end" font-size="11" style="fill:var(--muted)">${num(y)}</text>`;
-  let pts = [];
-  for (let i = 0; i <= 240; i++) { const x = o.x0 + (o.x1 - o.x0) * i / 240, y = o.f(x); if (y >= o.y0 && y <= o.y1) pts.push(X(x).toFixed(1) + "," + Y(y).toFixed(1)); }
-  g += `<polyline points="${pts.join(" ")}" fill="none" style="stroke:var(--curve)" stroke-width="3"/>`;
-  (o.path || []).forEach(p => g += `<polyline points="${p.map(([x, y]) => X(x) + "," + Y(y)).join(" ")}" fill="none" style="stroke:var(${o.pathColor || "--d"})" stroke-width="2.6" stroke-dasharray="6 4"/>`);
-  (o.dots || []).forEach(([x, y, c]) => g += `<circle cx="${X(x)}" cy="${Y(y)}" r="5.5" style="fill:var(${c})"/>`);
-  (o.labels || []).forEach(([x, y, t, c, a]) => g += `<text x="${X(x)}" y="${Y(y)}" text-anchor="${a || "middle"}" font-size="16" font-weight="700" style="fill:var(${c || "--ink"})">${t}</text>`);
-  return g + "</svg>";
-}
-function exRender(E) {
-  return E.rows.map(r => {
-    if (r.sec) return `<div class="sec">${r.sec}</div>`;
-    if (r.note) return `<div class="note">${r.note}</div>`;
-    if (r.html) return `<div class="wide">${r.html}</div>`;
-    const [l, rr, c, op] = r;
-    return `<div class="l">${l}</div><div class="r">${rr}${op ? `<span class="op">${op}</span>` : ""}</div><div class="c">${c || ""}</div>`;
-  }).join("");
-}
-function openEx() {
-  const l = task ? task.l : prog.lvl, E = EXAMPLES[l];
-  $("exLvl").textContent = LEVELS[l].t + " · " + LEVELS[l].s;
-  $("exSub").innerHTML = E.sub;
-  $("exBody").innerHTML = exRender(E);
-  $("exWin").hidden = false; document.querySelector(".exbox").scrollTop = 0; $("exOk").focus({ preventScroll: true });
-}
-function closeEx() { $("exWin").hidden = true; const b = $("trEx"); if (b) b.focus(); }
-$("trEx").addEventListener("click", openEx);
-$("exOk").addEventListener("click", closeEx);
-$("exClose").addEventListener("click", closeEx);
-$("exWin").addEventListener("click", e => { if (e.target.id === "exWin") closeEx(); });
-document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("exWin").hidden) closeEx(); });
-
-function showWin() {
-  const tot = prog.c.reduce((s, v) => s + v, 0), bad = prog.f.reduce((s, v) => s + v, 0);
-  $("winStats").textContent = `${tot} Aufgaben richtig gelöst${bad ? `, ${bad} ${bad === 1 ? "Fehlversuch" : "Fehlversuche"} unterwegs` : ", ohne einen einzigen Fehlversuch"}.`;
-  $("winStats").hidden = tot === 0;
-  $("win").hidden = false; $("winClose").focus(); confetti();
-}
-function closeWin() { $("win").hidden = true; confettiOn = false; updProTab(); }
-$("winClose").addEventListener("click", closeWin);
-$("win").addEventListener("click", e => { if (e.target.id === "win") closeWin(); });
-document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("win").hidden) closeWin(); });
-let confettiOn = false;
-function confetti() {
-  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  const c = $("confetti"), dpr = window.devicePixelRatio || 1, W = innerWidth, H = innerHeight;
-  c.width = W * dpr; c.height = H * dpr; const ctx = c.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  const cols = ["--a", "--d", "--e", "--z", "--curve", "--pencil"].map(tok);
-  const P = Array.from({ length: 180 }, () => ({ x: Math.random() * W, y: -20 - Math.random() * H * .6, vx: (Math.random() - .5) * 3, vy: 2 + Math.random() * 3,
-    r: 5 + Math.random() * 6, a: Math.random() * 6.3, va: (Math.random() - .5) * .3, c: pick(cols) }));
-  confettiOn = true; const t0 = performance.now();
-  (function frame(t) {
-    if (!confettiOn) { ctx.clearRect(0, 0, W, H); return; }
-    ctx.clearRect(0, 0, W, H);
-    for (const p of P) {
-      p.x += p.vx; p.y += p.vy; p.vy += 0.03; p.a += p.va;
-      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.fillStyle = p.c; ctx.fillRect(-p.r / 2, -p.r / 4, p.r, p.r / 2); ctx.restore();
-    }
-    if (t - t0 < 6000) requestAnimationFrame(frame); else ctx.clearRect(0, 0, W, H);
-  })(t0);
+  let f1 = factor(x1, cz, approx), f2 = factor(x2, cz, approx);
+  if (f2 === "x") [f1, f2] = [f2, f1];
+  return `y = ${aPre(a, ca)}${f1}${f2}`;
 }
 
 /* =============================================================
@@ -1006,7 +724,6 @@ function confetti() {
    ============================================================= */
 const bPq = new Board($("cPq"));
 const pqP = $("pqP"), pqQ = $("pqQ");
-const paren = v => v < 0 ? `(${num(v)})` : num(v);
 function updPq() {
   const p = +pqP.value, q = +pqQ.value, h = p / 2, A = -h, D = r6(h * h - q);
   $("pqPo").textContent = num(p); $("pqQo").textContent = num(q);
@@ -1226,8 +943,157 @@ function setSpMode(m) {
 $("spTabs").querySelectorAll("button").forEach(b => b.addEventListener("click", () => setSpMode(b.dataset.m)));
 
 /* =============================================================
-   5 PROFI-AUFGABEN (erst nach allen 4 Stufen sichtbar)
+   4 RECHENTRAINER: Stufen, Aufgaben, Skizze
    ============================================================= */
+
+const LEVELS = [
+  { t: "Stufe 1", s: "Scheitelpunktform → Normalform" },
+  { t: "Stufe 2", s: "Nullstellenform → Normalform" },
+  { t: "Stufe 3", s: "Nullstellen mit der pq-Formel" },
+  { t: "Stufe 4", s: "Gleichung aus der Skizze" },
+];
+
+function makeTask(l) {
+  if (l === 0) {
+    const a = pick([1, 1, -1, 2, -2, 3]), d = nz(-5, 5), e = rnd(13) - 6;
+    return { l, a, d, e, want: { A: a, B: -2 * a * d, C: a * d * d + e },
+      title: "Schreibe in Normalform um.", task: scheitelHTML(a, d, e),
+      hint: "Erst die Klammer mit der binomischen Formel auflösen, dann mit a malnehmen. Negative Zahlen mit Minus eintippen.",
+      answer: `<div class="slots"><span>y =</span><span class="p">a</span><span>x² +</span><span class="p">b</span><span>x +</span><span class="p">c</span>
+      <span>y =</span>${inp("A")}<span>x² +</span>${inp("B")}<span>x +</span>${inp("C")}</div>`,
+      f: x => a * (x - d) ** 2 + e, sol: () => `${scheitelHTML(a, d, e, false)} = ${polyBody(a, -2 * a * d, a * d * d + e)}` };
+  }
+  if (l === 1) {
+    const a = pick([1, 1, -1, 2, -2]); let x1 = rnd(13) - 6, x2 = rnd(13) - 6; if (x1 > x2) [x1, x2] = [x2, x1];
+    return { l, a, x1, x2, want: { A: a, B: -a * (x1 + x2), C: a * x1 * x2 },
+      title: "Schreibe in Normalform um.", task: nullHTML(a, x1, x2),
+      hint: "Klammern ausmultiplizieren (jedes mit jedem), dann mit a malnehmen.",
+      answer: `<div class="slots"><span>y =</span><span class="p">a</span><span>x² +</span><span class="p">b</span><span>x +</span><span class="p">c</span>
+      <span>y =</span>${inp("A")}<span>x² +</span>${inp("B")}<span>x +</span>${inp("C")}</div>`,
+      f: x => a * (x - x1) * (x - x2), sol: () => `${nullHTML(a, x1, x2, false)} = ${polyBody(a, -a * (x1 + x2), a * x1 * x2)}` };
+  }
+  if (l === 2) {
+    const k = pick([1, 1, 1, 2, -1, 3]);
+    let p, q, roots;
+    if (Math.random() < 0.18) { const h = rnd(7) - 3; p = 2 * h; q = h * h + 1 + rnd(5); roots = []; }
+    else { let r1 = rnd(15) - 7, r2 = rnd(15) - 7; if (r1 > r2) [r1, r2] = [r2, r1]; p = -(r1 + r2); q = r1 * r2; roots = r1 === r2 ? [r1] : [r1, r2]; }
+    return { l, k, p, q, roots,
+      title: "Berechne die Lösungen.", task: polyBody(k, k * p, k * q) + " = 0",
+      hint: k === 1 ? "pq-Formel: x = −p/2 ± √((p/2)² − q). Gibt es nur eine Lösung, trag sie in beide Felder ein." : "Erst durch den Faktor vor x² teilen, dann die pq-Formel. Gibt es nur eine Lösung, trag sie in beide Felder ein.",
+      answer: `x₁ = ${inp("x1")} &nbsp; x₂ = ${inp("x2")} <label class="chk" style="font-size:17px;font-weight:700"><input type="checkbox" data-k="none"> keine Lösung</label>`,
+      f: x => k * (x * x + p * x + q),
+      // eigene Prüfung: Reihenfolge egal, Kästchen „keine Lösung“
+      check(F, fb) {
+        if (F.none.checked) { this.guess = { none: true }; [F.x1, F.x2].forEach(el => el.classList.remove("ok", "bad")); return roots.length === 0; }
+        const g = [parse(F.x1.value), parse(F.x2.value)];
+        if (g.some(isNaN)) { fb.className = "feedback no"; fb.textContent = "Bitte beide Felder ausfüllen (oder „keine Lösung“)."; return null; }
+        this.guess = { xs: g };
+        const want = roots.length === 1 ? [roots[0], roots[0]] : roots.slice();
+        if (want.length === 0) { mark(F.x1, false); mark(F.x2, false); return false; }
+        const ok = (near(g[0], want[0], 0.01) && near(g[1], want[1], 0.01)) || (near(g[0], want[1], 0.01) && near(g[1], want[0], 0.01));
+        if (ok) { mark(F.x1, true); mark(F.x2, true); }
+        else { mark(F.x1, want.some(w => near(w, g[0], 0.01))); mark(F.x2, want.some(w => near(w, g[1], 0.01))); }
+        return ok;
+      },
+      failMsg() {
+        if (this.guess.none) return "Doch, es gibt Lösungen. Rechne D = (p/2)² − q nochmal nach.";
+        if (roots.length === 0) return "Schau auf D = (p/2)² − q. Was ist, wenn D negativ ist?";
+      },
+      sol: () => roots.length === 0 ? `D = (p/2)² − q = ${num((p / 2) ** 2 - q)} &lt; 0 → keine Lösung` : roots.length === 1 ? `x = ${num(roots[0])} (nur eine Lösung)` : `x₁ = ${num(roots[0])}, &nbsp; x₂ = ${num(roots[1])}` };
+  }
+  const a = pick([1, -1, 2, -2, 0.5, -0.5]), d = rnd(11) - 5, e = rnd(11) - 5;
+  return { l, a, d, e, want: { a, d, e },
+    title: "Lies die Scheitelpunktform aus der Skizze ab.", task: "",
+    hint: "Scheitel S(d | e) ablesen. Für a: vom Scheitel 1 nach rechts, wie viel geht es hoch oder runter? Bei S(−3 | …) ist d = −3.",
+    answer: `<div class="slots"><span>y =</span><span class="p ca">a</span><span>·(x −</span><span class="p cd">d</span><span>)² +</span><span class="p ce">e</span>
+      <span>y =</span>${inp("a")}<span>·(x −</span>${inp("d")}<span>)² +</span>${inp("e")}</div>`,
+    f: x => a * (x - d) ** 2 + e, sol: () => scheitelHTML(a, d, e, false) };
+}
+
+function drawTrain() {
+  const B = bTrain; B.begin(); if (!task) return;
+  const reveal = task.state !== "open"; // richtige Skizze erst nach richtiger Antwort oder „Lösung zeigen“, sonst könnte man ablesen
+  const leg = [];
+  if (task.l === 3) {
+    B.curve(task.f, tok("--pencil"), 5); leg.push(["--pencil", "Gegebene Parabel"]);
+    if (task.state !== "open") B.dot(task.d, task.e, tok("--pencil"), 6);
+  } else if (reveal) {
+    B.curve(task.f, tok("--pencil"), 5); leg.push(["--pencil", "Richtige Parabel"]);
+    if (task.l === 2) (task.roots).forEach(r => B.dot(r, 0, tok("--pencil"), 7));
+  }
+  const g = task.guess;
+  if (g && task.state !== "shown") {
+    if (task.l === 0 || task.l === 1) { B.curve(x => g.A * x * x + g.B * x + g.C, tok("--curve"), 3); leg.push(["--curve", "Deine Parabel"]); }
+    if (task.l === 3) { B.curve(x => g.a * (x - g.d) ** 2 + g.e, tok("--curve"), 3); leg.push(["--curve", "Deine Parabel"]); }
+    if (task.l === 2 && g.xs) { g.xs.forEach(x => B.dot(x, 0, tok("--curve"), 5)); leg.push(["--curve", "Deine Lösungen"]); }
+  }
+  if (!reveal && task.l !== 3) {
+    const c = B.ctx; c.font = `15px ${tok("--body")}`; c.fillStyle = tok("--muted"); c.textAlign = "center";
+    B.tag([[task.guess ? "Die richtige Skizze kommt, sobald es stimmt" : "Skizze erscheint nach dem Prüfen", tok("--muted")]], B.w / 2, B.Y(-6), { align: "center", base: "middle" });
+  }
+  $("legTrain").innerHTML = leg.map(([c, t]) => `<span><i style="background:var(${c})"></i>${t}</span>`).join("");
+}
+
+// ---------- Musterbeispiel je Stufe ----------
+
+const EXAMPLES = [
+  { sub: "Schreibe y = −2(x − 3)² + 4 in Normalform y = ax² + bx + c um.", rows: [
+    ["y", "= −2(x − 3)² + 4", "Aufgabe"],
+    ["", "= −2 · (x² − 2 · x · 3 + 3²) + 4", "2. binomische Formel: (a − b)² = a² − 2ab + b²"],
+    ["", "= −2 · (x² − 6x + 9) + 4", "In der Klammer ausrechnen"],
+    ["", "= −2x² + 12x − 18 + 4", "−2 mal jeden Summanden. Achtung: −2 · (−6x) = +12x"],
+    ["", "= <span class=\"res\">−2x² + 12x − 14</span>", "Zahlen zusammenfassen: −18 + 4 = −14"],
+    { note: "Eintippen: a = −2, b = 12, c = −14. Erst die Klammer auflösen, dann mit a malnehmen, dann e dazurechnen." },
+  ] },
+  { sub: "Schreibe y = 2(x + 1)(x − 4) in Normalform um.", rows: [
+    ["y", "= 2(x + 1)(x − 4)", "Aufgabe"],
+    ["", "= 2 · (x · x − x · 4 + 1 · x − 1 · 4)", "Die beiden Klammern ausmultiplizieren: jedes mit jedem"],
+    ["", "= 2 · (x² − 4x + x − 4)", "Ausrechnen"],
+    ["", "= 2 · (x² − 3x − 4)", "x-Terme zusammenfassen: −4x + x = −3x"],
+    ["", "= <span class=\"res\">2x² − 6x − 8</span>", "Mal 2: jeden Summanden in der Klammer"],
+    { note: "Eintippen: a = 2, b = −6, c = −8. Die Zahl vor den Klammern erst ganz am Ende malnehmen." },
+  ] },
+  { sub: "Löse 2x² − 4x − 6 = 0 mit der pq-Formel.", rows: [
+    { sec: "1. Vor x² muss eine 1 stehen" },
+    ["2x² − 4x − 6", "= 0", "Alles durch 2 teilen", "| : 2"],
+    ["x² − 2x − 3", "= 0", "Jetzt passt die Form x² + px + q = 0"],
+    { sec: "2. p und q ablesen" },
+    ['<span class="cd">p</span>', '= <span class="cd">−2</span>', "Zahl vor dem x, mit Vorzeichen"],
+    ['<span class="ca">q</span>', '= <span class="ca">−3</span>', "Zahl ohne x, mit Vorzeichen"],
+    { sec: "3. pq-Formel" },
+    ["x", '= −<span class="cd">p</span>/2 ± √((<span class="cd">p</span>/2)² − <span class="ca">q</span>)', "Formel hinschreiben"],
+    ["x", '= −(<span class="cd">−2</span>)/2 ± √(((<span class="cd">−2</span>)/2)² − (<span class="ca">−3</span>))', "Einsetzen, negative Zahlen in Klammern"],
+    ["x", "= 1 ± √((−1)² + 3)", "−(−2)/2 = 2/2 = 1 und − (−3) = + 3"],
+    ["x", "= 1 ± √(1 + 3)", "(−1)² = 1"],
+    ["x", "= 1 ± √4", "Unter der Wurzel zusammenrechnen"],
+    ["x", "= 1 ± 2", "√4 = 2"],
+    { sec: "4. Die zwei Lösungen" },
+    ["x₁", "= 1 − 2 = <span class=\"res\">−1</span>", "Mit Minus"],
+    ["x₂", "= 1 + 2 = <span class=\"res\">3</span>", "Mit Plus"],
+    ["Probe:", "(−1)² − 2 · (−1) − 3 = 1 + 2 − 3 = 0", "x₁ einsetzen: passt ✓"],
+    { note: "Ist die Zahl unter der Wurzel negativ, gibt es keine Lösung. Ist sie genau 0, gibt es nur eine Lösung (in beide Felder eintragen)." },
+  ] },
+  { sub: "Lies die Scheitelpunktform y = a(x − d)² + e der blauen Parabel ab.", rows: [
+    { html: exGraph({ x0: -6, x1: 3, y0: -5, y1: 5, f: x => -2 * (x + 2) ** 2 + 3, label: "Parabel mit Scheitel und Schritt", skipY: [3],
+        path: [[[-2, 3], [-1, 3], [-1, 1]]], dots: [[-2, 3, "--pencil"], [-1, 1, "--d"]],
+        labels: [[-1.5, 3.3, "1", "--d"], [-0.75, 2.2, "2", "--d", "start"], [-2.3, 3.6, "S", "--pencil", "end"]] }) },
+    { sec: "1. Scheitel ablesen" },
+    ["S", "= (−2 | 3)", "Der höchste (oder tiefste) Punkt"],
+    ['<span class="cd">d</span>', '= <span class="cd">−2</span>', "x-Wert des Scheitels"],
+    ['<span class="ce">e</span>', '= <span class="ce">3</span>', "y-Wert des Scheitels"],
+    { sec: "2. a bestimmen" },
+    ['<span class="ca">a</span>', '= <span class="ca">−2</span>', "Vom Scheitel 1 nach rechts: die Parabel geht 2 nach unten. Nach unten offen, also a negativ."],
+    { sec: "3. In y = a(x − d)² + e einsetzen" },
+    ["y", '= <span class="ca">−2</span>(x − (<span class="cd">−2</span>))² + <span class="ce">3</span>', "a, d und e einsetzen"],
+    ["y", "= <span class=\"res\">−2(x + 2)² + 3</span>", "− (−2) = + 2"],
+    { note: "Eintippen: a = −2, d = −2, e = 3. Ins Feld d kommt die −2, nicht die +2 aus der Klammer! Bei a = 0,5 geht man besser 2 nach rechts: dann geht es 2 hoch (0,5 · 2² = 2)." },
+  ] },
+];
+
+/* =============================================================
+   5 PROFI: Fragen
+   ============================================================= */
+
 const PRO = [
   { q: "Eine nach oben geöffnete Normalparabel hat die Nullstellen −1 und 5 (siehe Skizze). Wo liegt ihr Scheitel?",
     pts: [[-1, 0], [5, 0]], cap: "Nur die Nullstellen sind eingezeichnet.",
@@ -1284,16 +1150,198 @@ const PRO = [
   { q: "Welcher Graph gehört zu y = −(x + 1)(x − 3)?", gopts: [x => (x + 1) * (x - 3), x => -(x - 1) * (x + 3), x => -(x + 1) * (x - 3), x => -((x - 1) ** 2) - 4], ok: 2,
     ex: "Minus vorne: nach unten geöffnet. Nullstellen dort, wo eine Klammer 0 wird: x = −1 und x = 3. Der Scheitel liegt in der Mitte bei x = 1." },
 ];
+
+/* ---------- Anbindung an das gemeinsame Gerüst ---------- */
+const EXPLORE = {
+  draw: { pq: drawPq, forms: drawForms, sp: () => { fitVertex(); drawSp(); } },
+  canvases: ["cPq", "cForms", "cSp"],
+  init() { updPq(); updForms(); updSp(); },
+  quiz: { tab: "sp", on: () => spMode === "quiz", start: () => setSpMode("quiz") },
+  fontsReady: fitVertex,
+};
+
+/* =============================================================
+   RECHENTRAINER (geteilt)
+   Das Labor liefert: LEVELS (4 Stufen), makeTask(l), drawTrain(), EXAMPLES (je Stufe ein Musterbeispiel).
+   makeTask(l) gibt zurück: { l, title, task, hint, answer, want, sol(), … }
+     want  = { feldname: richtiger Wert } für die inp(…)-Felder in answer
+     check(F, fb) optional statt want: eigene Prüfung, gibt true/false zurück oder null (= unvollständig)
+     failMsg() optional: eigene Meldung bei falscher Antwort
+   ============================================================= */
+const NEED = 3, KEY = LAB.id + "-labor-v1";
+const freshProg = () => ({ c: [0, 0, 0, 0], f: [0, 0, 0, 0], unl: 0, lvl: 0, won: false });
+let prog = freshProg();
+try { const s = ADMIN ? ADMIN.prog : JSON.parse(localStorage.getItem(KEY)); if (s && Array.isArray(s.c)) prog = Object.assign(prog, s); } catch (_) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(prog)); } catch (_) {} changed(); };
+const bTrain = new Board($("cTrain"));
+let task = null;
+
+function renderLevels() {
+  const box = $("levels"); box.innerHTML = "";
+  LEVELS.forEach((L, i) => {
+    const b = document.createElement("button"); b.className = "lvl";
+    const open = allOpen() || i <= prog.unl;
+    b.disabled = !open; b.setAttribute("aria-pressed", i === prog.lvl);
+    const n = Math.min(prog.c[i], NEED);
+    b.innerHTML = `<span class="t">${open ? "" : "🔒 "}${L.t}</span><span class="s">${L.s}</span><span class="dots">${"●".repeat(n)}${"○".repeat(NEED - n)}</span>`;
+    b.addEventListener("click", () => { prog.lvl = i; save(); renderLevels(); newTask(); });
+    box.appendChild(b);
+  });
+  $("trProg").innerHTML = LEVELS.map((L, i) => `<span>${L.t}</span><span class="muted">${L.s}</span><span><b>${prog.c[i]}</b> richtig${prog.f[i] ? ` · ${prog.f[i]} ${prog.f[i] === 1 ? "Fehlversuch" : "Fehlversuche"}` : ""}</span>`).join("");
+  updProTab();
+}
+function newTask() {
+  task = makeTask(prog.lvl); task.state = "open"; task.guess = null;
+  $("trTitle").textContent = LEVELS[task.l].t + ": " + task.title;
+  $("trTask").innerHTML = task.task; $("trTask").hidden = !task.task; $("trHint").textContent = task.hint;
+  $("trAnswer").innerHTML = task.answer;
+  $("trFb").textContent = ""; $("trFb").className = "feedback"; $("trSol").hidden = true;
+  $("trCheck").disabled = false; $("trShow").disabled = false;
+  const first = $("trAnswer").querySelector("input.in"); if (first && window.matchMedia("(pointer:fine)").matches && current === "train") first.focus();
+  drawTrain();
+}
+function fields() { const o = {}; $("trAnswer").querySelectorAll("[data-k]").forEach(el => o[el.dataset.k] = el); return o; }
+function mark(el, ok) { el.classList.toggle("ok", ok); el.classList.toggle("bad", !ok); }
+function checkTask() {
+  if (!task || task.state !== "open") return;
+  const F = fields(), fb = $("trFb");
+  let ok = true;
+  if (task.check) { ok = task.check(F, fb); if (ok === null) return; }
+  else {
+    const g = {};
+    for (const k in task.want) g[k] = parse(F[k].value);
+    if (Object.values(g).some(isNaN)) { fb.className = "feedback no"; fb.textContent = "Bitte alle Felder ausfüllen."; return; }
+    for (const k in task.want) { const good = near(g[k], task.want[k], 0.001); mark(F[k], good); ok = ok && good; }
+    task.guess = g;
+  }
+  if (ok) {
+    task.state = "done"; prog.c[task.l]++;
+    let msg = pick(["Richtig!", "Stark!", "Genau!", "Sauber gerechnet!"]);
+    if (prog.c[task.l] === NEED && task.l < 3 && prog.unl <= task.l) { prog.unl = task.l + 1; msg = `Richtig! ${LEVELS[task.l + 1].t} ist jetzt frei.`; }
+    fb.className = "feedback ok"; fb.textContent = msg;
+    $("trCheck").disabled = true; $("trShow").disabled = true; $("trNext").focus();
+    if (!prog.won && prog.c.every(c => c >= NEED)) { prog.won = true; save(); updProTab(); setTimeout(showWin, 500); }
+  } else {
+    prog.f[task.l]++;
+    fb.className = "feedback no"; fb.textContent = "Noch nicht. Rot markierte Felder nochmal prüfen.";
+    const m = task.failMsg && task.failMsg(); if (m) fb.textContent = m;
+  }
+  save(); renderLevels(); drawTrain();
+}
+function showSolution() {
+  if (!task || task.state !== "open") return;
+  task.state = "shown"; $("trSol").innerHTML = task.sol(); $("trSol").hidden = false;
+  const fb = $("trFb"); fb.className = "feedback"; fb.textContent = "Lösung (zählt nicht):";
+  $("trCheck").disabled = true; $("trShow").disabled = true; drawTrain();
+}
+$("trCheck").addEventListener("click", checkTask);
+$("trShow").addEventListener("click", showSolution);
+$("trNext").addEventListener("click", newTask);
+$("trAnswer").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); task.state === "open" ? checkTask() : newTask(); } });
+$("trAnswer").addEventListener("input", () => { if (task && task.state === "open") $("trFb").textContent = ""; });
+// Zurücksetzen erst beim zweiten Klick innerhalb von 4 Sekunden
+let resetArmed = 0;
+$("trReset").addEventListener("click", () => {
+  const b = $("trReset");
+  if (Date.now() - resetArmed >= 4000) { resetArmed = Date.now(); b.textContent = "Wirklich? Nochmal klicken"; setTimeout(() => { b.textContent = "Fortschritt zurücksetzen"; }, 4000); return; }
+  resetArmed = 0; b.textContent = "Fortschritt zurücksetzen";
+  prog = freshProg(); save(); renderLevels(); newTask(); updProTab();
+});
+if (ADMIN) $("trReset").hidden = true;
+window.addEventListener("hashchange", renderLevels);
+if (!allOpen() && prog.lvl > prog.unl) prog.lvl = prog.unl;
+
+// ---------- Musterbeispiel je Stufe (Popup) ----------
+// EXAMPLES[l] = { sub, rows }; rows: [links, rechts, Kommentar, Umformung] oder {sec}, {note}, {html}
+function exGraph(o) {
+  const u = 30, W = (o.x1 - o.x0) * u, H = (o.y1 - o.y0) * u, X = x => (x - o.x0) * u, Y = y => (o.y1 - y) * u;
+  let g = `<svg class="exsvg" viewBox="-4 -4 ${W + 8} ${H + 8}" role="img" aria-label="${o.label}">`;
+  for (let x = o.x0; x <= o.x1; x++) g += `<line x1="${X(x)}" y1="0" x2="${X(x)}" y2="${H}" style="stroke:var(--grid-strong,#2e3f50)" stroke-width="${x === 0 ? 0 : 1}"/>`;
+  for (let y = o.y0; y <= o.y1; y++) g += `<line x1="0" y1="${Y(y)}" x2="${W}" y2="${Y(y)}" style="stroke:var(--grid-strong,#2e3f50)" stroke-width="${y === 0 ? 0 : 1}"/>`;
+  g += `<line x1="0" y1="${Y(0)}" x2="${W}" y2="${Y(0)}" style="stroke:var(--ink)" stroke-width="1.6"/><line x1="${X(0)}" y1="0" x2="${X(0)}" y2="${H}" style="stroke:var(--ink)" stroke-width="1.6"/>`;
+  g += `<text x="${W - 4}" y="${Y(0) - 6}" text-anchor="end" font-size="14" style="fill:var(--muted)">x</text><text x="${X(0) + 6}" y="14" font-size="14" style="fill:var(--muted)">y</text>`;
+  for (let x = o.x0 + 1; x < o.x1; x++) if (x) g += `<text x="${X(x)}" y="${Y(0) + 14}" text-anchor="middle" font-size="11" style="fill:var(--muted)">${num(x)}</text>`;
+  for (let y = o.y0 + 1; y < o.y1; y++) if (y && (o.skipY || []).indexOf(y) < 0) g += `<text x="${X(0) - 5}" y="${Y(y) + 4}" text-anchor="end" font-size="11" style="fill:var(--muted)">${num(y)}</text>`;
+  let pts = [];
+  for (let i = 0; i <= 240; i++) { const x = o.x0 + (o.x1 - o.x0) * i / 240, y = o.f(x); if (y >= o.y0 && y <= o.y1) pts.push(X(x).toFixed(1) + "," + Y(y).toFixed(1)); }
+  g += `<polyline points="${pts.join(" ")}" fill="none" style="stroke:var(--curve)" stroke-width="3"/>`;
+  (o.path || []).forEach(p => g += `<polyline points="${p.map(([x, y]) => X(x) + "," + Y(y)).join(" ")}" fill="none" style="stroke:var(${o.pathColor || "--d"})" stroke-width="2.6" stroke-dasharray="6 4"/>`);
+  (o.dots || []).forEach(([x, y, c]) => g += `<circle cx="${X(x)}" cy="${Y(y)}" r="5.5" style="fill:var(${c})"/>`);
+  (o.labels || []).forEach(([x, y, t, c, a]) => g += `<text x="${X(x)}" y="${Y(y)}" text-anchor="${a || "middle"}" font-size="16" font-weight="700" style="fill:var(${c || "--ink"})">${t}</text>`);
+  return g + "</svg>";
+}
+function exRender(E) {
+  return E.rows.map(r => {
+    if (r.sec) return `<div class="sec">${r.sec}</div>`;
+    if (r.note) return `<div class="note">${r.note}</div>`;
+    if (r.html) return `<div class="wide">${r.html}</div>`;
+    const [l, rr, c, op] = r;
+    return `<div class="l">${l}</div><div class="r">${rr}${op ? `<span class="op">${op}</span>` : ""}</div><div class="c">${c || ""}</div>`;
+  }).join("");
+}
+function openEx() {
+  const l = task ? task.l : prog.lvl, E = EXAMPLES[l];
+  $("exLvl").textContent = LEVELS[l].t + " · " + LEVELS[l].s;
+  $("exSub").innerHTML = E.sub;
+  $("exBody").innerHTML = exRender(E);
+  $("exWin").hidden = false; document.querySelector(".exbox").scrollTop = 0; $("exOk").focus({ preventScroll: true });
+}
+function closeEx() { $("exWin").hidden = true; const b = $("trEx"); if (b) b.focus(); }
+$("trEx").addEventListener("click", openEx);
+$("exOk").addEventListener("click", closeEx);
+$("exClose").addEventListener("click", closeEx);
+$("exWin").addEventListener("click", e => { if (e.target.id === "exWin") closeEx(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("exWin").hidden) closeEx(); });
+
+// ---------- Glückwunsch ----------
+function showWin() {
+  const tot = prog.c.reduce((s, v) => s + v, 0), bad = prog.f.reduce((s, v) => s + v, 0);
+  $("winStats").textContent = `${tot} Aufgaben richtig gelöst${bad ? `, ${bad} ${bad === 1 ? "Fehlversuch" : "Fehlversuche"} unterwegs` : ", ohne einen einzigen Fehlversuch"}.`;
+  $("winStats").hidden = tot === 0;
+  $("win").hidden = false; ($("winPro").hidden ? $("winClose") : $("winPro")).focus(); confetti();
+}
+function closeWin() { $("win").hidden = true; confettiOn = false; updProTab(); }
+$("winClose").addEventListener("click", closeWin);
+$("winPro").addEventListener("click", () => { closeWin(); show("pro"); });
+$("win").addEventListener("click", e => { if (e.target.id === "win") closeWin(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("win").hidden) closeWin(); });
+let confettiOn = false;
+function confetti() {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const c = $("confetti"), dpr = window.devicePixelRatio || 1, W = innerWidth, H = innerHeight;
+  c.width = W * dpr; c.height = H * dpr; const ctx = c.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const cols = ["--a", "--d", "--e", "--z", "--curve", "--pencil"].map(tok);
+  const Pp = Array.from({ length: 180 }, () => ({ x: Math.random() * W, y: -20 - Math.random() * H * .6, vx: (Math.random() - .5) * 3, vy: 2 + Math.random() * 3,
+    r: 5 + Math.random() * 6, a: Math.random() * 6.3, va: (Math.random() - .5) * .3, c: pick(cols) }));
+  confettiOn = true; const t0 = performance.now();
+  (function frame(t) {
+    ctx.clearRect(0, 0, W, H);
+    if (!confettiOn) return;
+    for (const p of Pp) { p.x += p.vx; p.y += p.vy; p.vy += 0.03; p.a += p.va;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.fillStyle = p.c; ctx.fillRect(-p.r / 2, -p.r / 4, p.r, p.r / 2); ctx.restore(); }
+    if (t - t0 < 6000) requestAnimationFrame(frame); else ctx.clearRect(0, 0, W, H);
+  })(t0);
+}
+
+/* =============================================================
+   PROFI-QUIZ (geteilt)
+   Das Labor liefert PRO = [ { q, opts | gopts, ok, ex, … } ]:
+     opts   4 Antworttexte          gopts  4 Graphen: Funktion f oder { f } oder { v: x } (senkrechte Linie)
+     ok     Index der richtigen     ex     Erklärung nach der Antwort
+     Skizze: graph [{f, c, dash}], pts [[x, y, "P"]], segs [[x1, y1, x2, y2, "--farbe"]], vlines [x], table [[xs], [ys]]
+             hideGraphUntil (Graph erst nach der Antwort), after / afterPts / afterSegs / afterCap (nach der Antwort), cap, noNums
+   ============================================================= */
 const bPro = new Board($("cPro"), 7);
 let pro = { i: 0, score: 0, answered: false, order: [], minis: [], errs: [] };
-function shuffle(n) { const a = [...Array(n).keys()]; for (let i = n - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
-function proVisible() { return window.__tabOk("pro"); }
+function proVisible() { return ADMIN ? ADMIN.tabOk("pro") : !!prog.won || allOpen(); }
+const proLocked = () => !prog.won && !allOpen(); // Admin-Version: Tab sichtbar, aber noch zu
 function updProTab() {
-  { const pb = document.querySelector('#mainTabs [data-tab="pro"]'); if (pb) { const lk = !prog.won && !allOpen(); pb.classList.toggle("locked", lk); pb.title = lk ? "Erst den Rechentrainer schaffen" : ""; } }
-  const vis = proVisible(), b = document.querySelector('#mainTabs [data-tab="pro"]');
+  const vis = proVisible(), b = document.querySelector('#mainTabs [data-tab="pro"]'); if (!b) return;
   b.hidden = !vis;
-  if (!vis && typeof current !== "undefined" && current === "pro") show("sp");
+  if (ADMIN) { const lk = proLocked(); b.classList.toggle("locked", lk); b.title = lk ? "Erst den Rechentrainer schaffen" : ""; }
+  if (!vis && typeof current !== "undefined" && current === "pro") show(LAB.tabs[0].id);
 }
+function proHasPic(Q, answered) { return !!((Q.graph && (!Q.hideGraphUntil || answered)) || Q.pts || Q.segs || Q.vlines || (answered && (Q.after || Q.afterPts))); }
 function buildOpts(Q) {
   let order; do order = shuffle(4); while (pro.order.length && order.every((k, i) => k === pro.order[i]));
   pro.order = order;
@@ -1304,7 +1352,7 @@ function buildOpts(Q) {
     if (Q.gopts) {
       b.innerHTML = `<span class="badge">${L}</span><canvas aria-label="Graph ${L}"></canvas>`;
       const board = new Board(b.querySelector("canvas"), 5); board.lab = 2;
-      pro.minis.push({ board, f: Q.gopts[k] });
+      const g = Q.gopts[k]; pro.minis.push({ board, g: typeof g === "function" ? { f: g } : g });
     } else b.innerHTML = `<span class="badge">${L}</span><span>${Q.opts[k]}</span>`;
     b.addEventListener("click", () => answerPro(k, b));
     box.appendChild(b);
@@ -1317,12 +1365,20 @@ function renderPro() {
   clearInterval(pro.timer); $("proLock").hidden = true; pro.locked = false;
   $("proDone").hidden = true; $("proQuiz").hidden = false;
   proHead(); $("proQ").textContent = Q.q;
+  const tb = $("proTable");
+  if (Q.table) { tb.hidden = false; tb.innerHTML = `<table class="wt"><tr><th>x</th>${Q.table[0].map(v => `<th>${num(v)}</th>`).join("")}</tr><tr><th>y</th>${Q.table[1].map(v => `<td>${typeof v === "string" ? v : num(v)}</td>`).join("")}</tr></table>`; }
+  else tb.hidden = true;
   $("cPro").hidden = !proHasPic(Q, false); $("proCap").textContent = Q.cap || ""; $("proCap").hidden = !Q.cap;
   buildOpts(Q);
   $("proFb").textContent = ""; $("proFb").className = "feedback"; $("proEx").hidden = true; $("proNext").hidden = true;
 }
+function revealPro(Q) {
+  $("proEx").textContent = Q.ex; $("proEx").hidden = false;
+  if (proHasPic(Q, true)) $("cPro").hidden = false;
+  if (Q.afterCap) { $("proCap").textContent = Q.afterCap; $("proCap").hidden = false; }
+}
 function answerPro(k, btn) {
-  if (window.__changed) window.__changed();
+  changed();
   const Q = PRO[pro.i];
   if (pro.answered || pro.locked) return;
   const fb = $("proFb");
@@ -1330,15 +1386,12 @@ function answerPro(k, btn) {
     if (!pro.missed) pro.score++;
     pro.answered = true; btn.classList.add("right");
     fb.className = "feedback ok"; fb.textContent = pro.missed ? "Jetzt stimmt’s." : pick(["Richtig!", "Genau!", "Stark!"]);
-    $("proEx").textContent = Q.ex; $("proEx").hidden = false;
+    revealPro(Q);
     $("proNext").hidden = false; $("proNext").textContent = pro.i < PRO.length - 1 ? "Nächste Frage" : "Auswertung";
     $("proNext").focus();
     $("proOpts").querySelectorAll(".opt").forEach(o => o.disabled = o !== btn);
-    if (proHasPic(Q, true)) $("cPro").hidden = false;
-    if (Q.afterCap) { $("proCap").textContent = Q.afterCap; $("proCap").hidden = false; }
     drawPro();
   } else {
-    // falsch: 3 Sekunden sperren, dann alle 4 Antworten neu mischen
     pro.missed = true; pro.locked = true; btn.classList.add("wrong"); pro.errs[pro.i] = (pro.errs[pro.i] || 0) + 1;
     $("proOpts").querySelectorAll(".opt").forEach(o => o.disabled = true);
     let n = 3; $("proCount").textContent = n; $("proLock").hidden = false;
@@ -1353,16 +1406,16 @@ function answerPro(k, btn) {
   proHead();
 }
 function nextPro() {
-  if (window.__changed) window.__changed();
+  changed();
   if (pro.review) { showProDone(); return; }
   if (pro.i < PRO.length - 1) { pro.i++; renderPro(); return; }
-  pro.finished = true; showProDone();
+  showProDone();
 }
 function showProDone() {
   pro.review = false;
   $("proQuiz").hidden = true; $("proDone").hidden = false;
   const s = pro.score, n = PRO.length;
-  $("proDoneT").textContent = s >= n - 2 ? "Parabel-Profi! 🏅" : s >= n / 2 ? "Stark gemacht!" : "Geschafft!";
+  $("proDoneT").textContent = s >= n - 2 ? LAB.profi + " 🏅" : s >= n / 2 ? "Stark gemacht!" : "Geschafft!";
   $("proDoneS").textContent = `${s} von ${n} Fragen beim ersten Versuch richtig.` + (s < n / 2 ? " Lies dir die Erklärungen in Ruhe nochmal durch, dann klappt es beim zweiten Durchgang besser." : "");
   const list = $("proList"); list.innerHTML = "";
   PRO.forEach((Q, i) => {
@@ -1380,38 +1433,43 @@ function reviewPro(i) {
   $("proOpts").querySelectorAll(".opt").forEach(o => { if (+o.dataset.k === Q.ok) o.classList.add("right"); else o.disabled = true; });
   const e = pro.errs[i] || 0;
   $("proHead").textContent = `Rückblick: Frage ${i + 1} von ${PRO.length} · ${e === 0 ? "sofort richtig" : e === 1 ? "1 Fehler" : e + " Fehler"}`;
-  $("proEx").textContent = Q.ex; $("proEx").hidden = false;
-  if (proHasPic(Q, true)) $("cPro").hidden = false;
-  if (Q.afterCap) { $("proCap").textContent = Q.afterCap; $("proCap").hidden = false; }
+  revealPro(Q);
   $("proNext").hidden = false; $("proNext").textContent = "Zurück zur Übersicht";
   window.scrollTo({ top: 0 }); requestAnimationFrame(drawPro);
 }
-function proHasPic(Q, answered) { return !!(Q.graph || Q.pts || Q.vlines || (answered && (Q.after || Q.afterPts))); }
 function drawPro() {
   const Q = PRO[pro.i]; if (!Q) return;
   const B = bPro;
   if (!$("cPro").hidden) {
-    B.begin();
-    const items = [...(Q.graph || []), ...(pro.answered && Q.after ? Q.after : [])];
+    B.lab = Q.noNums ? 99 : 1; B.begin();
+    const items = [...((Q.graph && (!Q.hideGraphUntil || pro.answered)) ? Q.graph : []), ...(pro.answered && Q.after ? Q.after : [])];
     (Q.vlines || []).forEach(x => B.seg(x, -B.R, x, B.R, tok("--d"), 2.5, [8, 6]));
     items.forEach(it => B.curve(it.f, tok(it.c || "--curve"), 3.5, it.dash ? [10, 7] : null));
     const pts = [...(Q.pts || []), ...(pro.answered && Q.afterPts ? Q.afterPts : [])];
+    [...(Q.segs || []), ...(pro.answered && Q.afterSegs ? Q.afterSegs : [])].forEach(([x1, y1, x2, y2, c]) => B.seg(x1, y1, x2, y2, tok(c), 3.5, []));
     pts.forEach(([x, y, l]) => { B.dot(x, y, tok("--ink"), 6); if (l) B.tag([[l, tok("--ink")]], B.X(x) + 9, B.Y(y) - 4, { base: "bottom" }); });
   }
-  pro.minis.forEach(m => { m.board.begin(); m.board.curve(m.f, tok("--curve"), 3); });
+  pro.minis.forEach(m => {
+    m.board.begin();
+    if (m.g.v !== undefined) m.board.seg(m.g.v, -m.board.R, m.g.v, m.board.R, tok("--curve"), 3, []);
+    else m.board.curve(m.g.f, tok("--curve"), 3);
+  });
 }
 $("proNext").addEventListener("click", nextPro);
 $("proAgain").addEventListener("click", () => { pro = { i: 0, score: 0, answered: false, order: [], minis: [], errs: [] }; renderPro(); });
 window.addEventListener("hashchange", updProTab);
 
 /* =============================================================
-   Tabs + Zeichnen
+   TABS, ADRESSE, START (geteilt)
+   Das Labor liefert EXPLORE = { draw: {tab: zeichne}, canvases: [ids], init(), quiz?, fontsReady? }
    ============================================================= */
 // Adresse merkt sich den Tab (z. B. …#rechentrainer), damit Neuladen und Links an derselben Stelle landen
 var hashOn = false;
-const SLUG = { sp: "scheitelpunktform", forms: "drei-formen", pq: "pq-formel", train: "rechentrainer", pro: "profi" };
+const SLUG = {};
+LAB.tabs.forEach(t => SLUG[t.id] = t.slug);
+SLUG.train = "rechentrainer"; SLUG.pro = "profi";
 function setHash() {
-  const sub = current === "sp" && spMode === "quiz" ? "/quiz" : "";
+  const q = EXPLORE.quiz, sub = q && current === q.tab && q.on() ? "/quiz" : "";
   const h = "#" + SLUG[current] + sub + (/alle/i.test(location.hash) ? "/alle" : "");
   if (location.hash !== h) { try { history.replaceState(null, "", h); } catch (_) {} }
 }
@@ -1420,36 +1478,39 @@ function hashTab() {
   for (const t in SLUG) if (h[0] === SLUG[t]) return { tab: t, quiz: h.indexOf("quiz") >= 0 };
   return null;
 }
-let current = "sp";
-const drawers = { pro: drawPro, train: drawTrain, pq: drawPq, forms: drawForms, sp: () => { fitVertex(); drawSp(); } };
+const FIRST = LAB.tabs[0].id;
+let current = FIRST;
+const drawers = Object.assign({}, EXPLORE.draw, { train: drawTrain, pro: drawPro });
 function show(tab) {
-  if (tab === "pro" && !prog.won && !allOpen()) { const f = [...document.querySelectorAll("#mainTabs button")].find(b => !b.hidden && b.dataset.tab !== "pro"); if (!f) return; tab = f.dataset.tab; }
-  current = tab; if (window.__changed) window.__changed();
+  if (ADMIN && tab === "pro" && proLocked()) { const f = [...document.querySelectorAll("#mainTabs button")].find(b => !b.hidden && b.dataset.tab !== "pro"); if (!f) return; tab = f.dataset.tab; }
+  current = tab; changed();
   document.querySelectorAll("#mainTabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === tab));
   document.querySelectorAll(".tab").forEach(s => s.hidden = s.id !== "tab-" + tab);
   try { localStorage.setItem(KEY + "-tab", tab); } catch (_) {}
   if (hashOn) setHash();
   requestAnimationFrame(drawers[tab]);
 }
-document.querySelectorAll("#mainTabs button").forEach(b => b.addEventListener("click", () => { if (b.dataset.tab === "pro" && !prog.won && !allOpen()) { window.__proLocked(); return; } show(b.dataset.tab); }));
+document.querySelectorAll("#mainTabs button").forEach(b => b.addEventListener("click", () => {
+  if (ADMIN && b.dataset.tab === "pro" && proLocked()) { ADMIN.proLocked(); return; }
+  show(b.dataset.tab);
+}));
 const redraw = () => drawers[current]();
-["cTrain", "cPq", "cForms", "cSp", "cPro", "proOpts"].forEach(id => new ResizeObserver(redraw).observe($(id)));
+[...EXPLORE.canvases, "cTrain", "cPro", "proOpts"].forEach(id => new ResizeObserver(redraw).observe($(id)));
 try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", redraw); } catch (_) {}
-if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { fitVertex(); redraw(); });
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (EXPLORE.fontsReady) EXPLORE.fontsReady(); redraw(); });
 
-renderLevels(); newTask(); updPq(); updForms(); updSp(); renderPro(); updProTab();
-$("winPro").addEventListener("click", () => { closeWin(); show("pro"); });
-let startTab = "sp"; try { startTab = localStorage.getItem(KEY + "-tab") || "sp"; } catch (_) {}
+renderLevels(); newTask(); EXPLORE.init(); renderPro(); updProTab();
+let startTab = FIRST; try { startTab = localStorage.getItem(KEY + "-tab") || FIRST; } catch (_) {}
 { const ht = hashTab(); if (ht) startTab = ht.tab; }
-show(drawers[startTab] && (startTab !== "pro" || proVisible()) ? startTab : "sp");
-{ const ht = hashTab(); if (ht && ht.quiz && current === "sp") setSpMode("quiz"); }
+show(drawers[startTab] && (startTab !== "pro" || proVisible()) ? startTab : FIRST);
+{ const ht = hashTab(), q = EXPLORE.quiz; if (ht && ht.quiz && q && current === q.tab) q.start(); }
 hashOn = true; setHash();
 window.addEventListener("hashchange", () => {
   const t = hashTab(), b = t && document.querySelector('#mainTabs [data-tab="' + t.tab + '"]');
   if (b && !b.hidden && t.tab !== current) b.click();
 });
-window.__lab2 = { show, updProTab, renderLevels, current: () => current, prog: () => prog, pro: () => pro, PRO_N: PRO.length };
-window.__lab = { get task() { return task; }, prog: () => prog };
+// für Tests und die Admin-Anbindung
+window.__lab = { get task() { return task; }, prog: () => prog, pro: () => pro, current: () => current, show, updProTab, renderLevels, PRO_N: PRO.length };
 };
 </script>
 </body>

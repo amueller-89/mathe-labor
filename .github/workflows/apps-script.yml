@@ -1,4 +1,4 @@
-# Schiebt Code.gs ins Apps-Script-Projekt und aktualisiert die bestehende Bereitstellung.
+# Schiebt Code.gs und Labs.gs ins Apps-Script-Projekt und aktualisiert die bestehende Bereitstellung.
 # Die /exec-Adresse bleibt gleich (Deployment-ID wird aus docs/config.js gelesen).
 # Benötigte Secrets: CLASPRC_JSON (Inhalt von ~/.clasprc.json nach "clasp login"), SCRIPT_ID.
 name: Apps Script bereitstellen
@@ -6,7 +6,7 @@ name: Apps Script bereitstellen
 on:
   push:
     branches: [main]
-    paths: ['adminpanel/Code.gs', 'adminpanel/appsscript.json']
+    paths: ['adminpanel/Code.gs', 'adminpanel/Labs.gs', 'adminpanel/appsscript.json']
   workflow_dispatch:
 
 concurrency: apps-script

@@ -1,0 +1,122 @@
+  <!-- ================= 1 SCHEITELPUNKTFORM ================= -->
+  <section id="tab-sp" class="tab">
+    <div class="row" style="margin-bottom:12px;justify-content:space-between">
+      <p class="lede">Regler bewegen oder den Scheitel direkt mit der Maus ziehen.</p>
+      <div class="seg" id="spTabs">
+        <button data-m="explore" aria-selected="true">Erkunden</button>
+        <button data-m="quiz" aria-selected="false">Quiz</button>
+      </div>
+    </div>
+    <div class="stage">
+      <section>
+        <canvas id="cSp" aria-label="Koordinatensystem mit Parabel"></canvas>
+        <div class="legend">
+          <span><i style="background:var(--curve)"></i><span id="spLegMine">Parabel</span></span>
+          <span id="spLegTarget" hidden><i style="background:var(--pencil)"></i>Gesuchte Parabel</span>
+          <span id="spLegNorm"><i style="background:var(--muted)"></i>Normalparabel y = x²</span>
+        </div>
+      </section>
+      <aside class="side">
+        <div class="card" id="spQuizCard" hidden>
+          <p class="label">Quiz</p>
+          <p style="margin:0 0 10px">Stellt die Regler so ein, dass eure Parabel genau auf der <b style="color:var(--pencil)">roten</b> liegt. Wie lautet ihre Gleichung?</p>
+          <div class="row">
+            <button class="btn primary" id="spCheck">Prüfen</button>
+            <button class="btn" id="spSolve">Auflösen</button>
+            <button class="btn" id="spNext">Neue Parabel</button>
+          </div>
+          <div class="feedback" id="spFb" aria-live="polite"></div>
+          <p class="hint" id="spScore">Treffer: 0 von 0</p>
+        </div>
+        <div class="card">
+          <p class="label">Scheitelpunktform &nbsp; y = <span class="ca">a</span>·(x − <span class="cd">d</span>)² + <span class="ce">e</span></p>
+          <div class="formula" id="spForm"></div>
+          <div class="vertex" id="spVertex"></div>
+          <div class="vertex probe" id="spProbe" aria-hidden="true"></div>
+        </div>
+        <div class="card">
+          <div class="sl"><b class="cd">d</b><input type="range" id="spD" class="rd" min="-6" max="6" step="0.05" value="0"><output id="spDo"></output></div>
+          <div class="sl"><b class="ce">e</b><input type="range" id="spE" class="re" min="-6" max="6" step="0.05" value="0"><output id="spEo"></output></div>
+          <div class="sl"><b class="ca">a</b><input type="range" id="spA" class="ra" min="-3" max="3" step="0.05" value="1"><output id="spAo"></output></div>
+          <div class="row" style="margin-top:4px">
+            <button class="btn" id="spReset">Zurück auf y = x²</button>
+            <label class="chk"><input type="checkbox" id="spNorm" checked> Normalparabel</label>
+          </div>
+        </div>
+        <div class="card">
+          <p class="label">Ausmultipliziert (Normalform)</p>
+          <div class="formula small" id="spSteps"></div>
+          <div class="formula small" id="spNf" style="margin-top:4px"></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= 2 DREI FORMEN ================= -->
+  <section id="tab-forms" class="tab" hidden>
+    <p class="lede" style="margin-bottom:12px">Zieh die <span class="cz">Nullstellen</span> oder den <b>Scheitel</b> mit der Maus, oder benutze die Regler. Alle drei Schreibweisen beschreiben dieselbe Parabel.</p>
+    <div class="stage">
+      <section>
+        <canvas id="cForms" aria-label="Parabel mit ziehbaren Nullstellen und Scheitel"></canvas>
+        <div class="legend">
+          <span><i style="background:var(--z)"></i>Nullstellen (ziehbar)</span>
+          <span><i style="background:var(--curve)"></i>Scheitel (ziehbar)</span>
+        </div>
+      </section>
+      <aside class="side">
+        <div class="card">
+          <p class="label">Nullstellenform &nbsp; y = <span class="ca">a</span>·(x − <span class="cz">x₁</span>)·(x − <span class="cz">x₂</span>)</p>
+          <div class="formula mid" id="fmNull"></div>
+          <div class="hint" id="fmMid" style="font-size:15px"></div>
+        </div>
+        <div class="card">
+          <p class="label">Scheitelpunktform &nbsp; y = <span class="ca">a</span>·(x − <span class="cd">d</span>)² + <span class="ce">e</span></p>
+          <div class="formula mid" id="fmSp"></div>
+        </div>
+        <div class="card">
+          <p class="label">Normalform &nbsp; y = ax² + bx + c</p>
+          <div class="formula mid" id="fmNf"></div>
+        </div>
+        <div class="card">
+          <div class="sl"><b class="ca">a</b><input type="range" id="fmA" class="ra" min="-3" max="3" step="0.05" value="1"><output id="fmAo"></output></div>
+          <div class="sl"><b class="cz">x₁</b><input type="range" id="fmX1" class="rz" min="-7" max="7" step="0.05" value="-1"><output id="fmX1o" class="cz"></output></div>
+          <div class="sl"><b class="cz">x₂</b><input type="range" id="fmX2" class="rz" min="-7" max="7" step="0.05" value="3"><output id="fmX2o" class="cz"></output></div>
+          <p class="hint" id="fmZoff" hidden style="margin:0 0 8px">Keine Nullstellen: Zieh den Scheitel unter (bzw. über) die x-Achse, dann gehen die Regler wieder.</p>
+          <div class="row">
+            <button class="btn small" id="fmReset">Zurücksetzen</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= 3 PQ-FORMEL ================= -->
+  <section id="tab-pq" class="tab" hidden>
+    <p class="lede" style="margin-bottom:12px">Die pq-Formel liest man an der Parabel y = x² + px + q ab: <span class="cd">−p/2</span> ist die Mitte (x-Wert des Scheitels), <span class="ce">√D</span> ist, wie weit die Nullstellen links und rechts davon liegen. D sagt außerdem, wie tief der Scheitel unter der x-Achse liegt.</p>
+    <div class="stage">
+      <section>
+        <canvas id="cPq" aria-label="Parabel zur pq-Formel"></canvas>
+        <div class="legend">
+          <span><i style="background:var(--curve)"></i>y = x² + px + q</span>
+          <span><i style="background:var(--d)"></i>Mitte −p/2</span>
+          <span><i style="background:var(--e)"></i>±√D und Tiefe D</span>
+        </div>
+      </section>
+      <aside class="side">
+        <div class="card">
+          <p class="label">Gleichung</p>
+          <div class="eqgrid" id="pqEq"></div>
+        </div>
+        <div class="card">
+          <p class="label">pq-Formel &nbsp; x₁,₂ = <span class="cd">−p/2</span> ± √((<span class="cd">p/2</span>)² − <span class="ca">q</span>)</p>
+          <div class="formula small steps" id="pqSteps"></div>
+          <div class="feedback" id="pqRes"></div>
+        </div>
+        <div class="card">
+          <div class="sl"><b class="cd">p</b><input type="range" id="pqP" class="rd" min="-8" max="8" step="0.1" value="-2"><output id="pqPo" class="cd"></output></div>
+          <div class="sl"><b class="ca">q</b><input type="range" id="pqQ" class="ra" min="-8" max="8" step="0.1" value="-3"><output id="pqQo" class="ca"></output></div>
+        </div>
+        <p class="hint">Zum Üben: Tab 4 Rechentrainer, Stufe 3.</p>
+      </aside>
+    </div>
+  </section>

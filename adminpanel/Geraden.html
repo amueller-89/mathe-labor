@@ -45,17 +45,12 @@ canvas{display:block;width:100%;aspect-ratio:1/1;max-height:640px;border:1px sol
 .side{display:flex;flex-direction:column;gap:14px;min-width:0}
 .card{background:var(--surface);border-radius:12px;padding:14px 16px;min-width:0}
 .label{font-size:13px;color:var(--muted);margin:0 0 4px}
-.formula{font-family:var(--display);font-weight:800;font-size:clamp(26px,3.4vw,40px);line-height:1.2;white-space:nowrap;overflow-x:auto}
 .formula.mid{font-size:clamp(20px,2.4vw,28px)}
 .formula.small{font-size:clamp(17px,2vw,22px);font-weight:600}
-.cm{color:var(--d)} .cb{color:var(--e)} .cz{color:var(--z)} .ca{color:var(--a)}
-.info{font-size:17px;font-weight:700;margin-top:6px;white-space:nowrap}
-@media (max-width:600px){.info{white-space:normal;font-size:15px}}
 .sl{display:grid;grid-template-columns:28px minmax(0,1fr) 72px;align-items:center;gap:10px;margin:8px 0}
 .sl b{font-family:var(--display);font-size:22px}
 .sl input{width:100%;min-width:0}
 .sl output{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
-input.rm{accent-color:var(--d)} input.rb{accent-color:var(--e)}
 .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 button.btn{font:inherit;font-size:15px;padding:8px 14px;border-radius:8px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
 button.btn.primary{background:var(--curve);border-color:var(--curve);color:#fff;font-weight:700}
@@ -68,17 +63,6 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--focus);outline-
 .legend span{display:inline-flex;align-items:center;gap:6px}
 .legend i{display:inline-block;width:22px;height:3px;border-radius:2px}
 .hint{font-size:13px;color:var(--muted);margin:6px 0 0}
-table.wt{border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:18px;width:100%}
-table.wt td,table.wt th{border:1.5px solid var(--line);padding:4px 6px;text-align:center;min-width:2.6em}
-table.wt th{color:var(--muted);font-weight:700;background:var(--paper)}
-table.wt td{font-weight:700}
-#mbTable{table-layout:fixed;font-size:clamp(14px,2.2vw,18px)}
-#mbTable th:first-child{width:2.4em}
-#mbTable td,#mbTable th{min-width:0;padding:4px 2px;white-space:nowrap}
-.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .15em;line-height:1.15}
-.frac>span:first-child{border-bottom:2px solid currentColor;padding:0 .2em}
-.frac>span:last-child{padding:0 .2em}
-.dq{font-family:var(--display);font-weight:700;font-size:clamp(18px,2.1vw,23px);line-height:1.6;white-space:nowrap;overflow-x:auto}
 .levels{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
 @media (max-width:860px){.levels{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .lvl{font:inherit;text-align:left;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
@@ -91,11 +75,7 @@ table.wt td{font-weight:700}
 .answer input.in{font:inherit;font-family:var(--body);font-weight:700;font-size:22px;width:4.2em;padding:2px 6px;text-align:center;border:2px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink)}
 .answer input.in.ok{border-color:var(--e);background:var(--ok-bg)}
 .answer input.in.bad{border-color:var(--pencil);background:var(--bad-bg)}
-.slots{display:grid;grid-template-columns:repeat(4,auto);justify-content:start;align-items:center;column-gap:6px;line-height:1.3;row-gap:6px}
 .slots .p{text-align:center;font-size:1.3em}
-.tgrid{display:grid;grid-auto-flow:column;grid-template-rows:auto auto;justify-content:start;align-items:center;gap:6px 6px;line-height:1.3}
-.tgrid .h{text-align:center;font-family:var(--body);font-size:18px;color:var(--muted)}
-.tgrid input.in{width:3.6em}
 .prog{display:grid;grid-template-columns:auto 1fr auto;gap:2px 12px;font-size:15px;font-variant-numeric:tabular-nums}
 .prog .muted{color:var(--muted)}
 .prowrap{max-width:860px;display:flex;flex-direction:column;gap:14px}
@@ -116,7 +96,6 @@ canvas.procan{max-width:400px;margin:0 0 14px}
 .opts.graphs canvas{max-height:none;border:0}
 .optwrap{position:relative}
 .lock{position:absolute;inset:-6px;display:grid;place-items:center;text-align:center;padding:12px;border-radius:12px;border:2px solid var(--pencil);background:var(--bad-bg);color:var(--pencil);font-family:var(--display);font-size:clamp(20px,2.6vw,26px);line-height:1.3;z-index:2}
-.lock small{display:block;font-family:var(--body);font-size:15px;color:var(--muted);margin-top:4px}
 .lock .count{font-size:38px;font-weight:800;line-height:1.1;margin:2px 0}
 .revlist{display:flex;flex-direction:column;gap:6px;text-align:left}
 .revitem{font:inherit;font-size:15px;display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);cursor:pointer;text-align:left}
@@ -162,7 +141,27 @@ canvas.procan{max-width:400px;margin:0 0 14px}
   .exg .c{grid-column:1/-1;margin:0 0 6px}
   .exg .l,.exg .r{font-size:17px;white-space:normal}
 }
-
+.formula{font-family:var(--display);font-weight:800;font-size:clamp(26px,3.4vw,40px);line-height:1.2;white-space:nowrap;overflow-x:auto}
+.cm{color:var(--d)} .cb{color:var(--e)} .cz{color:var(--z)} .ca{color:var(--a)}
+.info{font-size:17px;font-weight:700;margin-top:6px;white-space:nowrap}
+@media (max-width:600px){.info{white-space:normal;font-size:15px}}
+input.rm{accent-color:var(--d)} input.rb{accent-color:var(--e)}
+table.wt{border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:18px;width:100%}
+table.wt td,table.wt th{border:1.5px solid var(--line);padding:4px 6px;text-align:center;min-width:2.6em}
+table.wt th{color:var(--muted);font-weight:700;background:var(--paper)}
+table.wt td{font-weight:700}
+#mbTable{table-layout:fixed;font-size:clamp(14px,2.2vw,18px)}
+#mbTable th:first-child{width:2.4em}
+#mbTable td,#mbTable th{min-width:0;padding:4px 2px;white-space:nowrap}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .15em;line-height:1.15}
+.frac>span:first-child{border-bottom:2px solid currentColor;padding:0 .2em}
+.frac>span:last-child{padding:0 .2em}
+.dq{font-family:var(--display);font-weight:700;font-size:clamp(18px,2.1vw,23px);line-height:1.6;white-space:nowrap;overflow-x:auto}
+.slots{display:grid;grid-template-columns:repeat(4,auto);justify-content:start;align-items:center;column-gap:6px;line-height:1.3;row-gap:6px}
+.tgrid{display:grid;grid-auto-flow:column;grid-template-rows:auto auto;justify-content:start;align-items:center;gap:6px 6px;line-height:1.3}
+.tgrid .h{text-align:center;font-family:var(--body);font-size:18px;color:var(--muted)}
+.tgrid input.in{width:3.6em}
+.lock small{display:block;font-family:var(--body);font-size:15px;color:var(--muted);margin-top:4px}
 #mainTabs button.locked{opacity:.55}
 #mainTabs button.locked::before{content:"\1F512\00A0"}
 .proToast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:70;background:var(--surface);color:var(--ink);border:2px solid var(--line);border-radius:12px;padding:12px 18px;box-shadow:0 12px 40px rgb(0 0 0 / .4);max-width:calc(100vw - 32px);text-align:center}
@@ -304,7 +303,7 @@ canvas.procan{max-width:400px;margin:0 0 14px}
         <div class="card">
           <p class="label">Dein Fortschritt</p>
           <div class="prog" id="trProg"></div>
-          <div class="row" style="margin-top:8px"><button class="btn small" id="trReset" hidden>Fortschritt zurücksetzen</button></div>
+          <div class="row" style="margin-top:8px"><button class="btn small" id="trReset">Fortschritt zurücksetzen</button></div>
         </div>
       </aside>
     </div>
@@ -365,7 +364,6 @@ canvas.procan{max-width:400px;margin:0 0 14px}
   </div>
 </div>
 
-
 <div class="gate" id="gate">
   <div class="box">
     <h2>Geraden-Labor</h2>
@@ -385,6 +383,8 @@ canvas.procan{max-width:400px;margin:0 0 14px}
 </div>
 
 <script>
+/* Anmeldung + Verbindung zum Apps Script, nur in der Admin-Version (adminpanel/, docs/).
+   geraden ersetzt der Build durch die Labor-ID. */
 (() => {
 "use strict";
 const LAB = "geraden", IDKEY = "labor-" + LAB + "-name", SESS = "labor-" + LAB + "-sitzung";
@@ -411,14 +411,21 @@ const errMsg = e => {
   const m = e && e.message ? String(e.message).replace(/^(Exception|Error):\s*/, "") : "";
   return /Namen|Labor/.test(m) ? m : "Die Verbindung klappt gerade nicht. Versuch es gleich nochmal.";
 };
-let me = null, allowed = [], started = false, pingTimer = null, debounce = null, online = true, epoch = 0;
-window.__tabOk = t => allowed.indexOf(t) >= 0;
+let me = null, allowed = [], alle = false, started = false, pingTimer = null, debounce = null, online = true, epoch = 0;
+const tabOk = t => allowed.indexOf(t) >= 0;
 let toastT = null;
-window.__proLocked = () => {
-  let t = document.querySelector(".proToast");
-  if (!t) { t = document.createElement("div"); t.className = "proToast"; t.setAttribute("role", "status"); document.body.appendChild(t); }
-  t.textContent = "Der Profi-Tab öffnet sich, sobald du alle Stufen im Rechentrainer geschafft hast.";
-  t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 3500);
+// Haken für das Labor (labs/_shared/core.js liest window.LAB_ADMIN)
+window.LAB_ADMIN = {
+  alle: () => alle,
+  tabOk,
+  prog: null,
+  changed: () => { clearTimeout(debounce); debounce = setTimeout(ping, 2000); },
+  proLocked() {
+    let t = document.querySelector(".proToast");
+    if (!t) { t = document.createElement("div"); t.className = "proToast"; t.setAttribute("role", "status"); document.body.appendChild(t); }
+    t.textContent = "Der Profi-Tab öffnet sich, sobald du alle Stufen im Rechentrainer geschafft hast.";
+    t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 3500);
+  },
 };
 
 function gate(which) {
@@ -441,7 +448,7 @@ async function login(name) {
         await new Promise(ok => setTimeout(ok, 1500 + Math.random() * 2500 * (i + 1)));
       }
     }
-    me = { id: r.id, name: r.name }; store.set(IDKEY, r.name); sess.set(r.name); allowed = r.tabs || []; window.__alle = !!r.alle; epoch = r.epoch || 0;
+    me = { id: r.id, name: r.name }; store.set(IDKEY, r.name); sess.set(r.name); allowed = r.tabs || []; alle = !!r.alle; epoch = r.epoch || 0;
     start(r.prog);
   } catch (e) {
     $("gLoad").hidden = true; $("gErr").textContent = errMsg(e);
@@ -450,7 +457,7 @@ async function login(name) {
 function start(prog) {
   if (started) return;
   started = true;
-  window.__initProg = prog || {};
+  window.LAB_ADMIN.prog = prog || {};
   window.__startLab();
   $("whoName").textContent = me.name;
   $("who").hidden = false;
@@ -459,7 +466,7 @@ function start(prog) {
   setTimeout(ping, 1500);
 }
 function snap() {
-  const L = window.__lab2; if (!L) return null;
+  const L = window.__lab; if (!L) return null;
   const p = L.prog(), q = L.pro();
   return {
     tab: L.current(),
@@ -478,16 +485,15 @@ async function ping() {
     if (!r.known) { clearInterval(pingTimer); me = null; store.del(IDKEY); sess.del(); gate("gBye"); return; }
     // Lehrkraft hat alle zurückgesetzt: neu laden, dann startet alles bei null (Anmeldung bleibt)
     if (r.epoch && epoch && r.epoch !== epoch) { clearInterval(pingTimer); location.reload(); return; }
-    if (JSON.stringify(r.tabs) !== JSON.stringify(allowed) || !!r.alle !== !!window.__alle) { allowed = r.tabs || []; window.__alle = !!r.alle; apply(); }
+    if (JSON.stringify(r.tabs) !== JSON.stringify(allowed) || !!r.alle !== alle) { allowed = r.tabs || []; alle = !!r.alle; apply(); }
   } catch (e) { setOnline(false); }
 }
 function setOnline(v) { online = v; $("whoDot").classList.toggle("off", !v); $("whoDot").title = v ? "verbunden" : "keine Verbindung"; }
-window.__changed = () => { clearTimeout(debounce); debounce = setTimeout(ping, 2000); };
 function apply() {
-  const L = window.__lab2; if (!L) return;
-  document.querySelectorAll("#mainTabs button").forEach(b => { if (b.dataset.tab !== "pro") b.hidden = !window.__tabOk(b.dataset.tab); });
+  const L = window.__lab; if (!L) return;
+  document.querySelectorAll("#mainTabs button").forEach(b => { if (b.dataset.tab !== "pro") b.hidden = !tabOk(b.dataset.tab); });
   L.updProTab(); L.renderLevels();
-  $("winPro").hidden = !window.__tabOk("pro"); $("winProTxt").hidden = !window.__tabOk("pro");
+  $("winPro").hidden = !tabOk("pro"); $("winProTxt").hidden = !tabOk("pro");
   const vis = [...document.querySelectorAll("#mainTabs button")].filter(b => !b.hidden);
   if (!vis.length) { gate("gWait"); return; }
   if (!$("gWait").hidden || !$("gLogin").hidden || !$("gAgain").hidden) gate(null);
@@ -510,6 +516,9 @@ document.addEventListener("DOMContentLoaded", () => {
 <script>
 window.__startLab = () => {
 "use strict";
+const LAB = {"id": "geraden", "title": "Geraden-Labor", "thema": "Lineare Funktionen", "klasse": "UIIIb", "icon": "M4 25L28 6", "tabs": [{"id": "mb", "label": "Steigung & y-Achsenabschnitt", "slug": "steigung"}, {"id": "pts", "label": "Zwei Punkte", "slug": "zwei-punkte"}], "skizze": "Gerade", "win": "Ablesen, Normalform, Wertetabelle und Gerade durch zwei Punkte: Lineare Funktionen hast du drauf. Richtig gut gemacht!", "profi": "Geraden-Profi!", "file": "Geraden"};
+/* Geteilter Kern aller Labore: kleine Helfer, Koordinatensystem, Zahlen einlesen.
+   Wird vom Build (build.py) zusammen mit dem Code des Labors in eine Datei kopiert. */
 const $ = id => document.getElementById(id);
 const tok = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 const r6 = v => Math.round(v * 1e6) / 1e6;
@@ -519,17 +528,12 @@ const rnd = n => Math.floor(Math.random() * n);
 const pick = arr => arr[rnd(arr.length)];
 const near = (u, v, tol = 1e-6) => Math.abs(u - v) <= tol;
 const paren = v => r6(v) < 0 ? `(${num(v)})` : num(v);
-
-// y = m·x + b als HTML
-function lineHTML(m, b, col = true) {
-  m = r6(m); b = r6(b);
-  const cm = col ? "cm" : "", cb = col ? "cb" : "";
-  if (m === 0) return `y = ${sp(cb, num(b))}`;
-  const mx = m === 1 ? "x" : m === -1 ? sp(cm, "−") + "x" : sp(cm, num(m)) + "x";
-  const bp = b === 0 ? "" : b > 0 ? ` + ${sp(cb, num(b))}` : ` − ${sp(cb, num(-b))}`;
-  return `y = ${mx}${bp}`;
-}
 const frac = (a, b) => `<span class="frac"><span>${a}</span><span>${b}</span></span>`;
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+function nz(lo, hi) { let v; do v = lo + rnd(hi - lo + 1); while (v === 0); return v; }
+function shuffle(n) { const a = [...Array(n).keys()]; for (let i = n - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+// Eingabefeld für den Rechentrainer; data-k ist der Schlüssel in task.want
+const inp = k => `<input class="in" data-k="${k}" inputmode="decimal" autocomplete="off" spellcheck="false" aria-label="${k}">`;
 
 // ---------- Koordinatensystem ----------
 class Board {
@@ -543,7 +547,8 @@ class Board {
     const R = this.R, m = 14; this.u = (Math.min(this.w, this.h) - 2 * m) / (2 * R);
     this.ox = this.w / 2; this.oy = this.h / 2;
     const X = x => this.X(x), Y = y => this.Y(y);
-    ctx.clearRect(0, 0, this.w, this.h); ctx.setLineDash([]); ctx.lineWidth = 1;
+    ctx.clearRect(0, 0, this.w, this.h); ctx.setLineDash([]);
+    ctx.lineWidth = 1;
     for (let i = -R; i <= R; i++) {
       ctx.strokeStyle = i % 5 ? tok("--grid") : tok("--grid-strong");
       ctx.beginPath(); ctx.moveTo(X(i), Y(-R)); ctx.lineTo(X(i), Y(R)); ctx.stroke();
@@ -573,10 +578,10 @@ class Board {
     const R = this.R;
     this.clip(c => {
       c.strokeStyle = color; c.lineWidth = width; c.setLineDash(dash || []); c.lineJoin = "round"; c.lineCap = "round";
-      c.beginPath(); let started = false; const N = 400;
+      c.beginPath(); let started = false; const N = 700;
       for (let i = 0; i <= N; i++) {
         const x = -R + 2 * R * i / N, y = f(x);
-        if (y > R + 40 || y < -R - 40) { if (started) { c.lineTo(this.X(x), this.Y(Math.max(-R - 40, Math.min(R + 40, y)))); c.stroke(); c.beginPath(); started = false; } continue; }
+        if (y > R + 4 || y < -R - 4) { if (started) { c.lineTo(this.X(x), this.Y(Math.max(-R - 4, Math.min(R + 4, y)))); c.stroke(); c.beginPath(); started = false; } continue; }
         if (!started) { c.moveTo(this.X(x), this.Y(y)); started = true; } else c.lineTo(this.X(x), this.Y(y));
       }
       c.stroke();
@@ -590,6 +595,7 @@ class Board {
     const c = this.ctx; c.setLineDash([]); c.fillStyle = color; c.strokeStyle = tok("--paper"); c.lineWidth = 2;
     c.beginPath(); c.arc(this.X(x), this.Y(y), r, 0, 2 * Math.PI); c.fill(); if (ring) c.stroke();
   }
+  // farbiger Text mit Hintergrund; parts = [[text, farbe], ...]
   tag(parts, px, py, { align = "left", base = "top", size = 15 } = {}) {
     const c = this.ctx; c.font = `700 ${size}px ${tok("--body")}`; c.textBaseline = "alphabetic"; c.textAlign = "left";
     const tw = parts.reduce((s, p) => s + c.measureText(p[0]).width, 0);
@@ -602,20 +608,22 @@ class Board {
   }
   pointer(e) { const r = this.c.getBoundingClientRect(); return [this.ix(e.clientX - r.left), this.iy(e.clientY - r.top), e.clientX - r.left, e.clientY - r.top]; }
 }
-function draggable(board, hit, move) {
+
+// Ziehen: hit(x,y,px,py) liefert Griff oder null; move(griff,x,y)
+function draggable(board, hit, move, redraw) { // redraw optional
   const c = board.c; let grab = null;
   c.addEventListener("pointerdown", e => { const [x, y, px, py] = board.pointer(e); grab = hit(x, y, px, py); if (grab) { c.setPointerCapture(e.pointerId); e.preventDefault(); } });
   c.addEventListener("pointermove", e => {
     const [x, y, px, py] = board.pointer(e);
-    if (grab) move(grab, x, y); else c.style.cursor = hit(x, y, px, py) ? "grab" : "default";
+    if (grab) { move(grab, x, y); if (redraw) redraw(); } else c.style.cursor = hit(x, y, px, py) ? "grab" : "default";
   });
   const end = () => { grab = null; };
   c.addEventListener("pointerup", end); c.addEventListener("pointercancel", end);
 }
 const nearPx = (board, x, y, px, py, r = 16) => Math.hypot(board.X(x) - px, board.Y(y) - py) <= r;
 const snapTo = (v, s) => r6(Math.round(v / s) * s);
-const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 
+// ---------- Zahlen einlesen (Komma, Minuszeichen, Brüche wie 3/4) ----------
 function parse(str) {
   let s = String(str).trim().replace(/[−–—]/g, "-").replace(/\s/g, "").replace(",", ".");
   if (s === "") return NaN;
@@ -625,6 +633,25 @@ function parse(str) {
   if (fr) return Number(fr[1]) / Number(fr[2]);
   if (!/^[+-]?(\d+\.?\d*|\.\d+)$/.test(s)) return NaN;
   return Number(s);
+}
+
+// ---------- Admin-Version ----------
+// Die Version mit Anmeldung (adminpanel/, docs/) setzt vorher window.LAB_ADMIN, sonst ist es null.
+// alle(): Lehrkraft hat für dieses Kind alles geöffnet · tabOk(t): Tab freigegeben · prog: gespeicherter Fortschritt
+// changed(): Fortschritt geändert (wird gebündelt an den Server geschickt) · proLocked(): Hinweis „Profi noch zu“
+const ADMIN = window.LAB_ADMIN || null;
+const changed = () => { if (ADMIN) ADMIN.changed(); };
+// #alle in der Adresse öffnet alle Stufen und den Profi-Tab (für die Lehrkraft)
+const allOpen = () => ADMIN ? ADMIN.alle() : /alle/i.test(location.hash);
+
+// y = m·x + b als HTML
+function lineHTML(m, b, col = true) {
+  m = r6(m); b = r6(b);
+  const cm = col ? "cm" : "", cb = col ? "cb" : "";
+  if (m === 0) return `y = ${sp(cb, num(b))}`;
+  const mx = m === 1 ? "x" : m === -1 ? sp(cm, "−") + "x" : sp(cm, num(m)) + "x";
+  const bp = b === 0 ? "" : b > 0 ? ` + ${sp(cb, num(b))}` : ` − ${sp(cb, num(-b))}`;
+  return `y = ${mx}${bp}`;
 }
 
 /* =============================================================
@@ -756,25 +783,19 @@ draggable(bPts,
   (pt, x, y) => { pt.x = clamp(snapTo(x, 0.1), -7.5, 7.5); pt.y = clamp(snapTo(y, 0.1), -7.5, 7.5); updPts(); });
 
 /* =============================================================
-   3 RECHENTRAINER
+   3 RECHENTRAINER: Stufen, Aufgaben, Skizze
    ============================================================= */
+
 const LEVELS = [
   { t: "Stufe 1", s: "Gleichung aus dem Graphen" },
   { t: "Stufe 2", s: "In Normalform bringen" },
   { t: "Stufe 3", s: "Wertetabelle ausfüllen" },
   { t: "Stufe 4", s: "Gerade durch zwei Punkte" },
 ];
-const NEED = 3, KEY = "geraden-labor-v1";
-let prog = { c: [0, 0, 0, 0], f: [0, 0, 0, 0], unl: 0, lvl: 0, won: false };
-try { const s = window.__initProg; if (s && Array.isArray(s.c)) prog = Object.assign(prog, s); } catch (_) {}
-const allOpen = () => !!window.__alle;
-const save = () => { try { localStorage.setItem(KEY, JSON.stringify(prog)); } catch (_) {} if (window.__changed) window.__changed(); };
-const bTrain = new Board($("cTrain"));
-let task = null;
-const inp = k => `<input class="in" data-k="${k}" inputmode="decimal" autocomplete="off" spellcheck="false" aria-label="${k}">`;
+
 const mbSlots = `<div class="slots"><span>y =</span><span class="p cm">m</span><span>· x +</span><span class="p cb">b</span>
   <span>y =</span>${inp("m")}<span>· x +</span>${inp("b")}</div>`;
-function nz(lo, hi) { let v; do v = lo + rnd(hi - lo + 1); while (v === 0); return v; }
+
 function termsHTML(terms) {
   // terms: [{k, x:true/false}]
   return "y = " + terms.map((t, i) => {
@@ -822,59 +843,7 @@ function makeTask(l) {
     hint: "m = Δy : Δx = (f(x₂) − f(x₁)) : (x₂ − x₁). Dann einen Punkt in y = m · x + b einsetzen und nach b auflösen.",
     answer: mbSlots, f: x => m * x + b, sol: () => `m = ${num(y2 - y1)} : ${num(x2 - x1)} = ${num(m)}, &nbsp; ${lineHTML(m, b, false)}` };
 }
-function renderLevels() {
-  const box = $("levels"); box.innerHTML = "";
-  LEVELS.forEach((L, i) => {
-    const b = document.createElement("button"); b.className = "lvl";
-    const open = allOpen() || i <= prog.unl;
-    b.disabled = !open; b.setAttribute("aria-pressed", i === prog.lvl);
-    const n = Math.min(prog.c[i], NEED);
-    b.innerHTML = `<span class="t">${open ? "" : "🔒 "}${L.t}</span><span class="s">${L.s}</span><span class="dots">${"●".repeat(n)}${"○".repeat(NEED - n)}</span>`;
-    b.addEventListener("click", () => { prog.lvl = i; save(); renderLevels(); newTask(); });
-    box.appendChild(b);
-  });
-  $("trProg").innerHTML = LEVELS.map((L, i) => `<span>${L.t}</span><span class="muted">${L.s}</span><span><b>${prog.c[i]}</b> richtig${prog.f[i] ? ` · ${prog.f[i]} ${prog.f[i] === 1 ? "Fehlversuch" : "Fehlversuche"}` : ""}</span>`).join("");
-  updProTab();
-}
-function newTask() {
-  task = makeTask(prog.lvl); task.state = "open"; task.guess = null;
-  $("trTitle").textContent = LEVELS[task.l].t + ": " + task.title;
-  $("trTask").innerHTML = task.task; $("trTask").hidden = !task.task; $("trHint").textContent = task.hint;
-  $("trAnswer").innerHTML = task.answer;
-  $("trFb").textContent = ""; $("trFb").className = "feedback"; $("trSol").hidden = true;
-  $("trCheck").disabled = false; $("trShow").disabled = false;
-  const first = $("trAnswer").querySelector("input.in"); if (first && window.matchMedia("(pointer:fine)").matches && current === "train") first.focus();
-  drawTrain();
-}
-function fields() { const o = {}; $("trAnswer").querySelectorAll("[data-k]").forEach(el => o[el.dataset.k] = el); return o; }
-function mark(el, ok) { el.classList.toggle("ok", ok); el.classList.toggle("bad", !ok); }
-function checkTask() {
-  if (!task || task.state !== "open") return;
-  const F = fields(), fb = $("trFb"), g = {};
-  for (const k in task.want) g[k] = parse(F[k].value);
-  if (Object.values(g).some(isNaN)) { fb.className = "feedback no"; fb.textContent = "Bitte alle Felder ausfüllen."; return; }
-  let ok = true;
-  for (const k in task.want) { const good = near(g[k], task.want[k], 0.001); mark(F[k], good); ok = ok && good; }
-  task.guess = g;
-  if (ok) {
-    task.state = "done"; prog.c[task.l]++;
-    let msg = pick(["Richtig!", "Stark!", "Genau!", "Sauber gerechnet!"]);
-    if (prog.c[task.l] === NEED && task.l < 3 && prog.unl <= task.l) { prog.unl = task.l + 1; msg = `Richtig! ${LEVELS[task.l + 1].t} ist jetzt frei.`; }
-    fb.className = "feedback ok"; fb.textContent = msg;
-    $("trCheck").disabled = true; $("trShow").disabled = true; $("trNext").focus();
-    if (!prog.won && prog.c.every(c => c >= NEED)) { prog.won = true; save(); updProTab(); setTimeout(showWin, 500); }
-  } else {
-    prog.f[task.l]++;
-    fb.className = "feedback no"; fb.textContent = "Noch nicht. Rot markierte Felder nochmal prüfen.";
-  }
-  save(); renderLevels(); drawTrain();
-}
-function showSolution() {
-  if (!task || task.state !== "open") return;
-  task.state = "shown"; $("trSol").innerHTML = task.sol(); $("trSol").hidden = false;
-  const fb = $("trFb"); fb.className = "feedback"; fb.textContent = "Lösung (zählt nicht):";
-  $("trCheck").disabled = true; $("trShow").disabled = true; drawTrain();
-}
+
 function drawTrain() {
   const B = bTrain; B.begin(); if (!task) return;
   const reveal = task.state !== "open", leg = []; // richtige Skizze erst nach richtiger Antwort oder „Lösung zeigen“, sonst könnte man ablesen
@@ -890,22 +859,8 @@ function drawTrain() {
   if (!reveal && task.l !== 0 && task.l !== 3) B.tag([[task.guess ? "Die richtige Skizze kommt, sobald es stimmt" : "Skizze erscheint nach dem Prüfen", tok("--muted")]], B.w / 2, B.Y(-6), { align: "center", base: "middle" });
   $("legTrain").innerHTML = leg.map(([c, t]) => `<span><i style="background:var(${c})"></i>${t}</span>`).join("");
 }
-$("trCheck").addEventListener("click", checkTask);
-$("trShow").addEventListener("click", showSolution);
-$("trNext").addEventListener("click", newTask);
-$("trAnswer").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); task.state === "open" ? checkTask() : newTask(); } });
-$("trAnswer").addEventListener("input", () => { if (task && task.state === "open") $("trFb").textContent = ""; });
-let resetArmed = 0;
-$("trReset").addEventListener("click", () => {
-  const b = $("trReset");
-  if (Date.now() - resetArmed >= 4000) { resetArmed = Date.now(); b.textContent = "Wirklich? Nochmal klicken"; setTimeout(() => { b.textContent = "Fortschritt zurücksetzen"; }, 4000); return; }
-  resetArmed = 0; b.textContent = "Fortschritt zurücksetzen";
-  prog = { c: [0, 0, 0, 0], f: [0, 0, 0, 0], unl: 0, lvl: 0, won: false }; save(); renderLevels(); newTask();
-});
-window.addEventListener("hashchange", renderLevels);
-if (!allOpen() && prog.lvl > prog.unl) prog.lvl = prog.unl;
 
-// ---------- Glückwunsch ----------
+// ---------- Musterbeispiel je Stufe ----------
 
 const M = t => `<span class="cm">${t}</span>`, Bc = t => `<span class="cb">${t}</span>`;
 const EXAMPLES = [
@@ -971,78 +926,10 @@ const EXAMPLES = [
   ] },
 ];
 
-/* ---------- Musterbeispiel je Stufe (Popup) ---------- */
-function exGraph(o) {
-  const u = 30, W = (o.x1 - o.x0) * u, H = (o.y1 - o.y0) * u, X = x => (x - o.x0) * u, Y = y => (o.y1 - y) * u;
-  let g = `<svg class="exsvg" viewBox="-4 -4 ${W + 8} ${H + 8}" role="img" aria-label="${o.label}">`;
-  for (let x = o.x0; x <= o.x1; x++) g += `<line x1="${X(x)}" y1="0" x2="${X(x)}" y2="${H}" style="stroke:var(--grid-strong,#2e3f50)" stroke-width="${x === 0 ? 0 : 1}"/>`;
-  for (let y = o.y0; y <= o.y1; y++) g += `<line x1="0" y1="${Y(y)}" x2="${W}" y2="${Y(y)}" style="stroke:var(--grid-strong,#2e3f50)" stroke-width="${y === 0 ? 0 : 1}"/>`;
-  g += `<line x1="0" y1="${Y(0)}" x2="${W}" y2="${Y(0)}" style="stroke:var(--ink)" stroke-width="1.6"/><line x1="${X(0)}" y1="0" x2="${X(0)}" y2="${H}" style="stroke:var(--ink)" stroke-width="1.6"/>`;
-  g += `<text x="${W - 4}" y="${Y(0) - 6}" text-anchor="end" font-size="14" style="fill:var(--muted)">x</text><text x="${X(0) + 6}" y="14" font-size="14" style="fill:var(--muted)">y</text>`;
-  for (let x = o.x0 + 1; x < o.x1; x++) if (x) g += `<text x="${X(x)}" y="${Y(0) + 14}" text-anchor="middle" font-size="11" style="fill:var(--muted)">${num(x)}</text>`;
-  for (let y = o.y0 + 1; y < o.y1; y++) if (y && (o.skipY || []).indexOf(y) < 0) g += `<text x="${X(0) - 5}" y="${Y(y) + 4}" text-anchor="end" font-size="11" style="fill:var(--muted)">${num(y)}</text>`;
-  let pts = [];
-  for (let i = 0; i <= 240; i++) { const x = o.x0 + (o.x1 - o.x0) * i / 240, y = o.f(x); if (y >= o.y0 && y <= o.y1) pts.push(X(x).toFixed(1) + "," + Y(y).toFixed(1)); }
-  g += `<polyline points="${pts.join(" ")}" fill="none" style="stroke:var(--curve)" stroke-width="3"/>`;
-  (o.path || []).forEach(p => g += `<polyline points="${p.map(([x, y]) => X(x) + "," + Y(y)).join(" ")}" fill="none" style="stroke:var(${o.pathColor || "--d"})" stroke-width="2.6" stroke-dasharray="6 4"/>`);
-  (o.dots || []).forEach(([x, y, c]) => g += `<circle cx="${X(x)}" cy="${Y(y)}" r="5.5" style="fill:var(${c})"/>`);
-  (o.labels || []).forEach(([x, y, t, c, a]) => g += `<text x="${X(x)}" y="${Y(y)}" text-anchor="${a || "middle"}" font-size="16" font-weight="700" style="fill:var(${c || "--ink"})">${t}</text>`);
-  return g + "</svg>";
-}
-function exRender(E) {
-  return E.rows.map(r => {
-    if (r.sec) return `<div class="sec">${r.sec}</div>`;
-    if (r.note) return `<div class="note">${r.note}</div>`;
-    if (r.html) return `<div class="wide">${r.html}</div>`;
-    const [l, rr, c, op] = r;
-    return `<div class="l">${l}</div><div class="r">${rr}${op ? `<span class="op">${op}</span>` : ""}</div><div class="c">${c || ""}</div>`;
-  }).join("");
-}
-function openEx() {
-  const l = task ? task.l : prog.lvl, E = EXAMPLES[l];
-  $("exLvl").textContent = LEVELS[l].t + " · " + LEVELS[l].s;
-  $("exSub").innerHTML = E.sub;
-  $("exBody").innerHTML = exRender(E);
-  $("exWin").hidden = false; document.querySelector(".exbox").scrollTop = 0; $("exOk").focus({ preventScroll: true });
-}
-function closeEx() { $("exWin").hidden = true; const b = $("trEx"); if (b) b.focus(); }
-$("trEx").addEventListener("click", openEx);
-$("exOk").addEventListener("click", closeEx);
-$("exClose").addEventListener("click", closeEx);
-$("exWin").addEventListener("click", e => { if (e.target.id === "exWin") closeEx(); });
-document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("exWin").hidden) closeEx(); });
-
-function showWin() {
-  const tot = prog.c.reduce((s, v) => s + v, 0), bad = prog.f.reduce((s, v) => s + v, 0);
-  $("winStats").textContent = `${tot} Aufgaben richtig gelöst${bad ? `, ${bad} ${bad === 1 ? "Fehlversuch" : "Fehlversuche"} unterwegs` : ", ohne einen einzigen Fehlversuch"}.`;
-  $("win").hidden = false; $("winPro").focus(); confetti();
-}
-function closeWin() { $("win").hidden = true; confettiOn = false; updProTab(); }
-$("winClose").addEventListener("click", closeWin);
-$("winPro").addEventListener("click", () => { closeWin(); show("pro"); });
-$("win").addEventListener("click", e => { if (e.target.id === "win") closeWin(); });
-document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("win").hidden) closeWin(); });
-let confettiOn = false;
-function confetti() {
-  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  const c = $("confetti"), dpr = window.devicePixelRatio || 1, W = innerWidth, H = innerHeight;
-  c.width = W * dpr; c.height = H * dpr; const ctx = c.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  const cols = ["--a", "--d", "--e", "--z", "--curve", "--pencil"].map(tok);
-  const Pp = Array.from({ length: 180 }, () => ({ x: Math.random() * W, y: -20 - Math.random() * H * .6, vx: (Math.random() - .5) * 3, vy: 2 + Math.random() * 3,
-    r: 5 + Math.random() * 6, a: Math.random() * 6.3, va: (Math.random() - .5) * .3, c: pick(cols) }));
-  confettiOn = true; const t0 = performance.now();
-  (function frame(t) {
-    ctx.clearRect(0, 0, W, H);
-    if (!confettiOn) return;
-    for (const p of Pp) { p.x += p.vx; p.y += p.vy; p.vy += 0.03; p.a += p.va;
-      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.fillStyle = p.c; ctx.fillRect(-p.r / 2, -p.r / 4, p.r, p.r / 2); ctx.restore(); }
-    if (t - t0 < 6000) requestAnimationFrame(frame); else ctx.clearRect(0, 0, W, H);
-  })(t0);
-}
-
 /* =============================================================
-   4 PROFI-AUFGABEN (erst nach allen 4 Stufen sichtbar)
+   4 PROFI: Fragen
    ============================================================= */
+
 const PRO = [
   { q: "An der Geraden ist ein Steigungsdreieck mit Δx = 1 und Δy = 2 eingezeichnet. Jetzt zeichnet man ein größeres Steigungsdreieck mit Δx = 3. Was gilt dann für die Steigung m?",
     graph: [{ f: x => 2 * x - 2 }], segs: [[0, -2, 1, -2, "--d"], [1, -2, 1, 0, "--d"]], cap: "Orange: Steigungsdreieck mit Δx = 1 und Δy = 2.",
@@ -1128,17 +1015,197 @@ const PRO = [
     gopts: [{ f: x => x + 2 }, { f: x => -x - 2 }, { f: x => -x + 2 }, { f: x => -2 * x + 1 }], ok: 2,
     ex: "b = 2: Schnitt mit der y-Achse bei 2. m = −1: pro 1 nach rechts 1 nach unten, die Gerade fällt." },
 ];
+
+/* ---------- Anbindung an das gemeinsame Gerüst ---------- */
+const EXPLORE = {
+  draw: { mb: drawMb, pts: drawPts },          // Zeichenfunktion je Tab
+  canvases: ["cMb", "cPts"],                     // bei Größenänderung neu zeichnen
+  init() { updMb(); updPts(); },
+  quiz: { tab: "mb", on: () => mbMode === "quiz", start: () => setMbMode("quiz") },  // …#steigung/quiz
+};
+
+/* =============================================================
+   RECHENTRAINER (geteilt)
+   Das Labor liefert: LEVELS (4 Stufen), makeTask(l), drawTrain(), EXAMPLES (je Stufe ein Musterbeispiel).
+   makeTask(l) gibt zurück: { l, title, task, hint, answer, want, sol(), … }
+     want  = { feldname: richtiger Wert } für die inp(…)-Felder in answer
+     check(F, fb) optional statt want: eigene Prüfung, gibt true/false zurück oder null (= unvollständig)
+     failMsg() optional: eigene Meldung bei falscher Antwort
+   ============================================================= */
+const NEED = 3, KEY = LAB.id + "-labor-v1";
+const freshProg = () => ({ c: [0, 0, 0, 0], f: [0, 0, 0, 0], unl: 0, lvl: 0, won: false });
+let prog = freshProg();
+try { const s = ADMIN ? ADMIN.prog : JSON.parse(localStorage.getItem(KEY)); if (s && Array.isArray(s.c)) prog = Object.assign(prog, s); } catch (_) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(prog)); } catch (_) {} changed(); };
+const bTrain = new Board($("cTrain"));
+let task = null;
+
+function renderLevels() {
+  const box = $("levels"); box.innerHTML = "";
+  LEVELS.forEach((L, i) => {
+    const b = document.createElement("button"); b.className = "lvl";
+    const open = allOpen() || i <= prog.unl;
+    b.disabled = !open; b.setAttribute("aria-pressed", i === prog.lvl);
+    const n = Math.min(prog.c[i], NEED);
+    b.innerHTML = `<span class="t">${open ? "" : "🔒 "}${L.t}</span><span class="s">${L.s}</span><span class="dots">${"●".repeat(n)}${"○".repeat(NEED - n)}</span>`;
+    b.addEventListener("click", () => { prog.lvl = i; save(); renderLevels(); newTask(); });
+    box.appendChild(b);
+  });
+  $("trProg").innerHTML = LEVELS.map((L, i) => `<span>${L.t}</span><span class="muted">${L.s}</span><span><b>${prog.c[i]}</b> richtig${prog.f[i] ? ` · ${prog.f[i]} ${prog.f[i] === 1 ? "Fehlversuch" : "Fehlversuche"}` : ""}</span>`).join("");
+  updProTab();
+}
+function newTask() {
+  task = makeTask(prog.lvl); task.state = "open"; task.guess = null;
+  $("trTitle").textContent = LEVELS[task.l].t + ": " + task.title;
+  $("trTask").innerHTML = task.task; $("trTask").hidden = !task.task; $("trHint").textContent = task.hint;
+  $("trAnswer").innerHTML = task.answer;
+  $("trFb").textContent = ""; $("trFb").className = "feedback"; $("trSol").hidden = true;
+  $("trCheck").disabled = false; $("trShow").disabled = false;
+  const first = $("trAnswer").querySelector("input.in"); if (first && window.matchMedia("(pointer:fine)").matches && current === "train") first.focus();
+  drawTrain();
+}
+function fields() { const o = {}; $("trAnswer").querySelectorAll("[data-k]").forEach(el => o[el.dataset.k] = el); return o; }
+function mark(el, ok) { el.classList.toggle("ok", ok); el.classList.toggle("bad", !ok); }
+function checkTask() {
+  if (!task || task.state !== "open") return;
+  const F = fields(), fb = $("trFb");
+  let ok = true;
+  if (task.check) { ok = task.check(F, fb); if (ok === null) return; }
+  else {
+    const g = {};
+    for (const k in task.want) g[k] = parse(F[k].value);
+    if (Object.values(g).some(isNaN)) { fb.className = "feedback no"; fb.textContent = "Bitte alle Felder ausfüllen."; return; }
+    for (const k in task.want) { const good = near(g[k], task.want[k], 0.001); mark(F[k], good); ok = ok && good; }
+    task.guess = g;
+  }
+  if (ok) {
+    task.state = "done"; prog.c[task.l]++;
+    let msg = pick(["Richtig!", "Stark!", "Genau!", "Sauber gerechnet!"]);
+    if (prog.c[task.l] === NEED && task.l < 3 && prog.unl <= task.l) { prog.unl = task.l + 1; msg = `Richtig! ${LEVELS[task.l + 1].t} ist jetzt frei.`; }
+    fb.className = "feedback ok"; fb.textContent = msg;
+    $("trCheck").disabled = true; $("trShow").disabled = true; $("trNext").focus();
+    if (!prog.won && prog.c.every(c => c >= NEED)) { prog.won = true; save(); updProTab(); setTimeout(showWin, 500); }
+  } else {
+    prog.f[task.l]++;
+    fb.className = "feedback no"; fb.textContent = "Noch nicht. Rot markierte Felder nochmal prüfen.";
+    const m = task.failMsg && task.failMsg(); if (m) fb.textContent = m;
+  }
+  save(); renderLevels(); drawTrain();
+}
+function showSolution() {
+  if (!task || task.state !== "open") return;
+  task.state = "shown"; $("trSol").innerHTML = task.sol(); $("trSol").hidden = false;
+  const fb = $("trFb"); fb.className = "feedback"; fb.textContent = "Lösung (zählt nicht):";
+  $("trCheck").disabled = true; $("trShow").disabled = true; drawTrain();
+}
+$("trCheck").addEventListener("click", checkTask);
+$("trShow").addEventListener("click", showSolution);
+$("trNext").addEventListener("click", newTask);
+$("trAnswer").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); task.state === "open" ? checkTask() : newTask(); } });
+$("trAnswer").addEventListener("input", () => { if (task && task.state === "open") $("trFb").textContent = ""; });
+// Zurücksetzen erst beim zweiten Klick innerhalb von 4 Sekunden
+let resetArmed = 0;
+$("trReset").addEventListener("click", () => {
+  const b = $("trReset");
+  if (Date.now() - resetArmed >= 4000) { resetArmed = Date.now(); b.textContent = "Wirklich? Nochmal klicken"; setTimeout(() => { b.textContent = "Fortschritt zurücksetzen"; }, 4000); return; }
+  resetArmed = 0; b.textContent = "Fortschritt zurücksetzen";
+  prog = freshProg(); save(); renderLevels(); newTask(); updProTab();
+});
+if (ADMIN) $("trReset").hidden = true;
+window.addEventListener("hashchange", renderLevels);
+if (!allOpen() && prog.lvl > prog.unl) prog.lvl = prog.unl;
+
+// ---------- Musterbeispiel je Stufe (Popup) ----------
+// EXAMPLES[l] = { sub, rows }; rows: [links, rechts, Kommentar, Umformung] oder {sec}, {note}, {html}
+function exGraph(o) {
+  const u = 30, W = (o.x1 - o.x0) * u, H = (o.y1 - o.y0) * u, X = x => (x - o.x0) * u, Y = y => (o.y1 - y) * u;
+  let g = `<svg class="exsvg" viewBox="-4 -4 ${W + 8} ${H + 8}" role="img" aria-label="${o.label}">`;
+  for (let x = o.x0; x <= o.x1; x++) g += `<line x1="${X(x)}" y1="0" x2="${X(x)}" y2="${H}" style="stroke:var(--grid-strong,#2e3f50)" stroke-width="${x === 0 ? 0 : 1}"/>`;
+  for (let y = o.y0; y <= o.y1; y++) g += `<line x1="0" y1="${Y(y)}" x2="${W}" y2="${Y(y)}" style="stroke:var(--grid-strong,#2e3f50)" stroke-width="${y === 0 ? 0 : 1}"/>`;
+  g += `<line x1="0" y1="${Y(0)}" x2="${W}" y2="${Y(0)}" style="stroke:var(--ink)" stroke-width="1.6"/><line x1="${X(0)}" y1="0" x2="${X(0)}" y2="${H}" style="stroke:var(--ink)" stroke-width="1.6"/>`;
+  g += `<text x="${W - 4}" y="${Y(0) - 6}" text-anchor="end" font-size="14" style="fill:var(--muted)">x</text><text x="${X(0) + 6}" y="14" font-size="14" style="fill:var(--muted)">y</text>`;
+  for (let x = o.x0 + 1; x < o.x1; x++) if (x) g += `<text x="${X(x)}" y="${Y(0) + 14}" text-anchor="middle" font-size="11" style="fill:var(--muted)">${num(x)}</text>`;
+  for (let y = o.y0 + 1; y < o.y1; y++) if (y && (o.skipY || []).indexOf(y) < 0) g += `<text x="${X(0) - 5}" y="${Y(y) + 4}" text-anchor="end" font-size="11" style="fill:var(--muted)">${num(y)}</text>`;
+  let pts = [];
+  for (let i = 0; i <= 240; i++) { const x = o.x0 + (o.x1 - o.x0) * i / 240, y = o.f(x); if (y >= o.y0 && y <= o.y1) pts.push(X(x).toFixed(1) + "," + Y(y).toFixed(1)); }
+  g += `<polyline points="${pts.join(" ")}" fill="none" style="stroke:var(--curve)" stroke-width="3"/>`;
+  (o.path || []).forEach(p => g += `<polyline points="${p.map(([x, y]) => X(x) + "," + Y(y)).join(" ")}" fill="none" style="stroke:var(${o.pathColor || "--d"})" stroke-width="2.6" stroke-dasharray="6 4"/>`);
+  (o.dots || []).forEach(([x, y, c]) => g += `<circle cx="${X(x)}" cy="${Y(y)}" r="5.5" style="fill:var(${c})"/>`);
+  (o.labels || []).forEach(([x, y, t, c, a]) => g += `<text x="${X(x)}" y="${Y(y)}" text-anchor="${a || "middle"}" font-size="16" font-weight="700" style="fill:var(${c || "--ink"})">${t}</text>`);
+  return g + "</svg>";
+}
+function exRender(E) {
+  return E.rows.map(r => {
+    if (r.sec) return `<div class="sec">${r.sec}</div>`;
+    if (r.note) return `<div class="note">${r.note}</div>`;
+    if (r.html) return `<div class="wide">${r.html}</div>`;
+    const [l, rr, c, op] = r;
+    return `<div class="l">${l}</div><div class="r">${rr}${op ? `<span class="op">${op}</span>` : ""}</div><div class="c">${c || ""}</div>`;
+  }).join("");
+}
+function openEx() {
+  const l = task ? task.l : prog.lvl, E = EXAMPLES[l];
+  $("exLvl").textContent = LEVELS[l].t + " · " + LEVELS[l].s;
+  $("exSub").innerHTML = E.sub;
+  $("exBody").innerHTML = exRender(E);
+  $("exWin").hidden = false; document.querySelector(".exbox").scrollTop = 0; $("exOk").focus({ preventScroll: true });
+}
+function closeEx() { $("exWin").hidden = true; const b = $("trEx"); if (b) b.focus(); }
+$("trEx").addEventListener("click", openEx);
+$("exOk").addEventListener("click", closeEx);
+$("exClose").addEventListener("click", closeEx);
+$("exWin").addEventListener("click", e => { if (e.target.id === "exWin") closeEx(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("exWin").hidden) closeEx(); });
+
+// ---------- Glückwunsch ----------
+function showWin() {
+  const tot = prog.c.reduce((s, v) => s + v, 0), bad = prog.f.reduce((s, v) => s + v, 0);
+  $("winStats").textContent = `${tot} Aufgaben richtig gelöst${bad ? `, ${bad} ${bad === 1 ? "Fehlversuch" : "Fehlversuche"} unterwegs` : ", ohne einen einzigen Fehlversuch"}.`;
+  $("winStats").hidden = tot === 0;
+  $("win").hidden = false; ($("winPro").hidden ? $("winClose") : $("winPro")).focus(); confetti();
+}
+function closeWin() { $("win").hidden = true; confettiOn = false; updProTab(); }
+$("winClose").addEventListener("click", closeWin);
+$("winPro").addEventListener("click", () => { closeWin(); show("pro"); });
+$("win").addEventListener("click", e => { if (e.target.id === "win") closeWin(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("win").hidden) closeWin(); });
+let confettiOn = false;
+function confetti() {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const c = $("confetti"), dpr = window.devicePixelRatio || 1, W = innerWidth, H = innerHeight;
+  c.width = W * dpr; c.height = H * dpr; const ctx = c.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const cols = ["--a", "--d", "--e", "--z", "--curve", "--pencil"].map(tok);
+  const Pp = Array.from({ length: 180 }, () => ({ x: Math.random() * W, y: -20 - Math.random() * H * .6, vx: (Math.random() - .5) * 3, vy: 2 + Math.random() * 3,
+    r: 5 + Math.random() * 6, a: Math.random() * 6.3, va: (Math.random() - .5) * .3, c: pick(cols) }));
+  confettiOn = true; const t0 = performance.now();
+  (function frame(t) {
+    ctx.clearRect(0, 0, W, H);
+    if (!confettiOn) return;
+    for (const p of Pp) { p.x += p.vx; p.y += p.vy; p.vy += 0.03; p.a += p.va;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.fillStyle = p.c; ctx.fillRect(-p.r / 2, -p.r / 4, p.r, p.r / 2); ctx.restore(); }
+    if (t - t0 < 6000) requestAnimationFrame(frame); else ctx.clearRect(0, 0, W, H);
+  })(t0);
+}
+
+/* =============================================================
+   PROFI-QUIZ (geteilt)
+   Das Labor liefert PRO = [ { q, opts | gopts, ok, ex, … } ]:
+     opts   4 Antworttexte          gopts  4 Graphen: Funktion f oder { f } oder { v: x } (senkrechte Linie)
+     ok     Index der richtigen     ex     Erklärung nach der Antwort
+     Skizze: graph [{f, c, dash}], pts [[x, y, "P"]], segs [[x1, y1, x2, y2, "--farbe"]], vlines [x], table [[xs], [ys]]
+             hideGraphUntil (Graph erst nach der Antwort), after / afterPts / afterSegs / afterCap (nach der Antwort), cap, noNums
+   ============================================================= */
 const bPro = new Board($("cPro"), 7);
 let pro = { i: 0, score: 0, answered: false, order: [], minis: [], errs: [] };
-function shuffle(n) { const a = [...Array(n).keys()]; for (let i = n - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
-function proVisible() { return window.__tabOk("pro"); }
+function proVisible() { return ADMIN ? ADMIN.tabOk("pro") : !!prog.won || allOpen(); }
+const proLocked = () => !prog.won && !allOpen(); // Admin-Version: Tab sichtbar, aber noch zu
 function updProTab() {
-  { const pb = document.querySelector('#mainTabs [data-tab="pro"]'); if (pb) { const lk = !prog.won && !allOpen(); pb.classList.toggle("locked", lk); pb.title = lk ? "Erst den Rechentrainer schaffen" : ""; } }
-  const b = document.querySelector('#mainTabs [data-tab="pro"]'); if (!b) return;
-  b.hidden = !proVisible();
-  if (!proVisible() && typeof current !== "undefined" && current === "pro") show("mb");
+  const vis = proVisible(), b = document.querySelector('#mainTabs [data-tab="pro"]'); if (!b) return;
+  b.hidden = !vis;
+  if (ADMIN) { const lk = proLocked(); b.classList.toggle("locked", lk); b.title = lk ? "Erst den Rechentrainer schaffen" : ""; }
+  if (!vis && typeof current !== "undefined" && current === "pro") show(LAB.tabs[0].id);
 }
-function proHasPic(Q, answered) { return !!((Q.graph && (!Q.hideGraphUntil || answered)) || Q.pts || Q.segs || (answered && (Q.after || Q.afterPts))); }
+function proHasPic(Q, answered) { return !!((Q.graph && (!Q.hideGraphUntil || answered)) || Q.pts || Q.segs || Q.vlines || (answered && (Q.after || Q.afterPts))); }
 function buildOpts(Q) {
   let order; do order = shuffle(4); while (pro.order.length && order.every((k, i) => k === pro.order[i]));
   pro.order = order;
@@ -1149,7 +1216,7 @@ function buildOpts(Q) {
     if (Q.gopts) {
       b.innerHTML = `<span class="badge">${L}</span><canvas aria-label="Graph ${L}"></canvas>`;
       const board = new Board(b.querySelector("canvas"), 5); board.lab = 2;
-      pro.minis.push({ board, g: Q.gopts[k] });
+      const g = Q.gopts[k]; pro.minis.push({ board, g: typeof g === "function" ? { f: g } : g });
     } else b.innerHTML = `<span class="badge">${L}</span><span>${Q.opts[k]}</span>`;
     b.addEventListener("click", () => answerPro(k, b));
     box.appendChild(b);
@@ -1175,7 +1242,7 @@ function revealPro(Q) {
   if (Q.afterCap) { $("proCap").textContent = Q.afterCap; $("proCap").hidden = false; }
 }
 function answerPro(k, btn) {
-  if (window.__changed) window.__changed();
+  changed();
   const Q = PRO[pro.i];
   if (pro.answered || pro.locked) return;
   const fb = $("proFb");
@@ -1203,7 +1270,7 @@ function answerPro(k, btn) {
   proHead();
 }
 function nextPro() {
-  if (window.__changed) window.__changed();
+  changed();
   if (pro.review) { showProDone(); return; }
   if (pro.i < PRO.length - 1) { pro.i++; renderPro(); return; }
   showProDone();
@@ -1212,7 +1279,7 @@ function showProDone() {
   pro.review = false;
   $("proQuiz").hidden = true; $("proDone").hidden = false;
   const s = pro.score, n = PRO.length;
-  $("proDoneT").textContent = s >= n - 2 ? "Geraden-Profi! 🏅" : s >= n / 2 ? "Stark gemacht!" : "Geschafft!";
+  $("proDoneT").textContent = s >= n - 2 ? LAB.profi + " 🏅" : s >= n / 2 ? "Stark gemacht!" : "Geschafft!";
   $("proDoneS").textContent = `${s} von ${n} Fragen beim ersten Versuch richtig.` + (s < n / 2 ? " Lies dir die Erklärungen in Ruhe nochmal durch, dann klappt es beim zweiten Durchgang besser." : "");
   const list = $("proList"); list.innerHTML = "";
   PRO.forEach((Q, i) => {
@@ -1240,6 +1307,7 @@ function drawPro() {
   if (!$("cPro").hidden) {
     B.lab = Q.noNums ? 99 : 1; B.begin();
     const items = [...((Q.graph && (!Q.hideGraphUntil || pro.answered)) ? Q.graph : []), ...(pro.answered && Q.after ? Q.after : [])];
+    (Q.vlines || []).forEach(x => B.seg(x, -B.R, x, B.R, tok("--d"), 2.5, [8, 6]));
     items.forEach(it => B.curve(it.f, tok(it.c || "--curve"), 3.5, it.dash ? [10, 7] : null));
     const pts = [...(Q.pts || []), ...(pro.answered && Q.afterPts ? Q.afterPts : [])];
     [...(Q.segs || []), ...(pro.answered && Q.afterSegs ? Q.afterSegs : [])].forEach(([x1, y1, x2, y2, c]) => B.seg(x1, y1, x2, y2, tok(c), 3.5, []));
@@ -1256,13 +1324,16 @@ $("proAgain").addEventListener("click", () => { pro = { i: 0, score: 0, answered
 window.addEventListener("hashchange", updProTab);
 
 /* =============================================================
-   Tabs + Zeichnen
+   TABS, ADRESSE, START (geteilt)
+   Das Labor liefert EXPLORE = { draw: {tab: zeichne}, canvases: [ids], init(), quiz?, fontsReady? }
    ============================================================= */
 // Adresse merkt sich den Tab (z. B. …#rechentrainer), damit Neuladen und Links an derselben Stelle landen
 var hashOn = false;
-const SLUG = { mb: "steigung", pts: "zwei-punkte", train: "rechentrainer", pro: "profi" };
+const SLUG = {};
+LAB.tabs.forEach(t => SLUG[t.id] = t.slug);
+SLUG.train = "rechentrainer"; SLUG.pro = "profi";
 function setHash() {
-  const sub = current === "mb" && mbMode === "quiz" ? "/quiz" : "";
+  const q = EXPLORE.quiz, sub = q && current === q.tab && q.on() ? "/quiz" : "";
   const h = "#" + SLUG[current] + sub + (/alle/i.test(location.hash) ? "/alle" : "");
   if (location.hash !== h) { try { history.replaceState(null, "", h); } catch (_) {} }
 }
@@ -1271,34 +1342,39 @@ function hashTab() {
   for (const t in SLUG) if (h[0] === SLUG[t]) return { tab: t, quiz: h.indexOf("quiz") >= 0 };
   return null;
 }
-let current = "mb";
-const drawers = { mb: drawMb, pts: drawPts, train: drawTrain, pro: drawPro };
+const FIRST = LAB.tabs[0].id;
+let current = FIRST;
+const drawers = Object.assign({}, EXPLORE.draw, { train: drawTrain, pro: drawPro });
 function show(tab) {
-  if (tab === "pro" && !prog.won && !allOpen()) { const f = [...document.querySelectorAll("#mainTabs button")].find(b => !b.hidden && b.dataset.tab !== "pro"); if (!f) return; tab = f.dataset.tab; }
-  current = tab; if (window.__changed) window.__changed();
+  if (ADMIN && tab === "pro" && proLocked()) { const f = [...document.querySelectorAll("#mainTabs button")].find(b => !b.hidden && b.dataset.tab !== "pro"); if (!f) return; tab = f.dataset.tab; }
+  current = tab; changed();
   document.querySelectorAll("#mainTabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === tab));
   document.querySelectorAll(".tab").forEach(s => s.hidden = s.id !== "tab-" + tab);
   try { localStorage.setItem(KEY + "-tab", tab); } catch (_) {}
   if (hashOn) setHash();
   requestAnimationFrame(drawers[tab]);
 }
-document.querySelectorAll("#mainTabs button").forEach(b => b.addEventListener("click", () => { if (b.dataset.tab === "pro" && !prog.won && !allOpen()) { window.__proLocked(); return; } show(b.dataset.tab); }));
+document.querySelectorAll("#mainTabs button").forEach(b => b.addEventListener("click", () => {
+  if (ADMIN && b.dataset.tab === "pro" && proLocked()) { ADMIN.proLocked(); return; }
+  show(b.dataset.tab);
+}));
 const redraw = () => drawers[current]();
-["cMb", "cPts", "cTrain", "cPro", "proOpts"].forEach(id => new ResizeObserver(redraw).observe($(id)));
-if (document.fonts && document.fonts.ready) document.fonts.ready.then(redraw);
+[...EXPLORE.canvases, "cTrain", "cPro", "proOpts"].forEach(id => new ResizeObserver(redraw).observe($(id)));
+try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", redraw); } catch (_) {}
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (EXPLORE.fontsReady) EXPLORE.fontsReady(); redraw(); });
 
-renderLevels(); newTask(); updMb(); updPts(); renderPro(); updProTab();
-let startTab = "mb"; try { startTab = localStorage.getItem(KEY + "-tab") || "mb"; } catch (_) {}
+renderLevels(); newTask(); EXPLORE.init(); renderPro(); updProTab();
+let startTab = FIRST; try { startTab = localStorage.getItem(KEY + "-tab") || FIRST; } catch (_) {}
 { const ht = hashTab(); if (ht) startTab = ht.tab; }
-show(drawers[startTab] && (startTab !== "pro" || proVisible()) ? startTab : "mb");
-{ const ht = hashTab(); if (ht && ht.quiz && current === "mb") setMbMode("quiz"); }
+show(drawers[startTab] && (startTab !== "pro" || proVisible()) ? startTab : FIRST);
+{ const ht = hashTab(), q = EXPLORE.quiz; if (ht && ht.quiz && q && current === q.tab) q.start(); }
 hashOn = true; setHash();
 window.addEventListener("hashchange", () => {
   const t = hashTab(), b = t && document.querySelector('#mainTabs [data-tab="' + t.tab + '"]');
   if (b && !b.hidden && t.tab !== current) b.click();
 });
-window.__lab2 = { show, updProTab, renderLevels, current: () => current, prog: () => prog, pro: () => pro, PRO_N: PRO.length };
-window.__lab = { get task() { return task; }, prog: () => prog };
+// für Tests und die Admin-Anbindung
+window.__lab = { get task() { return task; }, prog: () => prog, pro: () => pro, current: () => current, show, updProTab, renderLevels, PRO_N: PRO.length };
 };
 </script>
 </body>

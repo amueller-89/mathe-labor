@@ -76,7 +76,7 @@ await kid.fill('#gWer','Ben');await kid.click('#gGo');await kid.waitForTimeout(8
 await kid.click('#mainTabs [data-tab=train]');await kid.waitForTimeout(200);
 console.log('hash',await kid.evaluate(()=>location.hash));
 await kid.reload();await kid.waitForTimeout(1500);
-console.log('F5: gate hidden',await kid.isHidden('#gate'),'who',await kid.textContent('#whoName'),'tab',await kid.evaluate(()=>window.__lab2.current()));
+console.log('F5: gate hidden',await kid.isHidden('#gate'),'who',await kid.textContent('#whoName'),'tab',await kid.evaluate(()=>window.__lab.current()));
 // neuer Besuch (Sitzung weg) -> "Bist du"
 await kid.evaluate(()=>sessionStorage.clear());await kid.reload();await kid.waitForTimeout(500);
 console.log('gAgain',await kid.isVisible('#gAgain'),await kid.textContent('#gWho'));
