@@ -177,7 +177,7 @@ function anmelden(lab, name) {
     });
   }
   C().put('seen_' + k.id, String(Date.now()), 21600);
-  return antwort_(lab, k.id, { id: k.id, name: k.name, prog: (k.st && k.st.prog) || null });
+  return antwort_(lab, k.id, { id: k.id, name: k.name, prog: (k.st && k.st.prog) || null, tab: (k.st && k.st.tab) || null });
 }
 
 // Wird alle 20 s vom Labor aufgerufen. state = neuer Fortschritt, oder null, wenn sich nichts geändert hat.

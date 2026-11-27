@@ -50,7 +50,7 @@ function gate(which) {
   $("gErr").textContent = ""; $("gLoad").hidden = true;
   if (which === "gLogin") setTimeout(() => $("gWer").focus(), 50);
 }
-async function login(name) {
+async function login(name, resume) {
   $("gErr").textContent = ""; $("gLoad").hidden = false;
   document.querySelectorAll("#gate button").forEach(b => b.disabled = true);
   try {
@@ -65,6 +65,8 @@ async function login(name) {
       }
     }
     me = { id: r.id, name: r.name }; store.set(IDKEY, r.name); sess.set(r.name); allowed = r.tabs || []; alle = !!r.alle; epoch = r.epoch || 0; need = r.need || 3;
+    // Start-Tab: nach F5 der aus der Adresse, sonst der zuletzt gespeicherte DIESES Kindes (nie der eines anderen Kindes am selben Rechner)
+    window.LAB_ADMIN.resume = !!resume; window.LAB_ADMIN.tab = r.tab || null;
     start(r.prog);
   } catch (e) {
     $("gLoad").hidden = true; $("gErr").textContent = errMsg(e);
@@ -142,7 +144,7 @@ $("whoSwitch").addEventListener("click", () => { clearInterval(pingTimer); me = 
 $("gNo").addEventListener("click", () => sess.del());
 document.addEventListener("DOMContentLoaded", () => {
   const known = store.get(IDKEY);
-  if (known && sess.get() === known) { $("gWho").textContent = known; gate("gAgain"); login(known); }
+  if (known && sess.get() === known) { $("gWho").textContent = known; gate("gAgain"); login(known, true); }
   else if (known) { $("gWho").textContent = known; gate("gAgain"); } else gate("gLogin");
 });
 })();

@@ -972,10 +972,13 @@ try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", redr
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (EXPLORE.fontsReady) EXPLORE.fontsReady(); redraw(); });
 
 renderLevels(); newTask(); EXPLORE.init(); renderPro(); updProTab();
-let startTab = FIRST; try { startTab = localStorage.getItem(KEY + "-tab") || FIRST; } catch (_) {}
-{ const ht = hashTab(); if (ht) startTab = ht.tab; }
+// Admin-Version: Adresse und localStorage gehören evtl. dem Kind, das vorher an diesem Rechner saß
+const startHash = ADMIN && !ADMIN.resume ? null : hashTab();
+let startTab = FIRST;
+if (ADMIN) startTab = ADMIN.tab || FIRST; else try { startTab = localStorage.getItem(KEY + "-tab") || FIRST; } catch (_) {}
+if (startHash) startTab = startHash.tab;
 show(drawers[startTab] && (startTab !== "pro" || proVisible()) ? startTab : FIRST);
-{ const ht = hashTab(), q = EXPLORE.quiz; if (ht && ht.quiz && q && current === q.tab) q.start(); }
+{ const q = EXPLORE.quiz; if (startHash && startHash.quiz && q && current === q.tab) q.start(); }
 hashOn = true; setHash();
 window.addEventListener("hashchange", () => {
   const t = hashTab(), b = t && document.querySelector('#mainTabs [data-tab="' + t.tab + '"]');
