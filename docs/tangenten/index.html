@@ -1,0 +1,1182 @@
+<!doctype html>
+<html lang="de" data-theme="dark">
+<head>
+<script src="../config.js"></script>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%2317212b%22/%3E%3Cpath%20d%3D%22M4%2026H29M7%2029V3%22%20stroke%3D%22%2393a5b6%22%20stroke-width%3D%222%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22/%3E%3Cpath%20d%3D%22M7%205Q15%2037%2023%205M9%2025L29%2013%22%20stroke%3D%22%236b9bff%22%20stroke-width%3D%223.2%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22/%3E%3C/svg%3E">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tangenten-Labor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+:root{
+  --paper:#fbfcfd; --ink:#15212c; --muted:#58697a; --line:#d4dee8; --surface:#eef3f8;
+  --grid:#dbe6f0; --grid-strong:#b3c6d8;
+  --a:#8e44ad; --d:#e07a1f; --e:#2e9e4f; --z:#0e7c86; --curve:#1f5eff; --pencil:#d2452f; --focus:#1f5eff;
+  --ok-bg:#e3f4e8; --bad-bg:#fbe6e2;
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible",system-ui,-apple-system,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0f161d; --ink:#e5ecf3; --muted:#93a5b6; --line:#273543; --surface:#17212b;
+  --grid:#1c2834; --grid-strong:#2e3f50;
+  --a:#c387e0; --d:#f5a25a; --e:#5fcf82; --z:#4fc3cf; --curve:#6b9bff; --pencil:#ff7d60; --focus:#6b9bff;
+  --ok-bg:#16301f; --bad-bg:#3a1d17; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0f161d; --ink:#e5ecf3; --muted:#93a5b6; --line:#273543; --surface:#17212b;
+  --grid:#1c2834; --grid-strong:#2e3f50;
+  --a:#c387e0; --d:#f5a25a; --e:#5fcf82; --z:#4fc3cf; --curve:#6b9bff; --pencil:#ff7d60; --focus:#6b9bff;
+  --ok-bg:#16301f; --bad-bg:#3a1d17; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+.wrap{max-width:1240px;margin:0 auto;padding:20px max(16px,env(safe-area-inset-right,0px)) 32px max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 24px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,4vw,40px);line-height:1.05;margin:0}
+.seg{display:inline-flex;flex-wrap:wrap}
+.seg button{font:inherit;font-size:15px;padding:8px 14px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer;margin-left:-1.5px}
+.seg button:first-child{border-radius:8px 0 0 8px;margin-left:0}
+.seg button:last-child{border-radius:0 8px 8px 0}
+.seg button[aria-selected="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.lede{margin:0;color:var(--muted);max-width:75ch}
+.stage{display:grid;grid-template-columns:minmax(0,11fr) minmax(0,10fr);gap:18px;align-items:start}
+@media (max-width:860px){.stage{grid-template-columns:minmax(0,1fr)}}
+canvas{display:block;width:100%;aspect-ratio:1/1;max-height:640px;border:1px solid var(--line);border-radius:12px;background:var(--paper);touch-action:none}
+.side{display:flex;flex-direction:column;gap:14px;min-width:0}
+.card{background:var(--surface);border-radius:12px;padding:14px 16px;min-width:0}
+.label{font-size:13px;color:var(--muted);margin:0 0 4px}
+.formula.mid{font-size:clamp(20px,2.4vw,28px)}
+.formula.small{font-size:clamp(17px,2vw,22px);font-weight:600}
+.sl{display:grid;grid-template-columns:28px minmax(0,1fr) 72px;align-items:center;gap:10px;margin:8px 0}
+.sl b{font-family:var(--display);font-size:22px}
+.sl input{width:100%;min-width:0}
+.sl output{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button.btn{font:inherit;font-size:15px;padding:8px 14px;border-radius:8px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+button.btn.primary{background:var(--curve);border-color:var(--curve);color:#fff;font-weight:700}
+button.btn:disabled{opacity:.45;cursor:default}
+button.btn.small{font-size:13px;padding:4px 10px}
+button:focus-visible,input:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.feedback{font-family:var(--display);font-weight:800;font-size:21px;min-height:30px;margin-top:8px}
+.feedback.ok{color:var(--e)} .feedback.no{color:var(--pencil)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px;color:var(--muted);margin-top:8px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{display:inline-block;width:22px;height:3px;border-radius:2px}
+.hint{font-size:13px;color:var(--muted);margin:6px 0 0}
+.levels{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:860px){.levels{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.lvl{font:inherit;text-align:left;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+.lvl[aria-pressed="true"]{border-color:var(--curve);box-shadow:inset 0 0 0 1.5px var(--curve)}
+.lvl:disabled{cursor:not-allowed;opacity:.5}
+.lvl .t{font-weight:700;display:block}
+.lvl .s{font-size:13px;color:var(--muted);display:block}
+.dots{letter-spacing:3px;color:var(--e);font-size:14px}
+.answer{font-family:var(--display);font-weight:800;font-size:clamp(20px,2.4vw,28px);line-height:2.1;display:flex;flex-wrap:wrap;align-items:center;gap:2px 6px}
+.answer input.in{font:inherit;font-family:var(--body);font-weight:700;font-size:22px;width:4.2em;padding:2px 6px;text-align:center;border:2px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink)}
+.answer input.in.ok{border-color:var(--e);background:var(--ok-bg)}
+.answer input.in.bad{border-color:var(--pencil);background:var(--bad-bg)}
+.slots .p{text-align:center;font-size:1.3em}
+.prog{display:grid;grid-template-columns:auto 1fr auto;gap:2px 12px;font-size:15px;font-variant-numeric:tabular-nums}
+.prog .muted{color:var(--muted)}
+.prowrap{max-width:860px;display:flex;flex-direction:column;gap:14px}
+.proq{font-family:var(--display);font-weight:800;font-size:clamp(21px,2.6vw,28px);line-height:1.25;margin:2px 0 12px}
+canvas.procan{max-width:400px;margin:0 0 14px}
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:600px){.opts:not(.graphs){grid-template-columns:minmax(0,1fr)}}
+.opt{font:inherit;font-size:18px;text-align:left;display:flex;align-items:center;gap:12px;padding:12px 14px;border:2px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--curve)}
+.opt:disabled{cursor:default;opacity:.55}
+.opt.right{border-color:var(--e);background:var(--ok-bg);opacity:1}
+.opt.wrong{border-color:var(--pencil);background:var(--bad-bg)}
+.opt .badge{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--surface);font-weight:700;font-size:15px}
+.opts.graphs{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:700px){.opts.graphs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.opts.graphs .opt{flex-direction:column;align-items:stretch;padding:8px;gap:6px}
+.opts.graphs .opt:disabled:not(.wrong){opacity:.8}
+.opts.graphs canvas{max-height:none;border:0}
+.optwrap{position:relative}
+.lock{position:absolute;inset:-6px;display:grid;place-items:center;text-align:center;padding:12px;border-radius:12px;border:2px solid var(--pencil);background:var(--bad-bg);color:var(--pencil);font-family:var(--display);font-size:clamp(20px,2.6vw,26px);line-height:1.3;z-index:2}
+.lock .count{font-size:38px;font-weight:800;line-height:1.1;margin:2px 0}
+.revlist{display:flex;flex-direction:column;gap:6px;text-align:left}
+.revitem{font:inherit;font-size:15px;display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);cursor:pointer;text-align:left}
+.revitem:hover{border-color:var(--curve)}
+.revitem .nr{font-weight:700;color:var(--muted)}
+.revitem .er{font-weight:700;color:var(--e);white-space:nowrap}
+.revitem.had .er{color:var(--pencil)}
+.proex{margin:4px 0 0;padding:10px 12px;border-left:4px solid var(--e);background:var(--paper);border-radius:6px}
+.win{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:16px;background:rgb(10 16 24 / .55)}
+.win canvas{position:fixed;inset:0;width:100%;height:100%;aspect-ratio:auto;max-height:none;border:0;border-radius:0;background:transparent;pointer-events:none}
+.win .box{position:relative;background:var(--paper);color:var(--ink);border-radius:18px;padding:28px 28px 22px;max-width:520px;width:100%;text-align:center;box-shadow:0 20px 60px rgb(0 0 0 / .35);animation:pop .45s cubic-bezier(.2,1.4,.4,1)}
+.win h2{font-family:var(--display);font-weight:800;font-size:clamp(30px,5vw,44px);line-height:1.05;margin:4px 0 10px}
+.win .big{font-size:56px;line-height:1}
+.win p{margin:0 0 8px}
+.win .stats{color:var(--muted);font-size:15px;margin:10px 0 18px}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion: reduce){.win .box{animation:none}}
+[hidden]{display:none!important}
+
+/* Musterbeispiel */
+.win .box.exbox{max-width:780px;text-align:left;max-height:calc(100vh - 32px);overflow:auto;padding:22px 24px 18px}
+.exbox h2{font-size:clamp(24px,4vw,32px);margin:0 0 4px}
+.exbox .exsub{color:var(--muted);margin:0 0 8px}
+.exclose{position:absolute;top:10px;right:12px;font:inherit;font-size:26px;line-height:1;background:none;border:0;color:var(--muted);cursor:pointer;padding:4px 8px}
+.exg{display:grid;grid-template-columns:max-content max-content minmax(0,1fr);gap:14px 18px;align-items:center;margin:8px 0 14px}
+.exg .l{text-align:right;font-family:var(--display);font-weight:700;font-size:24px;white-space:nowrap}
+.exg .r{font-family:var(--display);font-weight:700;font-size:24px;white-space:nowrap}
+.exg .op{font-family:var(--display);font-weight:700;font-size:22px;color:var(--ink)}
+.exg .c{font-size:15px;line-height:1.35;color:var(--muted);border-left:3px solid var(--line);padding:2px 0 2px 10px}
+.exg .c:empty{border:0;padding:0}
+.exg .sec{grid-column:1/-1;font-weight:700;margin:10px 0 -4px}
+.exg .sec:first-child{margin-top:0}
+.exg .note{grid-column:1/-1;font-size:15px;background:var(--surface);border-radius:8px;padding:8px 12px;margin-top:6px}
+.exg .wide{grid-column:1/-1;margin:4px 0}
+.exg .res{background:var(--ok-bg);border-radius:6px;padding:0 6px}
+.exg .frac{font-size:.85em}
+.exsvg{display:block;width:100%;max-width:330px;height:auto;margin:0 auto}
+.extab{display:inline-grid;grid-template-columns:repeat(5,auto);border:1.5px solid var(--line);border-radius:8px;overflow:hidden;font-weight:700;font-variant-numeric:tabular-nums}
+.extab span{padding:4px 14px;border-left:1px solid var(--line);text-align:center}
+.extab span:nth-child(5n+1){border-left:0;color:var(--muted)}
+.extab span:nth-child(n+6){border-top:1px solid var(--line)}
+@media (max-width:640px){
+  .exg{grid-template-columns:max-content minmax(0,1fr)}
+  .exg .c{grid-column:1/-1;margin:0 0 6px}
+  .exg .l,.exg .r{font-size:19px;white-space:normal}
+}
+
+/* Musterbeispiel-Knopf direkt neben dem Aufgabentitel */
+.trhead{display:flex;align-items:center;gap:16px;margin-bottom:6px}
+.trhead .label{margin:0}
+
+/* Tabs in zwei Gruppen: Erkunden | Üben */
+.tabnav{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 20px}
+.tgrp{display:flex;flex-direction:column;gap:4px}
+.tgrp .gl{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.fx{display:inline-block;text-align:center}
+/* Wertetabelle (Erkunden + Profi) */
+table.wt{border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:18px;width:100%}
+table.wt td,table.wt th{border:1.5px solid var(--line);padding:4px 6px;text-align:center;min-width:2.6em}
+table.wt th{color:var(--muted);font-weight:700;background:var(--paper)}
+table.wt td{font-weight:700}
+/* Profi: Fragenliste bei „alles frei“ */
+.pjump{display:grid;grid-template-columns:repeat(auto-fill,40px);gap:6px;margin-bottom:12px}
+.pjump button{font:inherit;font-size:14px;font-weight:700;height:34px;border-radius:8px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+.pjump button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.ca{color:var(--a)} .cd{color:var(--d)} .ce{color:var(--e)} .cz{color:var(--z)} .cx{color:var(--curve)}
+.def{margin:0;font-size:19px;line-height:1.45}
+.pt{font-family:var(--display);font-weight:800;font-size:26px;font-variant-numeric:tabular-nums;margin-bottom:4px}
+canvas.lupe{max-width:280px;margin:0 auto;border-radius:50%;border:3px solid var(--muted)}
+canvas.scan{max-width:300px;margin:0 auto}
+.tblwrap{overflow-x:auto}
+table.tt{table-layout:fixed;width:auto}
+table.tt th:first-child{width:100px;text-align:left}
+table.tt th,table.tt td{width:58px;padding:3px}
+table.tt th button{font:inherit;font-weight:700;width:100%;padding:3px 0;border:0;border-radius:6px;background:none;color:var(--ink);cursor:pointer}
+table.tt th.act button{background:var(--d);color:#fff}
+table.tt input{font:inherit;font-weight:700;width:100%;padding:3px 0;text-align:center;border:2px solid var(--line);border-radius:6px;background:var(--paper);color:var(--e)}
+table.tt input.ok{border-color:var(--e);background:var(--ok-bg)}
+table.tt input.bad{border-color:var(--pencil);background:var(--bad-bg)}
+table.tt td.act input{border-color:var(--d)}
+.qh{font-family:var(--display);font-weight:800;font-size:21px;line-height:1.3;margin:0 0 10px}
+.done{display:flex;flex-direction:column;gap:2px;margin:0 0 10px;color:var(--muted);font-size:16px}
+.done span::before{content:"✓ ";color:var(--e);font-weight:700}
+.opts.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.opts .opt{font-size:17px;padding:10px 12px}
+.qa{font-family:var(--display);font-weight:800;font-size:24px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.qa input{font:inherit;font-family:var(--body);font-weight:700;font-size:22px;width:9em;padding:2px 8px;border:2px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink)}
+.qa input.num{width:4.2em;text-align:center}
+.qa input.ok{border-color:var(--e);background:var(--ok-bg)}
+.qa input.bad{border-color:var(--pencil);background:var(--bad-bg)}
+.rule{font-family:var(--display);font-weight:800;font-size:23px;line-height:1.35;padding:10px 12px;background:var(--ok-bg);border-radius:8px;margin:0 0 12px}
+.live{font-family:var(--display);font-weight:800;font-size:22px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.pt .gap{display:inline-block;width:1.2em}
+.nw{white-space:nowrap}
+#mainTabs button.locked{opacity:.55}
+#mainTabs button.locked::before{content:"\1F512\00A0"}
+.proToast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:70;background:var(--surface);color:var(--ink);border:2px solid var(--line);border-radius:12px;padding:12px 18px;box-shadow:0 12px 40px rgb(0 0 0 / .4);max-width:calc(100vw - 32px);text-align:center}
+.gate{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:16px;background:var(--paper)}
+.gate .box{background:var(--surface);border-radius:16px;padding:28px 24px;max-width:460px;width:100%;box-shadow:0 20px 60px rgb(0 0 0 / .35)}
+.gate h2{font-family:var(--display);font-weight:800;font-size:clamp(28px,5vw,38px);line-height:1.05;margin:0 0 14px}
+.gate p{margin:0 0 14px}
+.gate input{font:inherit;font-size:20px;font-weight:700;padding:8px 12px;border:2px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);flex:1;min-width:0}
+.gate input:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.gate .gform{display:flex;gap:10px;flex-wrap:wrap}
+.gate .small{font-size:14px;color:var(--muted);margin:12px 0 0}
+.who{font-size:14px;color:var(--muted);margin-top:4px}
+.who b{color:var(--ink)}
+.linkbtn{font:inherit;background:none;border:0;padding:0;color:var(--muted);text-decoration:underline;cursor:pointer}
+.who .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--e);margin-right:6px;vertical-align:middle}
+.who .dot.off{background:var(--pencil)}
+.unlockToast{position:fixed;right:20px;bottom:20px;z-index:70;display:flex;align-items:center;gap:12px;max-width:min(520px,calc(100vw - 40px));background:var(--surface);color:var(--ink);border:2px solid var(--e);border-radius:12px;padding:14px 18px;font-size:17px;font-weight:700;box-shadow:0 12px 40px rgb(0 0 0 / .45);cursor:pointer}
+.unlockToast b{font-size:22px}
+.unlockToast.in{animation:unlockIn .35s ease-out}
+@keyframes unlockIn{from{transform:translateX(30px);opacity:0}to{transform:none;opacity:1}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>Tangenten-Labor</h1><div class="who" id="who" hidden><span class="dot" id="whoDot"></span>Angemeldet als <b id="whoName"></b> · <button class="linkbtn" id="whoSwitch">abmelden</button></div></div>
+    <nav class="tabnav" role="tablist" id="mainTabs">
+      <div class="tgrp" data-grp="Erkunden"><span class="gl">Erkunden</span><div class="seg">
+        <button role="tab" data-tab="tan" aria-selected="true">1 Tangente</button>
+        <button role="tab" data-tab="nor" aria-selected="false">2 Steigung an y = x²</button>
+        <button role="tab" data-tab="par" aria-selected="false">3 Andere Parabeln</button>
+        <button role="tab" data-tab="kub" aria-selected="false">4 Kurve mit x³</button>
+      </div></div>
+    </nav>
+  </header>
+
+  <!-- ================= 1 TANGENTE ================= -->
+  <section id="tab-tan" class="tab">
+    <p class="lede" style="margin-bottom:12px">Zieh den Punkt P oder benutze den Regler.</p>
+    <div class="stage">
+      <section>
+        <canvas id="cTan" aria-label="Normalparabel mit Tangente"></canvas>
+        <div class="legend">
+          <span><i style="background:var(--curve)"></i>y = x²</span>
+          <span><i style="background:var(--d)"></i>Tangente in P</span>
+        </div>
+      </section>
+      <aside class="side">
+        <div class="card">
+          <p class="label">Tangente</p>
+          <p class="def">Eine <b class="cd">Tangente</b> berührt die Kurve im Punkt P und hat dort genau dieselbe Richtung wie die Kurve.</p>
+        </div>
+        <div class="card">
+          <div class="pt" id="tanP"></div>
+          <div class="sl"><b>x</b><input type="range" id="tanX" min="-3" max="3" data-step="look" value="1"><output id="tanXo"></output></div>
+        </div>
+        <div class="card">
+          <div class="row" style="justify-content:space-between;margin-bottom:8px">
+            <p class="label" style="margin:0">Lupe um P</p>
+            <div class="seg" id="tanZoom">
+              <button data-z="5" aria-selected="true">5×</button>
+              <button data-z="20" aria-selected="false">20×</button>
+              <button data-z="100" aria-selected="false">100×</button>
+            </div>
+          </div>
+          <canvas id="cLupe" class="lupe" aria-label="Vergrößerung um P"></canvas>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= 2 STEIGUNG AN y = x² ================= -->
+  <section id="tab-nor" class="tab" hidden>
+    <p class="lede" style="margin-bottom:12px">Bestimme an jeder Stelle die Steigung der Tangente.</p>
+    <div class="stage">
+      <section>
+        <canvas id="norC" aria-label="Normalparabel mit Tangente"></canvas>
+        <div class="legend">
+          <span><i style="background:var(--curve)"></i><span id="norFn"></span></span>
+          <span><i style="background:var(--d)"></i>Tangente</span>
+          <span><i style="background:var(--e)"></i>Steigung</span>
+        </div>
+      </section>
+      <aside class="side">
+        <div class="card">
+          <div class="tblwrap" id="norTbl"></div>
+          <div class="row" id="norBtns" style="margin-top:10px">
+            <button class="btn primary" id="norCheck">Prüfen</button>
+            <button class="btn" id="norTri">Steigungsdreieck zeigen</button>
+          </div>
+          <div class="feedback" id="norFb" aria-live="polite"></div>
+        </div>
+        <div class="card">
+          <p class="label">Punkte (Stelle x | Steigung)</p>
+          <canvas id="norS" class="scan" aria-label="Punkte aus Stelle und Steigung"></canvas>
+        </div>
+        <div class="card" id="norQ" hidden></div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= 3 ANDERE PARABELN ================= -->
+  <section id="tab-par" class="tab" hidden>
+    <div class="row" style="margin-bottom:12px;justify-content:space-between">
+      <p class="lede">Bestimme an jeder Stelle die Steigung der Tangente.</p>
+      <p class="lede" id="parNr"></p>
+    </div>
+    <div class="stage">
+      <section>
+        <canvas id="parC" aria-label="Parabel mit Tangente"></canvas>
+        <div class="legend">
+          <span><i style="background:var(--curve)"></i><span id="parFn"></span></span>
+          <span><i style="background:var(--d)"></i>Tangente</span>
+          <span><i style="background:var(--e)"></i>Steigung</span>
+        </div>
+      </section>
+      <aside class="side">
+        <div class="card">
+          <div class="tblwrap" id="parTbl"></div>
+          <div class="row" id="parBtns" style="margin-top:10px">
+            <button class="btn primary" id="parCheck">Prüfen</button>
+            <button class="btn" id="parTri">Steigungsdreieck zeigen</button>
+          </div>
+          <div class="feedback" id="parFb" aria-live="polite"></div>
+        </div>
+        <div class="card">
+          <p class="label">Punkte (Stelle x | Steigung)</p>
+          <canvas id="parS" class="scan" aria-label="Punkte aus Stelle und Steigung"></canvas>
+        </div>
+        <div class="card" id="parQ" hidden></div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= 4 KURVE MIT x³ ================= -->
+  <section id="tab-kub" class="tab" hidden>
+    <p class="lede" style="margin-bottom:12px">Schieb P über die Kurve und trag Punkte ein.</p>
+    <div class="stage">
+      <section>
+        <canvas id="cKub" aria-label="Kurve mit Tangente"></canvas>
+        <div class="legend">
+          <span><i style="background:var(--curve)"></i>y = ¼·(x − 1)³ − 3·(x − 1) + 1</span>
+          <span><i style="background:var(--d)"></i>Tangente</span>
+        </div>
+      </section>
+      <aside class="side">
+        <div class="card">
+          <div class="pt" id="kubP"></div>
+          <div class="sl"><b>x</b><input type="range" id="kubX" min="-3" max="5" data-step="look" value="-2"><output id="kubXo"></output></div>
+          <div class="row" style="margin-top:4px">
+            <button class="btn primary" id="kubAdd">Punkt eintragen</button>
+            <button class="btn small" id="kubClear">Punkte löschen</button>
+            <span class="hint" id="kubN" style="margin:0"></span>
+          </div>
+        </div>
+        <div class="card">
+          <p class="label">Punkte (Stelle x | Steigung)</p>
+          <canvas id="kubS" class="scan" aria-label="Punkte aus Stelle und Steigung"></canvas>
+        </div>
+        <div class="card" id="kubQ" hidden></div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= 3 RECHENTRAINER ================= -->
+  <section id="tab-train" class="tab" hidden>
+    <p class="lede" style="margin-bottom:12px">Rechne auf Papier, tippe das Ergebnis ein und prüfe. Die Skizze zeigt danach deine  (blau) und, sobald es stimmt, die richtige (rot). <span class="needN">3</span> richtige Aufgaben schalten die nächste Stufe frei.</p>
+    <div class="levels" id="levels" style="margin-bottom:16px"></div>
+    <div class="stage">
+      <section>
+        <canvas id="cTrain" aria-label="Koordinatensystem zur Aufgabe"></canvas>
+        <div class="legend" id="legTrain"></div>
+      </section>
+      <aside class="side">
+        <div class="card">
+          <div class="trhead"><p class="label" id="trTitle"></p><button class="btn small" id="trEx" type="button">📘 Musterbeispiel ansehen</button></div>
+          <div class="formula" id="trTask"></div>
+        </div>
+        <div class="card">
+          <p class="label">Deine Antwort</p>
+          <div class="answer" id="trAnswer"></div>
+          <div class="row" style="margin-top:8px">
+            <button class="btn primary" id="trCheck">Prüfen</button>
+            <button class="btn" id="trShow">Lösung zeigen</button>
+            <button class="btn" id="trNext">Nächste Aufgabe</button>
+          </div>
+          <div class="feedback" id="trFb" aria-live="polite"></div>
+          <div class="formula small" id="trSol" hidden></div>
+        </div>
+        <div class="card">
+          <p class="label">Dein Fortschritt</p>
+          <div class="prog" id="trProg"></div>
+          <div class="row" style="margin-top:8px"><button class="btn small" id="trReset">Fortschritt zurücksetzen</button></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= 4 PROFI ================= -->
+  <section id="tab-pro" class="tab" hidden>
+    <div class="prowrap">
+      <p class="lede">Profi-Aufgaben für alle, die den Rechentrainer geschafft haben. Erst nachdenken, dann klicken.</p>
+      <div class="pjump" id="proJump" hidden></div>
+      <div id="proQuiz" class="card">
+        <p class="label" id="proHead"></p>
+        <div class="proq" id="proQ"></div>
+        <div id="proTable" style="margin:0 0 14px;max-width:420px" hidden></div>
+        <canvas id="cPro" class="procan" aria-label="Skizze zur Frage"></canvas>
+        <p class="hint" id="proCap" style="margin:-8px 0 14px" hidden></p>
+        <div class="optwrap">
+          <div class="opts" id="proOpts"></div>
+          <div class="lock" id="proLock" hidden aria-live="assertive"><div><b>Leider nicht. Überleg nochmal …</b><small id="proPicked"></small><div class="count" id="proCount">3</div></div></div>
+        </div>
+        <div class="feedback" id="proFb" aria-live="polite"></div>
+        <p class="proex" id="proEx" hidden></p>
+        <div class="row" style="margin-top:10px"><button class="btn primary" id="proNext" hidden>Nächste Frage</button></div>
+      </div>
+      <div id="proDone" class="card" hidden style="text-align:center;padding:28px 16px">
+        <h2 class="proq" id="proDoneT" style="font-size:34px;margin:0 0 8px"></h2>
+        <p id="proDoneS" style="margin:0 0 16px"></p>
+        <button class="btn primary" id="proAgain">Nochmal von vorn</button>
+        <p class="label" style="text-align:left;margin:24px 0 8px">Alle Fragen zum Nachschauen (Fehler pro Frage):</p>
+        <div class="revlist" id="proList"></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="win" id="exWin" hidden role="dialog" aria-modal="true" aria-labelledby="exT">
+  <div class="box exbox">
+    <button class="exclose" id="exClose" type="button" aria-label="Schließen">×</button>
+    <p class="label" id="exLvl"></p>
+    <h2 id="exT">Musterbeispiel</h2>
+    <p class="exsub" id="exSub"></p>
+    <div class="exg" id="exBody"></div>
+    <div class="row" style="justify-content:center"><button class="btn primary" id="exOk" type="button">Verstanden, jetzt ich!</button></div>
+  </div>
+</div>
+<div class="win" id="win" hidden role="dialog" aria-modal="true" aria-labelledby="winT">
+  <canvas id="confetti" aria-hidden="true"></canvas>
+  <div class="box">
+    <div class="big" aria-hidden="true">🏆</div>
+    <h2 id="winT">Glückwunsch!</h2>
+    <p><b>Du hast alle 4 Stufen geschafft.</b></p>
+    <p></p>
+    <p id="winProTxt"><b>Neu freigeschaltet: Tab 4 mit Profi-Aufgaben</b> zum Knobeln.</p>
+    <div class="stats" id="winStats"></div>
+    <div class="row" style="justify-content:center">
+      <button class="btn" id="winClose">Weiter üben</button>
+      <button class="btn primary" id="winPro">Zu den Profi-Aufgaben ★</button>
+    </div>
+  </div>
+</div>
+
+<div class="gate" id="gate">
+  <div class="box">
+    <h2>Tangenten-Labor</h2>
+    <div id="gLogin">
+      <p>Wie heißt du? Nimm deinen Vornamen und immer genau denselben, dann geht es an jedem Rechner da weiter, wo du aufgehört hast.</p>
+      <div class="gform"><input id="gWer" type="text" maxlength="30" autocomplete="nickname" autocapitalize="words" spellcheck="false" data-lpignore="true" data-1p-ignore placeholder="z. B. Mia" aria-label="Wie heißt du?"><button class="btn primary" id="gGo" type="button">Los geht’s</button></div>
+    </div>
+    <div id="gAgain" hidden>
+      <p>Bist du <b id="gWho"></b>?</p>
+      <div class="row"><button class="btn primary" id="gYes">Ja, weiter</button><button class="btn" id="gNo">Nein, ich bin jemand anderes</button></div>
+    </div>
+    <div id="gWait" hidden><p><b>Gleich geht’s los.</b></p><p>Deine Lehrkraft schaltet die erste Station gleich frei. Diese Seite merkt das von selbst.</p></div>
+    <div id="gBye" hidden><p><b>Du bist abgemeldet.</b></p><p>Lade die Seite neu (Taste F5), damit sich jemand anderes anmelden kann.</p></div>
+    <p class="feedback no" id="gErr" aria-live="polite"></p>
+    <p class="small" id="gLoad" hidden>Einen Moment …</p>
+  </div>
+</div>
+
+<script>
+/* Anmeldung + Verbindung zum Apps Script, nur in der Admin-Version (adminpanel/, docs/).
+   tangenten ersetzt der Build durch die Labor-ID. */
+(() => {
+"use strict";
+const LAB = "tangenten", IDKEY = "labor-" + LAB + "-name", SESS = "labor-" + LAB + "-sitzung";
+const $ = id => document.getElementById(id);
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch (_) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (_) {} },
+  del(k) { try { localStorage.removeItem(k); } catch (_) {} },
+};
+// Sitzung in diesem Browser-Tab: beim Neuladen (F5) ohne Nachfrage wieder anmelden
+const sess = {
+  get() { try { return sessionStorage.getItem(SESS); } catch (_) { return null; } },
+  set(v) { try { sessionStorage.setItem(SESS, v); } catch (_) {} },
+  del() { try { sessionStorage.removeItem(SESS); } catch (_) {} },
+};
+const call = (fn, ...args) => window.LABOR_API
+  ? fetch(window.LABOR_API, { method: "POST", body: JSON.stringify({ fn, args }) })
+      .then(r => r.json()).then(j => { if (j.error) throw new Error(j.error); return j.result; })
+  : new Promise((res, rej) => {
+      try { google.script.run.withSuccessHandler(res).withFailureHandler(rej)[fn](...args); }
+      catch (e) { rej(e); }
+    });
+const errMsg = e => {
+  const m = e && e.message ? String(e.message).replace(/^(Exception|Error):\s*/, "") : "";
+  return /Namen|Labor/.test(m) ? m : "Die Verbindung klappt gerade nicht. Versuch es gleich nochmal.";
+};
+let me = null, allowed = [], alle = false, need = 3, started = false, pingTimer = null, debounce = null, online = true, epoch = 0;
+const tabOk = t => allowed.indexOf(t) >= 0;
+let toastT = null;
+// Haken für das Labor (labs/_shared/core.js liest window.LAB_ADMIN)
+window.LAB_ADMIN = {
+  alle: () => alle,
+  need: () => need,
+  tabOk,
+  prog: null,
+  changed: () => { clearTimeout(debounce); debounce = setTimeout(ping, 2000); },
+  proLocked() {
+    let t = document.querySelector(".proToast");
+    if (!t) { t = document.createElement("div"); t.className = "proToast"; t.setAttribute("role", "status"); document.body.appendChild(t); }
+    t.textContent = "Der Profi-Tab öffnet sich, sobald du alle Stufen im Rechentrainer geschafft hast.";
+    t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 3500);
+  },
+};
+
+function gate(which) {
+  $("gate").hidden = !which;
+  ["gLogin", "gAgain", "gWait", "gBye"].forEach(id => $(id).hidden = id !== which);
+  $("gErr").textContent = ""; $("gLoad").hidden = true;
+  if (which === "gLogin") setTimeout(() => $("gWer").focus(), 50);
+}
+async function login(name) {
+  $("gErr").textContent = ""; $("gLoad").hidden = false;
+  document.querySelectorAll("#gate button").forEach(b => b.disabled = true);
+  try {
+    // Bei Ansturm (alle melden sich gleichzeitig an) automatisch mehrmals versetzt nachfassen
+    let r = null;
+    for (let i = 0; ; i++) {
+      try { r = await call("anmelden", LAB, name); break; }
+      catch (e) {
+        const m = e && e.message ? String(e.message) : "";
+        if (/Namen|Labor/.test(m) || i >= 6) throw e;
+        await new Promise(ok => setTimeout(ok, 1500 + Math.random() * 2500 * (i + 1)));
+      }
+    }
+    me = { id: r.id, name: r.name }; store.set(IDKEY, r.name); sess.set(r.name); allowed = r.tabs || []; alle = !!r.alle; epoch = r.epoch || 0; need = r.need || 3;
+    start(r.prog);
+  } catch (e) {
+    $("gLoad").hidden = true; $("gErr").textContent = errMsg(e);
+  } finally { document.querySelectorAll("#gate button").forEach(b => b.disabled = false); }
+}
+function start(prog) {
+  if (started) return;
+  started = true;
+  window.LAB_ADMIN.prog = prog || {};
+  window.__startLab();
+  $("whoName").textContent = me.name;
+  $("who").hidden = false;
+  apply();
+  pingTimer = setInterval(ping, 20000);
+  setTimeout(ping, 1500);
+}
+function snap() {
+  const L = window.__lab; if (!L) return null;
+  const p = L.prog(), q = L.pro();
+  return {
+    tab: L.current(),
+    prog: { c: p.c, f: p.f, unl: p.unl, lvl: p.lvl, won: !!p.won },
+    pro: { i: q.i, score: q.score, errs: (q.errs || []).map(x => x || 0), n: L.PRO_N, answered: !!q.answered, done: !$("proDone").hidden },
+  };
+}
+let lastSent = "";
+async function ping() {
+  if (!me) return;
+  const s = snap(), js = JSON.stringify(s);
+  try {
+    const r = await call("ping", LAB, me.id, js !== lastSent ? s : null, epoch);
+    lastSent = js;
+    setOnline(true);
+    if (!r.known) { clearInterval(pingTimer); me = null; store.del(IDKEY); sess.del(); gate("gBye"); return; }
+    // Lehrkraft hat alle zurückgesetzt: neu laden, dann startet alles bei null (Anmeldung bleibt)
+    if (r.epoch && epoch && r.epoch !== epoch) { clearInterval(pingTimer); location.reload(); return; }
+    if (JSON.stringify(r.tabs) !== JSON.stringify(allowed) || !!r.alle !== alle || (r.need || 3) !== need) {
+      const neu = (r.tabs || []).filter(t => allowed.indexOf(t) < 0).map(tabName), msgs = [];
+      if (neu.length) msgs.push("Neu freigeschaltet: " + neu.join(", "));
+      if (r.alle && !alle) msgs.push("Für dich ist jetzt alles freigeschaltet");
+      if ((r.need || 3) < need) msgs.push("Jetzt reichen " + (r.need || 3) + " richtige Aufgaben je Stufe");
+      allowed = r.tabs || []; alle = !!r.alle; need = r.need || 3; apply();
+      if (msgs.length) unlockToast(msgs);
+    }
+  } catch (e) { setOnline(false); }
+}
+const tabName = t => { const b = document.querySelector('#mainTabs [data-tab="' + t + '"]'); return b ? b.textContent.replace(/^\d+\s*/, "") : t; };
+// Hinweis am Rand, wenn die Lehrkraft etwas freischaltet (nimmt keinen Fokus)
+let unlockT = null;
+function unlockToast(msgs) {
+  let t = document.querySelector(".unlockToast");
+  if (!t) { t = document.createElement("div"); t.className = "unlockToast"; t.setAttribute("role", "status"); t.addEventListener("click", () => t.hidden = true); document.body.appendChild(t); }
+  t.innerHTML = "<b>🔓</b><span></span>"; t.querySelector("span").textContent = msgs.join(" · ");
+  t.hidden = false; t.classList.remove("in"); void t.offsetWidth; t.classList.add("in");
+  clearTimeout(unlockT); unlockT = setTimeout(() => t.hidden = true, 8000);
+}
+function setOnline(v) { online = v; $("whoDot").classList.toggle("off", !v); $("whoDot").title = v ? "verbunden" : "keine Verbindung"; }
+function apply() {
+  const L = window.__lab; if (!L) return;
+  document.querySelectorAll("#mainTabs button").forEach(b => { if (b.dataset.tab !== "pro") b.hidden = !tabOk(b.dataset.tab); });
+  L.updProTab(); L.renderLevels();
+  document.querySelectorAll("#mainTabs .tgrp").forEach(g => g.hidden = ![...g.querySelectorAll("button")].some(b => !b.hidden));
+  $("winPro").hidden = !tabOk("pro"); $("winProTxt").hidden = !tabOk("pro");
+  const vis = [...document.querySelectorAll("#mainTabs button")].filter(b => !b.hidden);
+  if (!vis.length) { gate("gWait"); return; }
+  if (!$("gWait").hidden || !$("gLogin").hidden || !$("gAgain").hidden) gate(null);
+  if (!vis.some(b => b.dataset.tab === L.current())) L.show(vis[0].dataset.tab);
+}
+
+$("gGo").addEventListener("click", () => login($("gWer").value));
+$("gWer").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); login($("gWer").value); } });
+$("gYes").addEventListener("click", () => login(store.get(IDKEY)));
+$("gNo").addEventListener("click", () => { store.del(IDKEY); gate("gLogin"); });
+$("whoSwitch").addEventListener("click", () => { clearInterval(pingTimer); me = null; store.del(IDKEY); sess.del(); gate("gBye"); });
+$("gNo").addEventListener("click", () => sess.del());
+document.addEventListener("DOMContentLoaded", () => {
+  const known = store.get(IDKEY);
+  if (known && sess.get() === known) { $("gWho").textContent = known; gate("gAgain"); login(known); }
+  else if (known) { $("gWho").textContent = known; gate("gAgain"); } else gate("gLogin");
+});
+})();
+</script>
+<script>
+window.__startLab = () => {
+"use strict";
+const LAB = {"id": "tangenten", "title": "Tangenten-Labor", "thema": "Tangenten und ihre Steigung", "klasse": "OIIIa", "icon": "M7 5Q15 37 23 5M9 25L29 13", "ueben": false, "tabs": [{"id": "tan", "label": "Tangente", "slug": "tangente"}, {"id": "nor", "label": "Steigung an y = x²", "slug": "normalparabel"}, {"id": "par", "label": "Andere Parabeln", "slug": "parabeln"}, {"id": "kub", "label": "Kurve mit x³", "slug": "kurve-x3"}], "file": "Tangenten"};
+/* Geteilter Kern aller Labore: kleine Helfer, Koordinatensystem, Zahlen einlesen.
+   Wird vom Build (build.py) zusammen mit dem Code des Labors in eine Datei kopiert. */
+const $ = id => document.getElementById(id);
+const tok = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const r6 = v => Math.round(v * 1e6) / 1e6;
+const num = v => { const r = r6(v); return (r < 0 ? "−" : "") + String(Math.abs(r)).replace(".", ","); };
+const sp = (cls, t) => cls ? `<span class="${cls}">${t}</span>` : t;
+const rnd = n => Math.floor(Math.random() * n);
+const pick = arr => arr[rnd(arr.length)];
+const near = (u, v, tol = 1e-6) => Math.abs(u - v) <= tol;
+const paren = v => r6(v) < 0 ? `(${num(v)})` : num(v);
+// Zahl in fester Breite, damit Text dahinter beim Ziehen nicht springt
+const fx = (cls, t, w = 3.2, al = "center") => `<span class="fx ${cls}" style="width:${w}em;text-align:${al}">${t}</span>`;
+const frac = (a, b) => `<span class="frac"><span>${a}</span><span>${b}</span></span>`;
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+function nz(lo, hi) { let v; do v = lo + rnd(hi - lo + 1); while (v === 0); return v; }
+function shuffle(n) { const a = [...Array(n).keys()]; for (let i = n - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+// Eingabefeld für den Rechentrainer; data-k ist der Schlüssel in task.want
+const inp = k => `<input class="in" data-k="${k}" inputmode="decimal" autocomplete="off" spellcheck="false" aria-label="${k}">`;
+
+// ---------- Koordinatensystem ----------
+class Board {
+  // R = halbe Breite in Einheiten; cx, cy = Mitte des Ausschnitts (Standard: Ursprung)
+  constructor(canvas, R = 8, cx = 0, cy = 0) { this.c = canvas; this.R = R; this.cx = cx; this.cy = cy; this.lab = 1; }
+  begin() {
+    const c = this.c, r = c.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+    const w = Math.max(1, Math.round(r.width * dpr)), h = Math.max(1, Math.round(r.height * dpr));
+    if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
+    const ctx = this.ctx = c.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    this.w = r.width; this.h = r.height;
+    const R = this.R, m = 14; this.u = (Math.min(this.w, this.h) - 2 * m) / (2 * R);
+    this.ox = this.w / 2 - this.cx * this.u; this.oy = this.h / 2 + this.cy * this.u;
+    const X = x => this.X(x), Y = y => this.Y(y);
+    const x0 = this.cx - R, x1 = this.cx + R, y0 = this.cy - R, y1 = this.cy + R;
+    ctx.clearRect(0, 0, this.w, this.h); ctx.setLineDash([]);
+    ctx.lineWidth = 1;
+    for (let i = Math.ceil(x0); i <= x1; i++) {
+      ctx.strokeStyle = i % 5 ? tok("--grid") : tok("--grid-strong");
+      ctx.beginPath(); ctx.moveTo(X(i), Y(y0)); ctx.lineTo(X(i), Y(y1)); ctx.stroke();
+    }
+    for (let i = Math.ceil(y0); i <= y1; i++) {
+      ctx.strokeStyle = i % 5 ? tok("--grid") : tok("--grid-strong");
+      ctx.beginPath(); ctx.moveTo(X(x0), Y(i)); ctx.lineTo(X(x1), Y(i)); ctx.stroke();
+    }
+    const ink = tok("--ink"), muted = tok("--muted");
+    ctx.strokeStyle = ink; ctx.fillStyle = ink; ctx.lineWidth = 1.6;
+    ctx.beginPath(); ctx.moveTo(X(x0), Y(0)); ctx.lineTo(X(x1), Y(0)); ctx.moveTo(X(0), Y(y0)); ctx.lineTo(X(0), Y(y1)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X(x1) + 2, Y(0)); ctx.lineTo(X(x1) - 7, Y(0) - 4); ctx.lineTo(X(x1) - 7, Y(0) + 4); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(X(0), Y(y1) - 2); ctx.lineTo(X(0) - 4, Y(y1) + 7); ctx.lineTo(X(0) + 4, Y(y1) + 7); ctx.fill();
+    ctx.font = `12px ${tok("--body")}`; ctx.fillStyle = muted;
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    for (let i = Math.floor(x0) + 1; i < x1; i++) if (i && i % this.lab === 0) ctx.fillText(num(i), X(i), Y(0) + 4);
+    ctx.textAlign = "right"; ctx.textBaseline = "middle";
+    for (let i = Math.floor(y0) + 1; i < y1; i++) if (i && i % this.lab === 0) ctx.fillText(num(i), X(0) - 5, Y(i));
+    ctx.fillStyle = ink; ctx.font = `700 14px ${tok("--body")}`;
+    ctx.textAlign = "right"; ctx.textBaseline = "bottom"; ctx.fillText(this.xName || "x", X(x1) - 4, Y(0) - 6);
+    ctx.textAlign = "left"; ctx.textBaseline = "top"; ctx.fillText(this.yName || "y", X(0) + 8, Y(y1) + 2);
+    return ctx;
+  }
+  X(x) { return this.ox + x * this.u; }
+  Y(y) { return this.oy - y * this.u; }
+  ix(px) { return (px - this.ox) / this.u; }
+  iy(py) { return (this.oy - py) / this.u; }
+  clip(fn) { const c = this.ctx, R = this.R; c.save(); c.beginPath(); c.rect(this.X(this.cx - R), this.Y(this.cy + R), 2 * R * this.u, 2 * R * this.u); c.clip(); fn(c); c.restore(); }
+  curve(f, color, width, dash) {
+    const R = this.R, lo = this.cy - R - 4 * R / 8, hi = this.cy + R + 4 * R / 8;
+    this.clip(c => {
+      c.strokeStyle = color; c.lineWidth = width; c.setLineDash(dash || []); c.lineJoin = "round"; c.lineCap = "round";
+      c.beginPath(); let started = false; const N = 700;
+      for (let i = 0; i <= N; i++) {
+        const x = this.cx - R + 2 * R * i / N, y = f(x);
+        if (y > hi || y < lo) { if (started) { c.lineTo(this.X(x), this.Y(Math.max(lo, Math.min(hi, y)))); c.stroke(); c.beginPath(); started = false; } continue; }
+        if (!started) { c.moveTo(this.X(x), this.Y(y)); started = true; } else c.lineTo(this.X(x), this.Y(y));
+      }
+      c.stroke();
+    });
+  }
+  seg(x1, y1, x2, y2, color, width = 1.5, dash = [5, 4]) {
+    this.clip(c => { c.strokeStyle = color; c.lineWidth = width; c.setLineDash(dash); c.beginPath(); c.moveTo(this.X(x1), this.Y(y1)); c.lineTo(this.X(x2), this.Y(y2)); c.stroke(); });
+  }
+  dot(x, y, color, r = 6, ring = true) {
+    if (Math.abs(x - this.cx) > this.R || Math.abs(y - this.cy) > this.R) return;
+    const c = this.ctx; c.setLineDash([]); c.fillStyle = color; c.strokeStyle = tok("--paper"); c.lineWidth = 2;
+    c.beginPath(); c.arc(this.X(x), this.Y(y), r, 0, 2 * Math.PI); c.fill(); if (ring) c.stroke();
+  }
+  // farbiger Text mit Hintergrund; parts = [[text, farbe], ...]
+  tag(parts, px, py, { align = "left", base = "top", size = 15 } = {}) {
+    const c = this.ctx; c.font = `700 ${size}px ${tok("--body")}`; c.textBaseline = "alphabetic"; c.textAlign = "left";
+    const tw = parts.reduce((s, p) => s + c.measureText(p[0]).width, 0);
+    let x = align === "left" ? px : align === "right" ? px - tw : px - tw / 2;
+    x = Math.max(4, Math.min(this.w - tw - 4, x));
+    let y = base === "top" ? py + size : base === "bottom" ? py - 4 : py + size / 2 - 2;
+    y = Math.max(size + 2, Math.min(this.h - 6, y));
+    c.fillStyle = tok("--paper"); c.globalAlpha = .85; c.fillRect(x - 3, y - size, tw + 6, size + 6); c.globalAlpha = 1;
+    for (const [t, col] of parts) { c.fillStyle = col; c.fillText(t, x, y); x += c.measureText(t).width; }
+  }
+  pointer(e) { const r = this.c.getBoundingClientRect(); return [this.ix(e.clientX - r.left), this.iy(e.clientY - r.top), e.clientX - r.left, e.clientY - r.top]; }
+}
+
+// Ziehen: hit(x,y,px,py) liefert Griff oder null; move(griff,x,y)
+function draggable(board, hit, move, redraw) { // redraw optional
+  const c = board.c; let grab = null;
+  c.addEventListener("pointerdown", e => { const [x, y, px, py] = board.pointer(e); grab = hit(x, y, px, py); if (grab) { c.setPointerCapture(e.pointerId); e.preventDefault(); } });
+  c.addEventListener("pointermove", e => {
+    const [x, y, px, py] = board.pointer(e);
+    if (grab) { move(grab, x, y); if (redraw) redraw(); } else c.style.cursor = hit(x, y, px, py) ? "grab" : "default";
+  });
+  const end = () => { grab = null; };
+  c.addEventListener("pointerup", end); c.addEventListener("pointercancel", end);
+}
+// ---------- Schieberegler ----------
+// Jeder Regler sagt im HTML nur, wozu er da ist; die Schrittweite steht nur hier:
+//   data-step="look"   nur anschauen/erkunden: fein
+//   data-step="match"  etwas Gegebenes treffen (Quiz): grob, damit man es auch trifft
+// Umschalten (z. B. Erkunden ↔ Quiz) mit setStep(regler, "match").
+const STEP = { look: 0.05, match: 0.25 };
+function setStep(el, kind) { el.dataset.step = kind; el.step = STEP[kind]; }
+// Startwert neu setzen: ohne step-Attribut hat der Browser ihn schon auf ganze Zahlen gerundet
+document.querySelectorAll('input[type="range"]').forEach(el => { setStep(el, el.dataset.step || "look"); el.value = el.getAttribute("value"); });
+
+const nearPx = (board, x, y, px, py, r = 16) => Math.hypot(board.X(x) - px, board.Y(y) - py) <= r;
+const snapTo = (v, s) => r6(Math.round(v / s) * s);
+
+// ---------- Zahlen einlesen (Komma, Minuszeichen, Brüche wie 3/4) ----------
+function parse(str) {
+  let s = String(str).trim().replace(/[−–—]/g, "-").replace(/\s/g, "").replace(",", ".");
+  if (s === "") return NaN;
+  if (s === "-") return -1;
+  if (s === "+") return 1;
+  const fr = s.match(/^([+-]?\d*\.?\d+)\/(\d*\.?\d+)$/);
+  if (fr) return Number(fr[1]) / Number(fr[2]);
+  if (!/^[+-]?(\d+\.?\d*|\.\d+)$/.test(s)) return NaN;
+  return Number(s);
+}
+
+// „0,09x + 7,5“, „7,5 + 0,09·x“, „24 − 1,5x“ → {m, b}; null, wenn es keine Gerade in x ist
+function parseLin(str) {
+  let s = String(str).toLowerCase().replace(/^\s*y\s*=/, "").replace(/[−–—]/g, "-").replace(/[·*×\s€%]/g, "").replace(/,/g, ".");
+  if (!s) return null;
+  if (!/^[+-]/.test(s)) s = "+" + s;
+  const terms = s.match(/[+-][^+-]+/g);
+  if (!terms || terms.join("") !== s) return null;
+  let m = 0, b = 0;
+  for (const t of terms) {
+    if (t.endsWith("x")) { const k = t.slice(0, -1); const v = k === "+" ? 1 : k === "-" ? -1 : parse(k); if (isNaN(v)) return null; m += v; }
+    else { const v = parse(t); if (isNaN(v)) return null; b += v; }
+  }
+  return { m: r6(m), b: r6(b) };
+}
+
+// ---------- Admin-Version ----------
+// Die Version mit Anmeldung (adminpanel/, docs/) setzt vorher window.LAB_ADMIN, sonst ist es null.
+// alle(): Lehrkraft hat für dieses Kind alles geöffnet · tabOk(t): Tab freigegeben · prog: gespeicherter Fortschritt
+// changed(): Fortschritt geändert (wird gebündelt an den Server geschickt) · proLocked(): Hinweis „Profi noch zu“
+const ADMIN = window.LAB_ADMIN || null;
+const changed = () => { if (ADMIN) ADMIN.changed(); };
+// #alle in der Adresse öffnet alle Stufen und den Profi-Tab (für die Lehrkraft)
+const allOpen = () => ADMIN ? ADMIN.alle() : /alle/i.test(location.hash);
+
+/* =============================================================
+   TANGENTEN-LABOR (nur Erkunden, kein Rechentrainer)
+   tan: Tangente an y = x² mit Lupe · nor: Steigungen an y = x² → Gerade
+   par: andere Parabeln, gleiches Vorgehen · kub: Kurve mit x³ → Punkte liegen auf einer Parabel
+   ============================================================= */
+const C = n => tok(n);
+const r2 = v => Math.round(v * 100) / 100;
+
+// Erkunden-Stand merken (in der Version mit Anmeldung je Name, falls sich mehrere ein Gerät teilen)
+const EX_KEY = (() => {
+  let n = ""; try { if (ADMIN) n = (localStorage.getItem("labor-" + LAB.id + "-name") || "").toLowerCase(); } catch (_) {}
+  return LAB.id + "-erkunden-v1" + (n ? "-" + n : "");
+})();
+let EXS = {}; try { EXS = JSON.parse(localStorage.getItem(EX_KEY)) || {}; } catch (_) {}
+const exSave = () => { try { localStorage.setItem(EX_KEY, JSON.stringify(EXS)); } catch (_) {} changed(); };
+
+// ---------- Zeichenhelfer ----------
+function tangent(B, f, df, a, col = C("--d"), w = 3) { const y0 = f(a), m = df(a); B.curve(x => y0 + m * (x - a), col, w); }
+// Steigungsdreieck: 1 nach rechts, Steigung nach oben/unten. Startet in P oder endet in P, je nachdem, was ins Bild passt.
+function triangle(B, f, df, a, label) {
+  const y0 = f(a), m = df(a), top = B.cy + B.R, bot = B.cy - B.R;
+  let x1 = a, y1 = y0;
+  if (triSide(B, f, df, a) < 0) { x1 = a - 1; y1 = y0 - m; }
+  const ink = C("--ink"), ce = C("--e");
+  B.seg(x1, y1, x1 + 1, y1, ink, 2.5, []);
+  B.seg(x1 + 1, y1, x1 + 1, y1 + m, ce, 3.5, []);
+  B.tag([["1", ink]], B.X(x1 + 0.5), B.Y(y1) + (m >= 0 ? 4 : -22), { align: "center", base: "top", size: 15 });
+  if (label != null && Math.abs(m) > 1e-9) B.tag([[label, ce]], B.X(x1 + 1) + 8, B.Y(y1 + m / 2), { align: "left", base: "middle", size: 17 });
+}
+// Seite, auf der das Steigungsdreieck liegt: +1 = es startet in P (rechts davon), −1 = es endet in P (links davon)
+function triSide(B, f, df, a) { const y0 = f(a), m = df(a); return y0 + m > B.cy + B.R || y0 + m < B.cy - B.R ? -1 : 1; }
+// „P“ neben den Punkt schreiben: side = −1 links, +1 rechts
+function pLabel(B, a, y, side) {
+  B.tag([["P", C("--ink")]], B.X(a) + 12 * side, B.Y(y) - 10, { align: side < 0 ? "right" : "left", base: "bottom", size: 16 });
+}
+const pHTML = (x, y) => `<span class="nw">P(${fx("", x, 2.9)}|${fx("", y, 2.9)})</span>`;
+// neue Frage ins Bild holen, falls sie unten aus dem Fenster ragt
+const seen = el => requestAnimationFrame(() => { try { el.scrollIntoView({ block: "nearest", behavior: "smooth" }); } catch (_) {} });
+// Multiple Choice: opts = [[Text, richtig?], …]; fertig() nach der richtigen Antwort
+function mc(box, opts, fertig, fbId, cls = "") {
+  const wrap = document.createElement("div"); wrap.className = "opts " + cls; box.appendChild(wrap);
+  const fb = document.createElement("div"); fb.className = "feedback"; fb.id = fbId; box.appendChild(fb);
+  opts.forEach(([t, ok]) => {
+    const b = document.createElement("button"); b.className = "opt"; b.type = "button"; b.innerHTML = `<span>${t}</span>`;
+    b.addEventListener("click", () => {
+      if (ok) { wrap.querySelectorAll("button").forEach(x => x.disabled = true); b.classList.add("right"); fb.className = "feedback ok"; fb.textContent = "Genau!"; setTimeout(fertig, 700); }
+      else { b.classList.add("wrong"); b.disabled = true; fb.className = "feedback no"; fb.textContent = "Schau nochmal genau hin."; }
+    });
+    wrap.appendChild(b);
+  });
+}
+
+/* =============================================================
+   1 TANGENTE (mit Lupe)
+   ============================================================= */
+const f2 = x => x * x, d2 = x => 2 * x;
+const bT = new Board($("cTan"), 6, 0, 4), bL = new Board($("cLupe"), 1);
+bL.lab = 1e9; bL.xName = bL.yName = " ";
+const tanX = $("tanX");
+let zoom = 5;
+function updTan() {
+  const a = +tanX.value;
+  $("tanXo").textContent = num(a);
+  $("tanP").innerHTML = pHTML(num(a), num(r6(a * a)));
+  drawTan();
+}
+function drawTan() {
+  const a = +tanX.value, y = a * a, B = bT;
+  B.begin();
+  B.curve(f2, C("--curve"), 3.5);
+  tangent(B, f2, d2, a);
+  const c = B.ctx; c.save(); c.setLineDash([5, 4]); c.strokeStyle = C("--muted"); c.lineWidth = 1.5;
+  c.beginPath(); c.arc(B.X(a), B.Y(y), Math.max(12, B.R / zoom * B.u), 0, 2 * Math.PI); c.stroke(); c.restore();
+  B.dot(a, y, C("--ink"), 7);
+  pLabel(B, a, y, a > 0 ? -1 : 1);
+  const L = bL; L.R = B.R / zoom; L.cx = a; L.cy = y;
+  L.begin();
+  L.curve(f2, C("--curve"), 6);
+  tangent(L, f2, d2, a, C("--d"), 3);
+  L.dot(a, y, C("--ink"), 7);
+}
+tanX.addEventListener("input", updTan);
+draggable(bT, (x, y, px, py) => nearPx(bT, +tanX.value, f2(+tanX.value), px, py, 20) || Math.abs(bT.Y(f2(x)) - py) < 14 ? {} : null,
+  (g, x) => { tanX.value = clamp(snapTo(x, STEP.look), -3, 3); updTan(); });
+document.querySelectorAll("#tanZoom button").forEach(b => b.addEventListener("click", () => {
+  zoom = +b.dataset.z;
+  document.querySelectorAll("#tanZoom button").forEach(x => x.setAttribute("aria-selected", x === b));
+  drawTan();
+}));
+
+/* =============================================================
+   2 + 3 STEIGUNGEN AN PARABELN (Tabelle → Punkte → Gerade)
+   Ein Beispiel: f, df, fn (Gleichung), xs (Stellen), view/sview [R, cx, cy], m, b (Gerade der Steigungen),
+   ask (Stelle für die Vorhersage), rule (Merksatz)
+   ============================================================= */
+function slopeLab(P, presets) {
+  const B = new Board($(P + "C")), S = new Board($(P + "S"));
+  S.lab = 2;
+  let k = 0, st = null;
+  const fresh = () => ({ v: {}, act: 0, tri: false, stage: 0, free: 0 });
+  const Q = () => presets[k];
+  const save = () => { EXS[P] = { k, st }; exSave(); };
+  function load(i, keep) {
+    k = i; st = keep || fresh();
+    const q = Q(); [B.R, B.cx, B.cy] = q.view; [S.R, S.cx, S.cy] = q.sview;
+    if (!keep) st.free = q.xs[0];
+    $(P + "Fn").innerHTML = q.fn;
+    if ($(P + "Nr")) $(P + "Nr").textContent = presets.length > 1 ? `Parabel ${k + 1} von ${presets.length}` : "";
+    table(); question(); draw();
+  }
+  const filled = i => st.v[i] != null;
+  const allFilled = () => Q().xs.every((_, i) => filled(i));
+  function table() {
+    const q = Q();
+    $(P + "Tbl").innerHTML = `<table class="wt tt"><tr><th>Stelle x</th>${q.xs.map((x, i) => `<th data-i="${i}"><button type="button" data-i="${i}">${num(x)}</button></th>`).join("")}</tr>` +
+      `<tr><th>Steigung</th>${q.xs.map((x, i) => `<td data-i="${i}"><input data-i="${i}" inputmode="decimal" autocomplete="off" spellcheck="false" aria-label="Steigung bei x = ${num(x)}"></td>`).join("")}</tr></table>`;
+    $(P + "Tbl").querySelectorAll("input").forEach(el => {
+      const i = +el.dataset.i;
+      if (filled(i)) { el.value = num(st.v[i]); el.readOnly = true; el.classList.add("ok"); }
+      el.addEventListener("focus", () => setAct(i));
+      el.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); check(); } });
+    });
+    $(P + "Tbl").querySelectorAll("th button").forEach(b => b.addEventListener("click", () => setAct(+b.dataset.i, true)));
+    markAct();
+    const done = st.stage > 0;
+    $(P + "Check").disabled = done; $(P + "Tri").disabled = done;
+  }
+  function markAct() {
+    $(P + "Tbl").querySelectorAll("[data-i]").forEach(el => { if (el.tagName === "TH" || el.tagName === "TD") el.classList.toggle("act", st.stage === 0 && +el.dataset.i === st.act); });
+    $(P + "Tri").textContent = st.tri ? "Steigungsdreieck ausblenden" : "Steigungsdreieck zeigen";
+  }
+  function setAct(i, focus) {
+    if (st.stage > 0) return;
+    if (st.act !== i) { st.act = i; $(P + "Fb").textContent = ""; }
+    markAct(); draw();
+    const el = $(P + "Tbl").querySelector(`input[data-i="${i}"]`);
+    if (focus && !filled(i)) el.focus();
+  }
+  function check() {
+    if (st.stage > 0) return;
+    const q = Q(), i = st.act, el = $(P + "Tbl").querySelector(`input[data-i="${i}"]`), fb = $(P + "Fb");
+    if (filled(i)) return;
+    const v = parse(el.value);
+    if (isNaN(v)) { fb.className = "feedback no"; fb.textContent = "Bitte eine Zahl eintippen."; return; }
+    const want = q.df(q.xs[i]);
+    if (!near(v, want, 0.01)) {
+      el.classList.add("bad"); fb.className = "feedback no"; fb.textContent = "Noch nicht.";
+      if (!st.tri) { st.tri = true; markAct(); }
+      draw(); return;
+    }
+    st.v[i] = want; el.value = num(want); el.readOnly = true; el.classList.remove("bad"); el.classList.add("ok");
+    fb.className = "feedback ok"; fb.textContent = "Richtig!";
+    const next = q.xs.findIndex((_, j) => !filled(j));
+    if (next < 0) { st.stage = 1; save(); table(); question(); draw(); seen($(P + "Q")); return; }
+    save(); draw();
+    setTimeout(() => { if (st.act === i) setAct(next, true); }, 600);
+  }
+  $(P + "Check").addEventListener("click", check);
+  $(P + "Tri").addEventListener("click", () => { st.tri = !st.tri; markAct(); draw(); });
+
+  function question() {
+    const box = $(P + "Q"), q = Q();
+    box.hidden = st.stage === 0; box.innerHTML = "";
+    $(P + "Btns").hidden = st.stage > 0; $(P + "Fb").hidden = st.stage > 0; $(P + "Fb").textContent = "";
+    if (st.stage === 0) return;
+    const done = [];
+    if (st.stage > 1) done.push("Die Punkte liegen auf einer Geraden.");
+    if (st.stage > 2) done.push(`Gerade: y = ${linBody(q.m, q.b)}`);
+    if (st.stage > 3) done.push(`Steigung bei x = ${num(q.ask)}: ${num(q.df(q.ask))}`);
+    if (done.length && st.stage < 4) box.insertAdjacentHTML("beforeend", `<div class="done">${done.map(t => `<span>${t}</span>`).join("")}</div>`);
+    const next = () => { st.stage++; save(); question(); draw(); seen(box); };
+    if (st.stage === 1) {
+      box.insertAdjacentHTML("beforeend", `<p class="qh">Die Punkte liegen …</p>`);
+      mc(box, [["auf einer Parabel", false], ["auf einer Geraden", true], ["ohne Muster verteilt", false]], next, P + "McFb", "three");
+    } else if (st.stage === 2 || st.stage === 3) {
+      const isEq = st.stage === 2;
+      box.insertAdjacentHTML("beforeend", isEq
+        ? `<p class="qh">Wie heißt die Gleichung dieser Geraden?</p><div class="qa">y = <input id="${P}In" autocomplete="off" spellcheck="false"><button class="btn primary" id="${P}Go" type="button">Prüfen</button></div>`
+        : `<p class="qh">Ohne Zeichnen: Welche Steigung hat die Tangente an der Stelle x = ${num(q.ask)}?</p><div class="qa"><input id="${P}In" class="num" inputmode="decimal" autocomplete="off"><button class="btn primary" id="${P}Go" type="button">Prüfen</button></div>`);
+      box.insertAdjacentHTML("beforeend", `<div class="feedback" id="${P}QFb" aria-live="polite"></div>`);
+      const inp = $(P + "In"), fb = $(P + "QFb");
+      const go = () => {
+        let ok;
+        if (isEq) {
+          const g = parseLin(inp.value);
+          if (!g) { fb.className = "feedback no"; fb.textContent = "Bitte eine Gleichung mit x eintippen."; return; }
+          ok = near(g.m, q.m, 0.001) && near(g.b, q.b, 0.001);
+        } else {
+          const v = parse(inp.value);
+          if (isNaN(v)) { fb.className = "feedback no"; fb.textContent = "Bitte eine Zahl eintippen."; return; }
+          ok = near(v, q.df(q.ask), 0.001);
+        }
+        inp.classList.toggle("ok", ok); inp.classList.toggle("bad", !ok);
+        fb.className = "feedback " + (ok ? "ok" : "no"); fb.textContent = ok ? "Richtig!" : "Noch nicht.";
+        if (ok) { inp.readOnly = true; $(P + "Go").disabled = true; setTimeout(next, 700); }
+      };
+      $(P + "Go").addEventListener("click", go);
+      inp.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); go(); } });
+      if (current === P) setTimeout(() => inp.focus(), 50);
+    } else {
+      const lo = Math.min(...q.xs), hi = Math.max(...q.xs);
+      box.insertAdjacentHTML("beforeend", `<div class="rule">${q.rule}</div>
+        <div class="live" id="${P}Live"></div>
+        <div class="sl"><b>x</b><input type="range" id="${P}X" min="${lo}" max="${hi}" data-step="look" value="${st.free}"><output id="${P}Xo"></output></div>
+        ${presets.length > 1 ? `<div class="row" style="margin-top:6px"><button class="btn" id="${P}Next" type="button">Nächste Parabel</button></div>` : ""}`);
+      const sl = $(P + "X"); setStep(sl, "look"); sl.value = st.free;
+      sl.addEventListener("input", () => { st.free = +sl.value; live(); draw(); });
+      sl.addEventListener("change", save);
+      if ($(P + "Next")) $(P + "Next").addEventListener("click", () => { load((k + 1) % presets.length); save(); });
+      live();
+    }
+  }
+  function live() {
+    const q = Q(), a = st.free;
+    $(P + "Xo").textContent = num(a);
+    $(P + "Live").innerHTML = `Stelle ${fx("", num(a), 3)} &nbsp; Steigung ${fx("ce", num(r6(q.df(a))), 3.4)}`;
+  }
+  function draw() {
+    const q = Q(), ink = C("--ink"), ce = C("--e");
+    const a = st.stage >= 4 ? st.free : q.xs[st.act], known = st.stage >= 4 || filled(st.act);
+    B.begin();
+    B.curve(q.f, C("--curve"), 3.5);
+    tangent(B, q.f, q.df, a);
+    if (st.tri || known) triangle(B, q.f, q.df, a, known ? num(r6(q.df(a))) : "?");
+    B.dot(a, q.f(a), ink, 7);
+    pLabel(B, a, q.f(a), -triSide(B, q.f, q.df, a));
+    S.begin();
+    if (st.stage >= 2) S.curve(x => q.m * x + q.b, ce, 2.5, [8, 6]);
+    if (st.stage < 4) S.seg(a, S.cy - S.R, a, S.cy + S.R, C("--d"), 1.5, [3, 5]);
+    q.xs.forEach((x, i) => { if (filled(i)) S.dot(x, q.df(x), ce, 6); });
+    if (st.stage >= 4) S.dot(a, q.df(a), ink, 7);
+  }
+  const linBody = (m, b) => {
+    const mx = m === 0 ? "" : m === 1 ? "x" : m === -1 ? "−x" : num(m) + "x";
+    if (!b) return mx || "0";
+    return mx ? `${mx} ${b > 0 ? "+" : "−"} ${num(Math.abs(b))}` : num(b);
+  };
+  const saved = EXS[P];
+  const init = () => { if (saved && presets[saved.k] && saved.st) load(saved.k, Object.assign(fresh(), saved.st)); else load(0); };
+  return { draw, init };
+}
+
+const NOR = slopeLab("nor", [{
+  f: f2, df: d2, fn: "y = x²", xs: [-3, -2, -1, 0, 1, 2, 3],
+  view: [6, 0, 4], sview: [7, 0, 0], m: 2, b: 0, ask: 10,
+  rule: "An der Stelle x hat die Tangente an <span class=nw>y = x²</span> die Steigung <span class=nw>2·x</span>.",
+}]);
+const PAR = slopeLab("par", [
+  { f: x => x * x / 2, df: x => x, fn: "y = ½·x²", xs: [-3, -2, -1, 0, 1, 2, 3],
+    view: [5, 0, 3], sview: [5, 0, 0], m: 1, b: 0, ask: 10,
+    rule: "An der Stelle x hat die Tangente an <span class=nw>y = ½·x²</span> die Steigung x." },
+  { f: x => -x * x + 2 * x + 3, df: x => -2 * x + 2, fn: "y = −x² + 2x + 3", xs: [-2, -1, 0, 1, 2, 3, 4], convex: false,
+    view: [6, 1, 0], sview: [7, 1, 0], m: -2, b: 2, ask: 10,
+    rule: "An der Stelle x hat die Tangente an <span class=nw>y = −x² + 2x + 3</span> die Steigung <span class=nw>−2·x + 2</span>." },
+  { f: x => x * x - 4 * x + 1, df: x => 2 * x - 4, fn: "y = x² − 4x + 1", xs: [-1, 0, 1, 2, 3, 4, 5],
+    view: [6, 2, 2], sview: [7, 2, 0], m: 2, b: -4, ask: 10,
+    rule: "An der Stelle x hat die Tangente an <span class=nw>y = x² − 4x + 1</span> die Steigung <span class=nw>2·x − 4</span>." },
+]);
+
+/* =============================================================
+   4 KURVE MIT x³ (angeleitet: Punkte sammeln → Parabel)
+   y = ¼(x − 1)³ − 3(x − 1) + 1, Hochpunkt (−1|5), Tiefpunkt (3|−3), Wendepunkt (1|1)
+   Steigung: ¾(x − 1)² − 3 (Parabel mit Scheitel (1|−3), Nullstellen −1 und 3)
+   ============================================================= */
+const fk = x => 0.25 * (x - 1) ** 3 - 3 * (x - 1) + 1, dk = x => 0.75 * (x - 1) ** 2 - 3;
+const bK = new Board($("cKub"), 5, 1, 1), sK = new Board($("kubS"), 7, 1, 3);
+sK.lab = 2;
+const kubX = $("kubX"), KUB_N = 6;
+let kub = Object.assign({ pts: [], stage: 0 }, EXS.kub || {});
+const kubSave = () => { EXS.kub = kub; exSave(); };
+function updKub() {
+  const a = +kubX.value;
+  $("kubXo").textContent = num(a);
+  $("kubP").innerHTML = `${pHTML(num(a), num(r2(fk(a))))}<span class="gap"></span>Steigung ${fx("ce", num(r2(dk(a))), 3.6)}`;
+  const n = kub.pts.length;
+  $("kubN").textContent = kub.stage === 0 ? `${n} von ${KUB_N} Punkten` : `${n} Punkte`;
+  drawKub();
+}
+function drawKub() {
+  const a = +kubX.value, ink = C("--ink"), ce = C("--e"), B = bK, S = sK;
+  B.begin();
+  B.curve(fk, C("--curve"), 3.5);
+  tangent(B, fk, dk, a);
+  triangle(B, fk, dk, a, num(r2(dk(a))));
+  if (kub.stage >= 3) {
+    [[-1, 5, "H"], [3, -3, "T"], [1, 1, "W"]].forEach(([x, y, t]) => { B.dot(x, y, C("--z"), 6); B.tag([[t, C("--z")]], B.X(x) + 10, B.Y(y) - 8, { base: "bottom", size: 15 }); });
+  }
+  B.dot(a, fk(a), ink, 7);
+  pLabel(B, a, fk(a), -triSide(B, fk, dk, a));
+  S.begin();
+  if (kub.stage >= 2) S.curve(dk, ce, 2.5, [8, 6]);
+  if (kub.stage >= 3) {
+    [-1, 3].forEach(x => { S.seg(x, 0, x, sK.cy + sK.R, C("--z"), 1.5); S.dot(x, 0, C("--z"), 6); });
+    S.dot(1, -3, C("--z"), 6);
+  }
+  kub.pts.forEach(([x, m]) => S.dot(x, m, ce, 6));
+  S.dot(a, dk(a), ink, 6);
+  const c = S.ctx; c.save(); c.strokeStyle = ink; c.lineWidth = 2; c.beginPath(); c.arc(S.X(a), S.Y(dk(a)), 9, 0, 2 * Math.PI); c.stroke(); c.restore();
+}
+function kubQuestion() {
+  const box = $("kubQ"); box.innerHTML = ""; box.hidden = kub.stage === 0;
+  const next = () => { kub.stage++; kubSave(); kubQuestion(); drawKub(); seen(box); };
+  if (kub.stage === 1) {
+    box.insertAdjacentHTML("beforeend", `<p class="qh">Die Punkte liegen …</p>`);
+    mc(box, [["auf einer Geraden", false], ["auf einer Parabel", true], ["auf einer Kurve wie der blauen", false], ["ohne Muster verteilt", false]], next, "kubMcFb");
+  } else if (kub.stage === 2) {
+    box.insertAdjacentHTML("beforeend", `<p class="qh">Wo ist die Tangente waagerecht?</p>`);
+    mc(box, [["an den Nullstellen der grünen Parabel", true], ["am Scheitel der grünen Parabel", false], ["an den Nullstellen der blauen Kurve", false], ["nur bei x = 0", false]], next, "kubMcFb");
+  } else if (kub.stage >= 3) {
+    box.insertAdjacentHTML("beforeend", `<div class="done"><span>Waagerecht bei x = −1 und x = 3: Hochpunkt H und Tiefpunkt T</span></div>
+      <div class="rule">Am Wendepunkt W fällt die Kurve am steilsten. Dort liegt der Scheitel der grünen Parabel.</div>`);
+  }
+}
+kubX.addEventListener("input", updKub);
+draggable(bK, (x, y, px, py) => Math.abs(bK.Y(fk(x)) - py) < 16 ? {} : null,
+  (g, x) => { kubX.value = clamp(snapTo(x, STEP.look), -3, 5); updKub(); });
+$("kubAdd").addEventListener("click", () => {
+  const a = r6(+kubX.value);
+  kub.pts = kub.pts.filter(p => !near(p[0], a)); kub.pts.push([a, r6(dk(a))]);
+  if (kub.stage === 0 && kub.pts.length >= KUB_N) { kub.stage = 1; kubQuestion(); seen($("kubQ")); }
+  kubSave(); updKub();
+});
+$("kubClear").addEventListener("click", () => { kub.pts = []; kubSave(); updKub(); });
+
+/* ---------- Anbindung an das gemeinsame Gerüst ---------- */
+const EXPLORE = {
+  draw: { tan: drawTan, nor: NOR.draw, par: PAR.draw, kub: drawKub },
+  canvases: ["cTan", "cLupe", "norC", "norS", "parC", "parS", "cKub", "kubS"],
+  init() { updTan(); NOR.init(); PAR.init(); updKub(); kubQuestion(); },
+};
+
+/* =============================================================
+   OHNE ÜBEN (geteilt): für Labore mit "ueben": false im Steckbrief.
+   Ersetzt trainer.js und profi.js: kein Rechentrainer, kein Profi-Tab.
+   Stellt nur bereit, was app.js und die Admin-Anbindung erwarten.
+   ============================================================= */
+const KEY = LAB.id + "-labor-v1";
+const prog = { c: [], f: [], unl: 0, lvl: 0, won: false }, pro = { i: 0, score: 0, errs: [], answered: false };
+const PRO = [];
+let task = null;
+function renderLevels() {}
+function newTask() {}
+function drawTrain() {}
+function renderPro() {}
+function drawPro() {}
+function updProTab() {}
+const proVisible = () => false, proLocked = () => false;
+
+/* =============================================================
+   TABS, ADRESSE, START (geteilt)
+   Das Labor liefert EXPLORE = { draw: {tab: zeichne}, canvases: [ids], init(), quiz?, fontsReady? }
+   ============================================================= */
+// Adresse merkt sich den Tab (z. B. …#rechentrainer), damit Neuladen und Links an derselben Stelle landen
+var hashOn = false;
+const SLUG = {};
+LAB.tabs.forEach(t => SLUG[t.id] = t.slug);
+if (document.querySelector('#mainTabs [data-tab="train"]')) { SLUG.train = "rechentrainer"; SLUG.pro = "profi"; }
+function setHash() {
+  const q = EXPLORE.quiz, sub = q && current === q.tab && q.on() ? "/quiz" : "";
+  const h = "#" + SLUG[current] + sub + (/alle/i.test(location.hash) ? "/alle" : "");
+  if (location.hash !== h) { try { history.replaceState(null, "", h); } catch (_) {} }
+}
+function hashTab() {
+  const h = decodeURIComponent(location.hash.slice(1)).toLowerCase().split("/");
+  for (const t in SLUG) if (h[0] === SLUG[t]) return { tab: t, quiz: h.indexOf("quiz") >= 0 };
+  return null;
+}
+const FIRST = LAB.tabs[0].id;
+let current = FIRST;
+const drawers = Object.assign({}, EXPLORE.draw, { train: drawTrain, pro: drawPro });
+function show(tab) {
+  if (ADMIN && tab === "pro" && proLocked()) { const f = [...document.querySelectorAll("#mainTabs button")].find(b => !b.hidden && b.dataset.tab !== "pro"); if (!f) return; tab = f.dataset.tab; }
+  current = tab; changed();
+  document.querySelectorAll("#mainTabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === tab));
+  document.querySelectorAll(".tab").forEach(s => s.hidden = s.id !== "tab-" + tab);
+  try { localStorage.setItem(KEY + "-tab", tab); } catch (_) {}
+  if (hashOn) setHash();
+  requestAnimationFrame(drawers[tab]);
+}
+document.querySelectorAll("#mainTabs button").forEach(b => b.addEventListener("click", () => {
+  if (ADMIN && b.dataset.tab === "pro" && proLocked()) { ADMIN.proLocked(); return; }
+  show(b.dataset.tab);
+}));
+const redraw = () => drawers[current]();
+[...EXPLORE.canvases, "cTrain", "cPro", "proOpts"].forEach(id => new ResizeObserver(redraw).observe($(id)));
+try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", redraw); } catch (_) {}
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (EXPLORE.fontsReady) EXPLORE.fontsReady(); redraw(); });
+
+renderLevels(); newTask(); EXPLORE.init(); renderPro(); updProTab();
+let startTab = FIRST; try { startTab = localStorage.getItem(KEY + "-tab") || FIRST; } catch (_) {}
+{ const ht = hashTab(); if (ht) startTab = ht.tab; }
+show(drawers[startTab] && (startTab !== "pro" || proVisible()) ? startTab : FIRST);
+{ const ht = hashTab(), q = EXPLORE.quiz; if (ht && ht.quiz && q && current === q.tab) q.start(); }
+hashOn = true; setHash();
+window.addEventListener("hashchange", () => {
+  const t = hashTab(), b = t && document.querySelector('#mainTabs [data-tab="' + t.tab + '"]');
+  if (b && !b.hidden && t.tab !== current) b.click();
+});
+// für Tests und die Admin-Anbindung
+window.__lab = { get task() { return task; }, prog: () => prog, pro: () => pro, current: () => current, show, updProTab, renderLevels, PRO_N: PRO.length };
+};
+</script>
+</body>
+</html>

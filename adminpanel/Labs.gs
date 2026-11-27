@@ -8,4 +8,8 @@ const LABS = {
     title: "Parabel-Labor", file: "Parabel", klasse: "OIIIa",
     tabs: [["sp", "1 Scheitelpunktform", "Erkunden"], ["forms", "2 Drei Formen", "Erkunden"], ["pq", "3 pq-Formel", "Erkunden"], ["train", "4 Rechentrainer", "Üben"], ["pro", "5 Profi ★", "Üben"]],
   },
+  tangenten: {
+    title: "Tangenten-Labor", file: "Tangenten", klasse: "OIIIa",
+    tabs: [["tan", "1 Tangente", "Erkunden"], ["nor", "2 Steigung an y = x²", "Erkunden"], ["par", "3 Andere Parabeln", "Erkunden"], ["kub", "4 Kurve mit x³", "Erkunden"]],
+  },
 };

@@ -228,20 +228,6 @@ const STORIES = [
   },
 ];
 const eur = v => (Math.abs(v - Math.round(v)) < 1e-9 ? String(Math.round(v)) : r6(v).toFixed(2).replace(".", ",")) + " €";
-// „0,09x + 7,5“, „7,5 + 0,09·x“, „24 − 1,5x“ → {m, b}; null, wenn es keine Gerade in x ist
-function parseLin(str) {
-  let s = String(str).toLowerCase().replace(/^\s*y\s*=/, "").replace(/[−–—]/g, "-").replace(/[·*×\s€%]/g, "").replace(/,/g, ".");
-  if (!s) return null;
-  if (!/^[+-]/.test(s)) s = "+" + s;
-  const terms = s.match(/[+-][^+-]+/g);
-  if (!terms || terms.join("") !== s) return null;
-  let m = 0, b = 0;
-  for (const t of terms) {
-    if (t.endsWith("x")) { const k = t.slice(0, -1); const v = k === "+" ? 1 : k === "-" ? -1 : parse(k); if (isNaN(v)) return null; m += v; }
-    else { const v = parse(t); if (isNaN(v)) return null; b += v; }
-  }
-  return { m: r6(m), b: r6(b) };
-}
 const linTxt = (m, b) => `y = ${num(m)}x ${b < 0 ? "−" : "+"} ${num(Math.abs(b))}`;
 function storyTask(l) {
   const S = pick(STORIES), o = S.make(), y = r6(o.m * o.x + o.b);

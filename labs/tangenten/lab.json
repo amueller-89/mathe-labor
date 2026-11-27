@@ -1,0 +1,14 @@
+{
+  "id": "tangenten",
+  "title": "Tangenten-Labor",
+  "thema": "Tangenten und ihre Steigung",
+  "klasse": "OIIIa",
+  "icon": "M7 5Q15 37 23 5M9 25L29 13",
+  "ueben": false,
+  "tabs": [
+    { "id": "tan", "label": "Tangente", "slug": "tangente" },
+    { "id": "nor", "label": "Steigung an y = x²", "slug": "normalparabel" },
+    { "id": "par", "label": "Andere Parabeln", "slug": "parabeln" },
+    { "id": "kub", "label": "Kurve mit x³", "slug": "kurve-x3" }
+  ]
+}

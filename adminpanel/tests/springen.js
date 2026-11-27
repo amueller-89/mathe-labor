@@ -1,7 +1,7 @@
 // Prüft, ob beim Bewegen der Regler ein „=“ in den Erkunden-Tabs springt. Aufruf: node adminpanel/tests/springen.js (im Repo-Ordner)
 const {chromium}=require('playwright');
 (async()=>{const b=await chromium.launch();
-for(const [file,tabs] of [['Geraden-Labor',['mb','pts']],['Parabel-Labor',['sp','forms','pq']]]){
+for(const [file,tabs] of [['Geraden-Labor',['mb','pts']],['Parabel-Labor',['sp','forms','pq']],['Tangenten-Labor',['tan','kub']]]){
  const p=await b.newPage({viewport:{width:1512,height:982}});
  await p.goto('file://'+process.cwd()+'/labore/'+file+'.html#alle');await p.waitForTimeout(600);
  for(const t of tabs){

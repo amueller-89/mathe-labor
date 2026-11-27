@@ -632,7 +632,8 @@ const inp = k => `<input class="in" data-k="${k}" inputmode="decimal" autocomple
 
 // ---------- Koordinatensystem ----------
 class Board {
-  constructor(canvas, R = 8) { this.c = canvas; this.R = R; this.lab = 1; }
+  // R = halbe Breite in Einheiten; cx, cy = Mitte des Ausschnitts (Standard: Ursprung)
+  constructor(canvas, R = 8, cx = 0, cy = 0) { this.c = canvas; this.R = R; this.cx = cx; this.cy = cy; this.lab = 1; }
   begin() {
     const c = this.c, r = c.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
     const w = Math.max(1, Math.round(r.width * dpr)), h = Math.max(1, Math.round(r.height * dpr));
@@ -640,43 +641,47 @@ class Board {
     const ctx = this.ctx = c.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     this.w = r.width; this.h = r.height;
     const R = this.R, m = 14; this.u = (Math.min(this.w, this.h) - 2 * m) / (2 * R);
-    this.ox = this.w / 2; this.oy = this.h / 2;
+    this.ox = this.w / 2 - this.cx * this.u; this.oy = this.h / 2 + this.cy * this.u;
     const X = x => this.X(x), Y = y => this.Y(y);
+    const x0 = this.cx - R, x1 = this.cx + R, y0 = this.cy - R, y1 = this.cy + R;
     ctx.clearRect(0, 0, this.w, this.h); ctx.setLineDash([]);
     ctx.lineWidth = 1;
-    for (let i = -R; i <= R; i++) {
+    for (let i = Math.ceil(x0); i <= x1; i++) {
       ctx.strokeStyle = i % 5 ? tok("--grid") : tok("--grid-strong");
-      ctx.beginPath(); ctx.moveTo(X(i), Y(-R)); ctx.lineTo(X(i), Y(R)); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(X(-R), Y(i)); ctx.lineTo(X(R), Y(i)); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(X(i), Y(y0)); ctx.lineTo(X(i), Y(y1)); ctx.stroke();
+    }
+    for (let i = Math.ceil(y0); i <= y1; i++) {
+      ctx.strokeStyle = i % 5 ? tok("--grid") : tok("--grid-strong");
+      ctx.beginPath(); ctx.moveTo(X(x0), Y(i)); ctx.lineTo(X(x1), Y(i)); ctx.stroke();
     }
     const ink = tok("--ink"), muted = tok("--muted");
     ctx.strokeStyle = ink; ctx.fillStyle = ink; ctx.lineWidth = 1.6;
-    ctx.beginPath(); ctx.moveTo(X(-R), Y(0)); ctx.lineTo(X(R), Y(0)); ctx.moveTo(X(0), Y(-R)); ctx.lineTo(X(0), Y(R)); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(X(R) + 2, Y(0)); ctx.lineTo(X(R) - 7, Y(0) - 4); ctx.lineTo(X(R) - 7, Y(0) + 4); ctx.fill();
-    ctx.beginPath(); ctx.moveTo(X(0), Y(R) - 2); ctx.lineTo(X(0) - 4, Y(R) + 7); ctx.lineTo(X(0) + 4, Y(R) + 7); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(X(x0), Y(0)); ctx.lineTo(X(x1), Y(0)); ctx.moveTo(X(0), Y(y0)); ctx.lineTo(X(0), Y(y1)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X(x1) + 2, Y(0)); ctx.lineTo(X(x1) - 7, Y(0) - 4); ctx.lineTo(X(x1) - 7, Y(0) + 4); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(X(0), Y(y1) - 2); ctx.lineTo(X(0) - 4, Y(y1) + 7); ctx.lineTo(X(0) + 4, Y(y1) + 7); ctx.fill();
     ctx.font = `12px ${tok("--body")}`; ctx.fillStyle = muted;
     ctx.textAlign = "center"; ctx.textBaseline = "top";
-    for (let i = -R + 1; i < R; i++) if (i && i % this.lab === 0) ctx.fillText(num(i), X(i), Y(0) + 4);
+    for (let i = Math.floor(x0) + 1; i < x1; i++) if (i && i % this.lab === 0) ctx.fillText(num(i), X(i), Y(0) + 4);
     ctx.textAlign = "right"; ctx.textBaseline = "middle";
-    for (let i = -R + 1; i < R; i++) if (i && i % this.lab === 0) ctx.fillText(num(i), X(0) - 5, Y(i));
+    for (let i = Math.floor(y0) + 1; i < y1; i++) if (i && i % this.lab === 0) ctx.fillText(num(i), X(0) - 5, Y(i));
     ctx.fillStyle = ink; ctx.font = `700 14px ${tok("--body")}`;
-    ctx.textAlign = "right"; ctx.textBaseline = "bottom"; ctx.fillText("x", X(R) - 4, Y(0) - 6);
-    ctx.textAlign = "left"; ctx.textBaseline = "top"; ctx.fillText("y", X(0) + 8, Y(R) + 2);
+    ctx.textAlign = "right"; ctx.textBaseline = "bottom"; ctx.fillText(this.xName || "x", X(x1) - 4, Y(0) - 6);
+    ctx.textAlign = "left"; ctx.textBaseline = "top"; ctx.fillText(this.yName || "y", X(0) + 8, Y(y1) + 2);
     return ctx;
   }
   X(x) { return this.ox + x * this.u; }
   Y(y) { return this.oy - y * this.u; }
   ix(px) { return (px - this.ox) / this.u; }
   iy(py) { return (this.oy - py) / this.u; }
-  clip(fn) { const c = this.ctx, R = this.R; c.save(); c.beginPath(); c.rect(this.X(-R), this.Y(R), 2 * R * this.u, 2 * R * this.u); c.clip(); fn(c); c.restore(); }
+  clip(fn) { const c = this.ctx, R = this.R; c.save(); c.beginPath(); c.rect(this.X(this.cx - R), this.Y(this.cy + R), 2 * R * this.u, 2 * R * this.u); c.clip(); fn(c); c.restore(); }
   curve(f, color, width, dash) {
-    const R = this.R;
+    const R = this.R, lo = this.cy - R - 4 * R / 8, hi = this.cy + R + 4 * R / 8;
     this.clip(c => {
       c.strokeStyle = color; c.lineWidth = width; c.setLineDash(dash || []); c.lineJoin = "round"; c.lineCap = "round";
       c.beginPath(); let started = false; const N = 700;
       for (let i = 0; i <= N; i++) {
-        const x = -R + 2 * R * i / N, y = f(x);
-        if (y > R + 4 || y < -R - 4) { if (started) { c.lineTo(this.X(x), this.Y(Math.max(-R - 4, Math.min(R + 4, y)))); c.stroke(); c.beginPath(); started = false; } continue; }
+        const x = this.cx - R + 2 * R * i / N, y = f(x);
+        if (y > hi || y < lo) { if (started) { c.lineTo(this.X(x), this.Y(Math.max(lo, Math.min(hi, y)))); c.stroke(); c.beginPath(); started = false; } continue; }
         if (!started) { c.moveTo(this.X(x), this.Y(y)); started = true; } else c.lineTo(this.X(x), this.Y(y));
       }
       c.stroke();
@@ -686,7 +691,7 @@ class Board {
     this.clip(c => { c.strokeStyle = color; c.lineWidth = width; c.setLineDash(dash); c.beginPath(); c.moveTo(this.X(x1), this.Y(y1)); c.lineTo(this.X(x2), this.Y(y2)); c.stroke(); });
   }
   dot(x, y, color, r = 6, ring = true) {
-    if (Math.abs(x) > this.R || Math.abs(y) > this.R) return;
+    if (Math.abs(x - this.cx) > this.R || Math.abs(y - this.cy) > this.R) return;
     const c = this.ctx; c.setLineDash([]); c.fillStyle = color; c.strokeStyle = tok("--paper"); c.lineWidth = 2;
     c.beginPath(); c.arc(this.X(x), this.Y(y), r, 0, 2 * Math.PI); c.fill(); if (ring) c.stroke();
   }
@@ -738,6 +743,21 @@ function parse(str) {
   if (fr) return Number(fr[1]) / Number(fr[2]);
   if (!/^[+-]?(\d+\.?\d*|\.\d+)$/.test(s)) return NaN;
   return Number(s);
+}
+
+// „0,09x + 7,5“, „7,5 + 0,09·x“, „24 − 1,5x“ → {m, b}; null, wenn es keine Gerade in x ist
+function parseLin(str) {
+  let s = String(str).toLowerCase().replace(/^\s*y\s*=/, "").replace(/[−–—]/g, "-").replace(/[·*×\s€%]/g, "").replace(/,/g, ".");
+  if (!s) return null;
+  if (!/^[+-]/.test(s)) s = "+" + s;
+  const terms = s.match(/[+-][^+-]+/g);
+  if (!terms || terms.join("") !== s) return null;
+  let m = 0, b = 0;
+  for (const t of terms) {
+    if (t.endsWith("x")) { const k = t.slice(0, -1); const v = k === "+" ? 1 : k === "-" ? -1 : parse(k); if (isNaN(v)) return null; m += v; }
+    else { const v = parse(t); if (isNaN(v)) return null; b += v; }
+  }
+  return { m: r6(m), b: r6(b) };
 }
 
 // ---------- Admin-Version ----------
@@ -1612,7 +1632,7 @@ window.addEventListener("hashchange", updProTab);
 var hashOn = false;
 const SLUG = {};
 LAB.tabs.forEach(t => SLUG[t.id] = t.slug);
-SLUG.train = "rechentrainer"; SLUG.pro = "profi";
+if (document.querySelector('#mainTabs [data-tab="train"]')) { SLUG.train = "rechentrainer"; SLUG.pro = "profi"; }
 function setHash() {
   const q = EXPLORE.quiz, sub = q && current === q.tab && q.on() ? "/quiz" : "";
   const h = "#" + SLUG[current] + sub + (/alle/i.test(location.hash) ? "/alle" : "");

@@ -1,0 +1,127 @@
+  <!-- ================= 1 TANGENTE ================= -->
+  <section id="tab-tan" class="tab">
+    <p class="lede" style="margin-bottom:12px">Zieh den Punkt P oder benutze den Regler.</p>
+    <div class="stage">
+      <section>
+        <canvas id="cTan" aria-label="Normalparabel mit Tangente"></canvas>
+        <div class="legend">
+          <span><i style="background:var(--curve)"></i>y = x²</span>
+          <span><i style="background:var(--d)"></i>Tangente in P</span>
+        </div>
+      </section>
+      <aside class="side">
+        <div class="card">
+          <p class="label">Tangente</p>
+          <p class="def">Eine <b class="cd">Tangente</b> berührt die Kurve im Punkt P und hat dort genau dieselbe Richtung wie die Kurve.</p>
+        </div>
+        <div class="card">
+          <div class="pt" id="tanP"></div>
+          <div class="sl"><b>x</b><input type="range" id="tanX" min="-3" max="3" data-step="look" value="1"><output id="tanXo"></output></div>
+        </div>
+        <div class="card">
+          <div class="row" style="justify-content:space-between;margin-bottom:8px">
+            <p class="label" style="margin:0">Lupe um P</p>
+            <div class="seg" id="tanZoom">
+              <button data-z="5" aria-selected="true">5×</button>
+              <button data-z="20" aria-selected="false">20×</button>
+              <button data-z="100" aria-selected="false">100×</button>
+            </div>
+          </div>
+          <canvas id="cLupe" class="lupe" aria-label="Vergrößerung um P"></canvas>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= 2 STEIGUNG AN y = x² ================= -->
+  <section id="tab-nor" class="tab" hidden>
+    <p class="lede" style="margin-bottom:12px">Bestimme an jeder Stelle die Steigung der Tangente.</p>
+    <div class="stage">
+      <section>
+        <canvas id="norC" aria-label="Normalparabel mit Tangente"></canvas>
+        <div class="legend">
+          <span><i style="background:var(--curve)"></i><span id="norFn"></span></span>
+          <span><i style="background:var(--d)"></i>Tangente</span>
+          <span><i style="background:var(--e)"></i>Steigung</span>
+        </div>
+      </section>
+      <aside class="side">
+        <div class="card">
+          <div class="tblwrap" id="norTbl"></div>
+          <div class="row" id="norBtns" style="margin-top:10px">
+            <button class="btn primary" id="norCheck">Prüfen</button>
+            <button class="btn" id="norTri">Steigungsdreieck zeigen</button>
+          </div>
+          <div class="feedback" id="norFb" aria-live="polite"></div>
+        </div>
+        <div class="card">
+          <p class="label">Punkte (Stelle x | Steigung)</p>
+          <canvas id="norS" class="scan" aria-label="Punkte aus Stelle und Steigung"></canvas>
+        </div>
+        <div class="card" id="norQ" hidden></div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= 3 ANDERE PARABELN ================= -->
+  <section id="tab-par" class="tab" hidden>
+    <div class="row" style="margin-bottom:12px;justify-content:space-between">
+      <p class="lede">Bestimme an jeder Stelle die Steigung der Tangente.</p>
+      <p class="lede" id="parNr"></p>
+    </div>
+    <div class="stage">
+      <section>
+        <canvas id="parC" aria-label="Parabel mit Tangente"></canvas>
+        <div class="legend">
+          <span><i style="background:var(--curve)"></i><span id="parFn"></span></span>
+          <span><i style="background:var(--d)"></i>Tangente</span>
+          <span><i style="background:var(--e)"></i>Steigung</span>
+        </div>
+      </section>
+      <aside class="side">
+        <div class="card">
+          <div class="tblwrap" id="parTbl"></div>
+          <div class="row" id="parBtns" style="margin-top:10px">
+            <button class="btn primary" id="parCheck">Prüfen</button>
+            <button class="btn" id="parTri">Steigungsdreieck zeigen</button>
+          </div>
+          <div class="feedback" id="parFb" aria-live="polite"></div>
+        </div>
+        <div class="card">
+          <p class="label">Punkte (Stelle x | Steigung)</p>
+          <canvas id="parS" class="scan" aria-label="Punkte aus Stelle und Steigung"></canvas>
+        </div>
+        <div class="card" id="parQ" hidden></div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= 4 KURVE MIT x³ ================= -->
+  <section id="tab-kub" class="tab" hidden>
+    <p class="lede" style="margin-bottom:12px">Schieb P über die Kurve und trag Punkte ein.</p>
+    <div class="stage">
+      <section>
+        <canvas id="cKub" aria-label="Kurve mit Tangente"></canvas>
+        <div class="legend">
+          <span><i style="background:var(--curve)"></i>y = ¼·(x − 1)³ − 3·(x − 1) + 1</span>
+          <span><i style="background:var(--d)"></i>Tangente</span>
+        </div>
+      </section>
+      <aside class="side">
+        <div class="card">
+          <div class="pt" id="kubP"></div>
+          <div class="sl"><b>x</b><input type="range" id="kubX" min="-3" max="5" data-step="look" value="-2"><output id="kubXo"></output></div>
+          <div class="row" style="margin-top:4px">
+            <button class="btn primary" id="kubAdd">Punkt eintragen</button>
+            <button class="btn small" id="kubClear">Punkte löschen</button>
+            <span class="hint" id="kubN" style="margin:0"></span>
+          </div>
+        </div>
+        <div class="card">
+          <p class="label">Punkte (Stelle x | Steigung)</p>
+          <canvas id="kubS" class="scan" aria-label="Punkte aus Stelle und Steigung"></canvas>
+        </div>
+        <div class="card" id="kubQ" hidden></div>
+      </aside>
+    </div>
+  </section>

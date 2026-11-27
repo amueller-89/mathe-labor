@@ -6,7 +6,7 @@
 var hashOn = false;
 const SLUG = {};
 LAB.tabs.forEach(t => SLUG[t.id] = t.slug);
-SLUG.train = "rechentrainer"; SLUG.pro = "profi";
+if (document.querySelector('#mainTabs [data-tab="train"]')) { SLUG.train = "rechentrainer"; SLUG.pro = "profi"; }
 function setHash() {
   const q = EXPLORE.quiz, sub = q && current === q.tab && q.on() ? "/quiz" : "";
   const h = "#" + SLUG[current] + sub + (/alle/i.test(location.hash) ? "/alle" : "");

@@ -3,7 +3,7 @@
     python3 build.py
 
 Quelle (von Hand bearbeiten):
-  labs/_shared/      gemeinsames Gerüst: page.html, base.css, core.js, trainer.js, profi.js, app.js, admin/
+  labs/_shared/      gemeinsames Gerüst: page.html, base.css, core.js, trainer.js, profi.js, ohne-ueben.js, app.js, admin/
   labs/<id>/         ein Labor: lab.json (Steckbrief), tabs.html, style.css, lab.js
 
 Ergebnis (nie von Hand bearbeiten, wird überschrieben):
@@ -46,7 +46,8 @@ def fill(t, **kw):
 def all_tabs(lab):
     """Erkunden-Tabs aus dem Steckbrief, dann immer Rechentrainer und Profi (Gruppe Üben)."""
     tabs = [(t['id'], t['label'], 'Erkunden') for t in lab['tabs']]
-    tabs += [('train', 'Rechentrainer', 'Üben'), ('pro', 'Profi ★', 'Üben')]
+    if lab.get('ueben', True):  # "ueben": false im Steckbrief = nur Erkunden, ohne Rechentrainer und Profi
+        tabs += [('train', 'Rechentrainer', 'Üben'), ('pro', 'Profi ★', 'Üben')]
     return [(tid, f'{i + 1} {label}', grp) for i, (tid, label, grp) in enumerate(tabs)]
 
 
@@ -63,7 +64,8 @@ def page(d, lab, admin):
     h1 = f'<h1>{title}</h1>'
     js = ('const LAB = ' + json.dumps(lab, ensure_ascii=False) + ';\n'
           + read(SHARED, 'core.js') + '\n' + read(LABS, d, 'lab.js') + '\n'
-          + read(SHARED, 'trainer.js') + '\n' + read(SHARED, 'profi.js') + '\n' + read(SHARED, 'app.js'))
+          + (read(SHARED, 'trainer.js') + '\n' + read(SHARED, 'profi.js') if lab.get('ueben', True) else read(SHARED, 'ohne-ueben.js'))
+          + '\n' + read(SHARED, 'app.js'))
     extra = ''
     if admin:
         style += read(SHARED, 'admin', 'gate.css')
@@ -78,7 +80,7 @@ def page(d, lab, admin):
     return fill(read(SHARED, 'page.html'),
                 ICON=lab['icon'].replace(' ', '%20'), TITLE=title, H1=h1, STYLE=style, NAV=nav,
                 TABS=read(LABS, d, 'tabs.html'), N_TRAIN=str(len(tabs) - 1), N_PRO=str(len(tabs)),
-                SKIZZE=lab['skizze'], WIN=lab['win'], ADMIN=extra, SCRIPT=js)
+                SKIZZE=lab.get('skizze', ''), WIN=lab.get('win', ''), ADMIN=extra, SCRIPT=js)
 
 
 labs = []

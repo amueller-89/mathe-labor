@@ -15,7 +15,7 @@ labs/                  Quelle: hier wird gearbeitet
     app.js             Tabs, Adresse (#rechentrainer …), Start
     admin/             Anmeldung + Verbindung zum Apps Script (nur Admin-Version)
     start.html         Startseite für GitHub Pages
-  geraden/, parabel/   je ein Labor (siehe unten)
+  geraden/, parabel/, tangenten/   je ein Labor (siehe unten)
 build.py               baut alles in labore/, adminpanel/ und docs/
 labore/                fertige eigenständige Dateien (erzeugt)
 adminpanel/            Server (Code.gs), Lehrer-Oberfläche (Admin.html), Admin-Versionen (erzeugt)
@@ -36,6 +36,7 @@ Erzeugte Dateien nie von Hand ändern, sie werden überschrieben.
 |---|---|---|
 | `Geraden-Labor.html` | 8 | Lineare Funktionen: Steigung und y-Achsenabschnitt erkunden, Gerade durch zwei Punkte, Rechentrainer mit 4 Stufen (Stufe 4: Textaufgaben), Profi-Fragen |
 | `Parabel-Labor.html` | 9 | Quadratische Funktionen: Scheitelpunktform, drei Formen (allgemeine Form, Scheitelpunkt-, Nullstellenform), pq-Formel, Rechentrainer, Profi-Fragen |
+| `Tangenten-Labor.html` | 9 | Zusatz für Schnelle, nur Erkunden: Tangente an y = x² mit Lupe, Steigungen an Parabeln bestimmen → die Punkte (Stelle | Steigung) liegen auf einer Geraden, Kurve mit x³ → sie liegen auf einer Parabel |
 | `Scheitelpunktform.html` | 9 | ältere Einzeldatei, nicht Teil des Builds |
 
 Jede Datei ist eigenständig und läuft ohne Server direkt im Browser.
@@ -50,6 +51,7 @@ Mit `#alle` am Ende der Adresse sind alle Stufen und der Profi-Tab sofort offen 
    - `icon`: SVG-Pfad für das Symbol, 32×32
    - `tabs`: die Erkunden-Tabs mit `id`, `label`, `slug` (für die Adresse). Rechentrainer und Profi kommen automatisch dahinter.
    - `skizze` („Gerade“, „Parabel“ …), `win` (Text im Glückwunsch-Popup), `profi` (Titel bei fast allen Profi-Fragen richtig)
+   - `"ueben": false`: nur Erkunden-Tabs, ohne Rechentrainer und Profi (dann entfallen `skizze`, `win`, `profi` und in `lab.js` `LEVELS` … `PRO`; siehe `labs/tangenten/`)
 3. `tabs.html`: je Erkunden-Tab eine `<section id="tab-<id>" class="tab">`.
 4. `style.css`: nur was dieses Labor zusätzlich braucht (Farbklassen, Formeln).
 5. `lab.js`, in dieser Reihenfolge:
