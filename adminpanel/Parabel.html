@@ -146,6 +146,11 @@ canvas.procan{max-width:400px;margin:0 0 14px}
 /* Musterbeispiel-Knopf direkt neben dem Aufgabentitel */
 .trhead{display:flex;align-items:center;gap:16px;margin-bottom:6px}
 .trhead .label{margin:0}
+
+/* Tabs in zwei Gruppen: Erkunden | Üben */
+.tabnav{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 20px}
+.tgrp{display:flex;flex-direction:column;gap:4px}
+.tgrp .gl{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
 .formula{font-family:var(--display);font-weight:800;font-size:clamp(24px,3vw,36px);line-height:1.2;white-space:nowrap;overflow-x:auto}
 .formula.off{color:var(--muted);font-weight:600;font-size:17px;white-space:normal}
 .ca{color:var(--a)} .cd{color:var(--d)} .ce{color:var(--e)} .cz{color:var(--z)} .cx{color:var(--curve)}
@@ -179,18 +184,26 @@ footer{font-size:13px;color:var(--muted)}
 .linkbtn{font:inherit;background:none;border:0;padding:0;color:var(--muted);text-decoration:underline;cursor:pointer}
 .who .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--e);margin-right:6px;vertical-align:middle}
 .who .dot.off{background:var(--pencil)}
+.unlockToast{position:fixed;right:20px;bottom:20px;z-index:70;display:flex;align-items:center;gap:12px;max-width:min(520px,calc(100vw - 40px));background:var(--surface);color:var(--ink);border:2px solid var(--e);border-radius:12px;padding:14px 18px;font-size:17px;font-weight:700;box-shadow:0 12px 40px rgb(0 0 0 / .45);cursor:pointer}
+.unlockToast b{font-size:22px}
+.unlockToast.in{animation:unlockIn .35s ease-out}
+@keyframes unlockIn{from{transform:translateX(30px);opacity:0}to{transform:none;opacity:1}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
     <div><h1>Parabel-Labor</h1><div class="who" id="who" hidden><span class="dot" id="whoDot"></span>Angemeldet als <b id="whoName"></b> · <button class="linkbtn" id="whoSwitch">abmelden</button></div></div>
-    <nav class="seg" role="tablist" id="mainTabs">
-      <button role="tab" data-tab="sp" aria-selected="true">1 Scheitelpunktform</button>
-      <button role="tab" data-tab="forms" aria-selected="false">2 Drei Formen</button>
-      <button role="tab" data-tab="pq" aria-selected="false">3 pq-Formel</button>
-      <button role="tab" data-tab="train" aria-selected="false">4 Rechentrainer</button>
-      <button role="tab" data-tab="pro" aria-selected="false" hidden>5 Profi ★</button>
+    <nav class="tabnav" role="tablist" id="mainTabs">
+      <div class="tgrp" data-grp="Erkunden"><span class="gl">Erkunden</span><div class="seg">
+        <button role="tab" data-tab="sp" aria-selected="true">1 Scheitelpunktform</button>
+        <button role="tab" data-tab="forms" aria-selected="false">2 Drei Formen</button>
+        <button role="tab" data-tab="pq" aria-selected="false">3 pq-Formel</button>
+      </div></div>
+      <div class="tgrp" data-grp="Üben"><span class="gl">Üben</span><div class="seg">
+        <button role="tab" data-tab="train" aria-selected="false">4 Rechentrainer</button>
+        <button role="tab" data-tab="pro" aria-selected="false" hidden>5 Profi ★</button>
+      </div></div>
     </nav>
   </header>
 
@@ -330,7 +343,6 @@ footer{font-size:13px;color:var(--muted)}
         <div class="card">
           <div class="trhead"><p class="label" id="trTitle"></p><button class="btn small" id="trEx" type="button">📘 Musterbeispiel ansehen</button></div>
           <div class="formula" id="trTask"></div>
-          <p class="hint" id="trHint"></p>
         </div>
         <div class="card">
           <p class="label">Deine Antwort</p>
@@ -529,14 +541,32 @@ async function ping() {
     if (!r.known) { clearInterval(pingTimer); me = null; store.del(IDKEY); sess.del(); gate("gBye"); return; }
     // Lehrkraft hat alle zurückgesetzt: neu laden, dann startet alles bei null (Anmeldung bleibt)
     if (r.epoch && epoch && r.epoch !== epoch) { clearInterval(pingTimer); location.reload(); return; }
-    if (JSON.stringify(r.tabs) !== JSON.stringify(allowed) || !!r.alle !== alle || (r.need || 3) !== need) { allowed = r.tabs || []; alle = !!r.alle; need = r.need || 3; apply(); }
+    if (JSON.stringify(r.tabs) !== JSON.stringify(allowed) || !!r.alle !== alle || (r.need || 3) !== need) {
+      const neu = (r.tabs || []).filter(t => allowed.indexOf(t) < 0).map(tabName), msgs = [];
+      if (neu.length) msgs.push("Neu freigeschaltet: " + neu.join(", "));
+      if (r.alle && !alle) msgs.push("Für dich ist jetzt alles freigeschaltet");
+      if ((r.need || 3) < need) msgs.push("Jetzt reichen " + (r.need || 3) + " richtige Aufgaben je Stufe");
+      allowed = r.tabs || []; alle = !!r.alle; need = r.need || 3; apply();
+      if (msgs.length) unlockToast(msgs);
+    }
   } catch (e) { setOnline(false); }
+}
+const tabName = t => { const b = document.querySelector('#mainTabs [data-tab="' + t + '"]'); return b ? b.textContent.replace(/^\d+\s*/, "") : t; };
+// Hinweis am Rand, wenn die Lehrkraft etwas freischaltet (nimmt keinen Fokus)
+let unlockT = null;
+function unlockToast(msgs) {
+  let t = document.querySelector(".unlockToast");
+  if (!t) { t = document.createElement("div"); t.className = "unlockToast"; t.setAttribute("role", "status"); t.addEventListener("click", () => t.hidden = true); document.body.appendChild(t); }
+  t.innerHTML = "<b>🔓</b><span></span>"; t.querySelector("span").textContent = msgs.join(" · ");
+  t.hidden = false; t.classList.remove("in"); void t.offsetWidth; t.classList.add("in");
+  clearTimeout(unlockT); unlockT = setTimeout(() => t.hidden = true, 8000);
 }
 function setOnline(v) { online = v; $("whoDot").classList.toggle("off", !v); $("whoDot").title = v ? "verbunden" : "keine Verbindung"; }
 function apply() {
   const L = window.__lab; if (!L) return;
   document.querySelectorAll("#mainTabs button").forEach(b => { if (b.dataset.tab !== "pro") b.hidden = !tabOk(b.dataset.tab); });
   L.updProTab(); L.renderLevels();
+  document.querySelectorAll("#mainTabs .tgrp").forEach(g => g.hidden = ![...g.querySelectorAll("button")].some(b => !b.hidden));
   $("winPro").hidden = !tabOk("pro"); $("winProTxt").hidden = !tabOk("pro");
   const vis = [...document.querySelectorAll("#mainTabs button")].filter(b => !b.hidden);
   if (!vis.length) { gate("gWait"); return; }
@@ -971,7 +1001,6 @@ function makeTask(l) {
     const a = pick([1, 1, -1, 2, -2, 3]), d = nz(-5, 5), e = rnd(13) - 6;
     return { l, a, d, e, want: { A: a, B: -2 * a * d, C: a * d * d + e },
       title: "Schreibe in die allgemeine Form um.", task: scheitelHTML(a, d, e),
-      hint: "Erst die Klammer mit der binomischen Formel auflösen, dann mit a malnehmen. Negative Zahlen mit Minus eintippen.",
       answer: `<div class="slots"><span>y =</span><span class="p">a</span><span>x² +</span><span class="p">b</span><span>x +</span><span class="p">c</span>
       <span>y =</span>${inp("A")}<span>x² +</span>${inp("B")}<span>x +</span>${inp("C")}</div>`,
       f: x => a * (x - d) ** 2 + e, sol: () => `${scheitelHTML(a, d, e, false)} = ${polyBody(a, -2 * a * d, a * d * d + e)}` };
@@ -980,7 +1009,6 @@ function makeTask(l) {
     const a = pick([1, 1, -1, 2, -2]); let x1 = rnd(13) - 6, x2 = rnd(13) - 6; if (x1 > x2) [x1, x2] = [x2, x1];
     return { l, a, x1, x2, want: { A: a, B: -a * (x1 + x2), C: a * x1 * x2 },
       title: "Schreibe in die allgemeine Form um.", task: nullHTML(a, x1, x2),
-      hint: "Klammern ausmultiplizieren (jedes mit jedem), dann mit a malnehmen.",
       answer: `<div class="slots"><span>y =</span><span class="p">a</span><span>x² +</span><span class="p">b</span><span>x +</span><span class="p">c</span>
       <span>y =</span>${inp("A")}<span>x² +</span>${inp("B")}<span>x +</span>${inp("C")}</div>`,
       f: x => a * (x - x1) * (x - x2), sol: () => `${nullHTML(a, x1, x2, false)} = ${polyBody(a, -a * (x1 + x2), a * x1 * x2)}` };
@@ -992,14 +1020,14 @@ function makeTask(l) {
     else { let r1 = rnd(15) - 7, r2 = rnd(15) - 7; if (r1 > r2) [r1, r2] = [r2, r1]; p = -(r1 + r2); q = r1 * r2; roots = r1 === r2 ? [r1] : [r1, r2]; }
     return { l, k, p, q, roots,
       title: "Berechne die Lösungen.", task: polyBody(k, k * p, k * q) + " = 0",
-      hint: k === 1 ? "pq-Formel: x = −p/2 ± √((p/2)² − q). Gibt es nur eine Lösung, trag sie in beide Felder ein." : "Erst durch die Zahl vor x² teilen (Normalform), dann die pq-Formel. Gibt es nur eine Lösung, trag sie in beide Felder ein.",
       answer: `x₁ = ${inp("x1")} &nbsp; x₂ = ${inp("x2")} <label class="chk" style="font-size:17px;font-weight:700"><input type="checkbox" data-k="none"> keine Lösung</label>`,
       f: x => k * (x * x + p * x + q),
       // eigene Prüfung: Reihenfolge egal, Kästchen „keine Lösung“
       check(F, fb) {
         if (F.none.checked) { this.guess = { none: true }; [F.x1, F.x2].forEach(el => el.classList.remove("ok", "bad")); return roots.length === 0; }
-        const g = [parse(F.x1.value), parse(F.x2.value)];
-        if (g.some(isNaN)) { fb.className = "feedback no"; fb.textContent = "Bitte beide Felder ausfüllen (oder „keine Lösung“)."; return null; }
+        let g = [parse(F.x1.value), parse(F.x2.value)];
+        if (g.every(isNaN)) { fb.className = "feedback no"; fb.textContent = "Bitte ausfüllen (oder „keine Lösung“)."; return null; }
+        if (g.some(isNaN)) { const v = g.find(x => !isNaN(x)); g = [v, v]; } // ein Feld leer = nur eine Lösung
         this.guess = { xs: g };
         const want = roots.length === 1 ? [roots[0], roots[0]] : roots.slice();
         if (want.length === 0) { mark(F.x1, false); mark(F.x2, false); return false; }
@@ -1017,7 +1045,6 @@ function makeTask(l) {
   const a = pick([1, -1, 2, -2, 0.5, -0.5]), d = rnd(11) - 5, e = rnd(11) - 5;
   return { l, a, d, e, want: { a, d, e },
     title: "Lies die Scheitelpunktform aus der Skizze ab.", task: "",
-    hint: "Scheitel S(d | e) ablesen. Für a: vom Scheitel 1 nach rechts, wie viel geht es hoch oder runter? Bei S(−3 | …) ist d = −3.",
     answer: `<div class="slots"><span>y =</span><span class="p ca">a</span><span>·(x −</span><span class="p cd">d</span><span>)² +</span><span class="p ce">e</span>
       <span>y =</span>${inp("a")}<span>·(x −</span>${inp("d")}<span>)² +</span>${inp("e")}</div>`,
     f: x => a * (x - d) ** 2 + e, sol: () => scheitelHTML(a, d, e, false) };
@@ -1104,10 +1131,10 @@ const EXAMPLES = [
    ============================================================= */
 
 const PRO = [
-  { q: "Eine nach oben geöffnete Normalparabel hat die Nullstellen −1 und 5 (siehe Skizze). Wo liegt ihr Scheitel?",
+  { q: "Eine nach oben geöffnete Parabel hat die Nullstellen −1 und 5 (siehe Skizze). Wo liegt ihr Scheitel?",
     pts: [[-1, 0], [5, 0]], cap: "Nur die Nullstellen sind eingezeichnet.",
-    opts: ["S(2 | −9)", "S(3 | −9)", "S(2 | 9)", "S(2 | −5)"], ok: 0, after: [{ f: x => (x + 1) * (x - 5) }], afterPts: [[2, -9]],
-    ex: "Der Scheitel liegt genau in der Mitte: x = (−1 + 5) : 2 = 2. Einsetzen in y = (x + 1)(x − 5): y = 3 · (−3) = −9." },
+    opts: ["S(2 | −9)", "S(3 | −9)", "S(2 | 9)", "S(−2 | −9)"], ok: 0, after: [{ f: x => (x + 1) * (x - 5) }], afterPts: [[2, -9]],
+    ex: "Der Scheitel liegt genau in der Mitte: x = (−1 + 5) : 2 = 2. Die Parabel ist nach oben geöffnet und schneidet die x-Achse, also liegt der Scheitel darunter: y ist negativ." },
   { q: "Für welches e hat y = −2(x − 1)² + e genau eine Nullstelle?",
     graph: [{ f: x => -2 * (x - 1) ** 2 + 3 }], cap: "So sieht die Parabel zum Beispiel für e = 3 aus.",
     opts: ["e = −2", "e = 0", "e = 1", "e = 2"], ok: 1, after: [{ f: x => -2 * (x - 1) ** 2, c: "--e" }],
@@ -1131,10 +1158,10 @@ const PRO = [
     opts: ["(p/2)² − q < 0", "q < 0", "p < 0", "q = 0"], ok: 0,
     after: [{ f: x => x * x - 2 * x + 3 }], afterCap: "Beispiel: y = x² − 2x + 3, unter der Wurzel steht 1 − 3 = −2.",
     ex: "Keine Nullstellen heißt: Unter der Wurzel der pq-Formel steht etwas Negatives. Vorsicht: Bei q < 0 gibt es sogar immer zwei Nullstellen, denn dann ist (p/2)² − q sicher positiv." },
-  { q: "Die Parabel y = a(x − 1)² + 4 hat den Scheitel S(1 | 4) und geht durch P(3 | 0). Wie groß ist a?",
-    pts: [[1, 4, "S"], [3, 0, "P"]], cap: "Nur S und P sind eingezeichnet.",
-    opts: ["a = −1", "a = 1", "a = −2", "a = −0,5"], ok: 0, after: [{ f: x => -((x - 1) ** 2) + 4 }],
-    ex: "P einsetzen: 0 = a · (3 − 1)² + 4 = 4a + 4. Also a = −1. In der Skizze: Vom Scheitel 2 nach rechts geht es 4 nach unten, bei der Normalparabel wären es genau 2² = 4 nach oben." },
+  { q: "Die Parabel y = a(x − 1)² + 4 hat den Scheitel S(1 | 4) und geht durch P(2 | 2). Wie groß ist a?",
+    pts: [[1, 4, "S"], [2, 2, "P"]], cap: "Nur S und P sind eingezeichnet.",
+    opts: ["a = −2", "a = 2", "a = −1", "a = −4"], ok: 0, after: [{ f: x => -2 * (x - 1) ** 2 + 4 }],
+    ex: "P einsetzen: 2 = a · (2 − 1)² + 4 = a + 4. Also a = −2. In der Skizze: Vom Scheitel 1 nach rechts geht es 2 nach unten." },
   { q: "Die Parabel y = x² + px + q ist symmetrisch zur gestrichelten Geraden x = 3. Was weißt du über p?",
     graph: [{ f: x => x * x - 6 * x + 5 }], vlines: [3], cap: "Die Parabel ist symmetrisch zur Geraden x = 3.",
     opts: ["p = 3", "p = −3", "p = −6", "p = 6"], ok: 2,
@@ -1172,7 +1199,7 @@ const EXPLORE = {
 /* =============================================================
    RECHENTRAINER (geteilt)
    Das Labor liefert: LEVELS (4 Stufen), makeTask(l), drawTrain(), EXAMPLES (je Stufe ein Musterbeispiel).
-   makeTask(l) gibt zurück: { l, title, task, hint, answer, want, sol(), … }
+   makeTask(l) gibt zurück: { l, title, task, answer, want, sol(), … }
      want  = { feldname: richtiger Wert } für die inp(…)-Felder in answer
      check(F, fb) optional statt want: eigene Prüfung, gibt true/false zurück oder null (= unvollständig)
      failMsg() optional: eigene Meldung bei falscher Antwort
@@ -1210,7 +1237,7 @@ function renderLevels() {
 function newTask() {
   task = makeTask(prog.lvl); task.state = "open"; task.guess = null;
   $("trTitle").textContent = LEVELS[task.l].t + ": " + task.title;
-  $("trTask").innerHTML = task.task; $("trTask").hidden = !task.task; $("trHint").textContent = task.hint;
+  $("trTask").innerHTML = task.task; $("trTask").hidden = !task.task;
   $("trAnswer").innerHTML = task.answer;
   $("trFb").textContent = ""; $("trFb").className = "feedback"; $("trSol").hidden = true;
   $("trCheck").disabled = false; $("trShow").disabled = false;

@@ -2,10 +2,10 @@
 const LABS = {
   geraden: {
     title: "Geraden-Labor", file: "Geraden", klasse: "UIIIb",
-    tabs: [["mb", "1 Steigung & y-Achsenabschnitt"], ["pts", "2 Zwei Punkte"], ["train", "3 Rechentrainer"], ["pro", "4 Profi ★"]],
+    tabs: [["mb", "1 Steigung & y-Achsenabschnitt", "Erkunden"], ["pts", "2 Zwei Punkte", "Erkunden"], ["train", "3 Rechentrainer", "Üben"], ["pro", "4 Profi ★", "Üben"]],
   },
   parabel: {
     title: "Parabel-Labor", file: "Parabel", klasse: "OIIIa",
-    tabs: [["sp", "1 Scheitelpunktform"], ["forms", "2 Drei Formen"], ["pq", "3 pq-Formel"], ["train", "4 Rechentrainer"], ["pro", "5 Profi ★"]],
+    tabs: [["sp", "1 Scheitelpunktform", "Erkunden"], ["forms", "2 Drei Formen", "Erkunden"], ["pq", "3 pq-Formel", "Erkunden"], ["train", "4 Rechentrainer", "Üben"], ["pro", "5 Profi ★", "Üben"]],
   },
 };

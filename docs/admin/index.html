@@ -40,7 +40,10 @@ h2{font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 10px}
 @media (max-width:860px){.grid2{grid-template-columns:minmax(0,1fr)}}
 .muted{color:var(--muted)}
 .hint{font-size:14px;color:var(--muted);margin:10px 0 0}
-.toggles{display:flex;flex-wrap:wrap;gap:8px}
+.toggles{display:flex;flex-direction:column;gap:10px}
+.grow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.gb{font:inherit;font-size:15px;font-weight:700;width:120px;padding:8px 0;border-radius:8px;border:1.5px solid var(--line);background:var(--paper);color:var(--muted);cursor:pointer}
+.gb[aria-pressed="true"]{border-color:var(--e);background:var(--ok-bg);color:var(--ink)}
 .tg{font:inherit;font-size:15px;display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--paper);color:var(--muted);cursor:pointer}
 .tg::before{content:"🔒";font-size:13px}
 .tg[aria-pressed="true"]{border-color:var(--e);background:var(--ok-bg);color:var(--ink)}
@@ -243,10 +246,22 @@ function render() {
   });
   // Freigaben
   const tg = $("toggles"); tg.innerHTML = "";
-  d.tabs.forEach(t => {
-    const b = el("button", "tg", t.label); b.setAttribute("aria-pressed", t.on);
-    b.addEventListener("click", () => toggle(t.id));
-    tg.appendChild(b);
+  // je Gruppe (Erkunden, Üben) eine Zeile: Gruppenknopf schaltet alle Tabs der Gruppe frei bzw. wieder aus
+  [...new Set(d.tabs.map(t => t.grp || ""))].forEach(g => {
+    const row = el("div", "grow"), ts = d.tabs.filter(t => (t.grp || "") === g), all = ts.every(t => t.on);
+    const gb = el("button", "gb", g || "Tabs"); gb.setAttribute("aria-pressed", all);
+    gb.title = all ? "Alle Tabs dieser Gruppe verstecken" : "Alle Tabs dieser Gruppe freischalten";
+    gb.addEventListener("click", () => {
+      const ids = ts.map(t => t.id), on = data.tabs.filter(t => t.on).map(t => t.id);
+      setTabs(all ? on.filter(id => ids.indexOf(id) < 0) : [...new Set(on.concat(ids))]);
+    });
+    row.appendChild(gb);
+    ts.forEach(t => {
+      const b = el("button", "tg", t.label); b.setAttribute("aria-pressed", t.on);
+      b.addEventListener("click", () => toggle(t.id));
+      row.appendChild(b);
+    });
+    tg.appendChild(row);
   });
   const N = d.need || 3;
   $("needN").textContent = N; $("needMinus").disabled = N <= 1; $("needPlus").disabled = N >= 5;

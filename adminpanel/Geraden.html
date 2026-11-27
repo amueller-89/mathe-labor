@@ -146,6 +146,11 @@ canvas.procan{max-width:400px;margin:0 0 14px}
 /* Musterbeispiel-Knopf direkt neben dem Aufgabentitel */
 .trhead{display:flex;align-items:center;gap:16px;margin-bottom:6px}
 .trhead .label{margin:0}
+
+/* Tabs in zwei Gruppen: Erkunden | Üben */
+.tabnav{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 20px}
+.tgrp{display:flex;flex-direction:column;gap:4px}
+.tgrp .gl{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
 .formula{font-family:var(--display);font-weight:800;font-size:clamp(26px,3.4vw,40px);line-height:1.2;white-space:nowrap;overflow-x:auto}
 .cm{color:var(--d)} .cb{color:var(--e)} .cz{color:var(--z)} .ca{color:var(--a)}
 .info{font-size:17px;font-weight:700;margin-top:6px;white-space:nowrap}
@@ -192,17 +197,25 @@ table.wt td{font-weight:700}
 .linkbtn{font:inherit;background:none;border:0;padding:0;color:var(--muted);text-decoration:underline;cursor:pointer}
 .who .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--e);margin-right:6px;vertical-align:middle}
 .who .dot.off{background:var(--pencil)}
+.unlockToast{position:fixed;right:20px;bottom:20px;z-index:70;display:flex;align-items:center;gap:12px;max-width:min(520px,calc(100vw - 40px));background:var(--surface);color:var(--ink);border:2px solid var(--e);border-radius:12px;padding:14px 18px;font-size:17px;font-weight:700;box-shadow:0 12px 40px rgb(0 0 0 / .45);cursor:pointer}
+.unlockToast b{font-size:22px}
+.unlockToast.in{animation:unlockIn .35s ease-out}
+@keyframes unlockIn{from{transform:translateX(30px);opacity:0}to{transform:none;opacity:1}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
     <div><h1>Geraden-Labor</h1><div class="who" id="who" hidden><span class="dot" id="whoDot"></span>Angemeldet als <b id="whoName"></b> · <button class="linkbtn" id="whoSwitch">abmelden</button></div></div>
-    <nav class="seg" role="tablist" id="mainTabs">
-      <button role="tab" data-tab="mb" aria-selected="true">1 Steigung &amp; y-Achsenabschnitt</button>
-      <button role="tab" data-tab="pts" aria-selected="false">2 Zwei Punkte</button>
-      <button role="tab" data-tab="train" aria-selected="false">3 Rechentrainer</button>
-      <button role="tab" data-tab="pro" aria-selected="false" hidden>4 Profi ★</button>
+    <nav class="tabnav" role="tablist" id="mainTabs">
+      <div class="tgrp" data-grp="Erkunden"><span class="gl">Erkunden</span><div class="seg">
+        <button role="tab" data-tab="mb" aria-selected="true">1 Steigung &amp; y-Achsenabschnitt</button>
+        <button role="tab" data-tab="pts" aria-selected="false">2 Zwei Punkte</button>
+      </div></div>
+      <div class="tgrp" data-grp="Üben"><span class="gl">Üben</span><div class="seg">
+        <button role="tab" data-tab="train" aria-selected="false">3 Rechentrainer</button>
+        <button role="tab" data-tab="pro" aria-selected="false" hidden>4 Profi ★</button>
+      </div></div>
     </nav>
   </header>
 
@@ -300,7 +313,6 @@ table.wt td{font-weight:700}
         <div class="card">
           <div class="trhead"><p class="label" id="trTitle"></p><button class="btn small" id="trEx" type="button">📘 Musterbeispiel ansehen</button></div>
           <div class="formula" id="trTask"></div>
-          <p class="hint" id="trHint"></p>
         </div>
         <div class="card">
           <p class="label">Deine Antwort</p>
@@ -499,14 +511,32 @@ async function ping() {
     if (!r.known) { clearInterval(pingTimer); me = null; store.del(IDKEY); sess.del(); gate("gBye"); return; }
     // Lehrkraft hat alle zurückgesetzt: neu laden, dann startet alles bei null (Anmeldung bleibt)
     if (r.epoch && epoch && r.epoch !== epoch) { clearInterval(pingTimer); location.reload(); return; }
-    if (JSON.stringify(r.tabs) !== JSON.stringify(allowed) || !!r.alle !== alle || (r.need || 3) !== need) { allowed = r.tabs || []; alle = !!r.alle; need = r.need || 3; apply(); }
+    if (JSON.stringify(r.tabs) !== JSON.stringify(allowed) || !!r.alle !== alle || (r.need || 3) !== need) {
+      const neu = (r.tabs || []).filter(t => allowed.indexOf(t) < 0).map(tabName), msgs = [];
+      if (neu.length) msgs.push("Neu freigeschaltet: " + neu.join(", "));
+      if (r.alle && !alle) msgs.push("Für dich ist jetzt alles freigeschaltet");
+      if ((r.need || 3) < need) msgs.push("Jetzt reichen " + (r.need || 3) + " richtige Aufgaben je Stufe");
+      allowed = r.tabs || []; alle = !!r.alle; need = r.need || 3; apply();
+      if (msgs.length) unlockToast(msgs);
+    }
   } catch (e) { setOnline(false); }
+}
+const tabName = t => { const b = document.querySelector('#mainTabs [data-tab="' + t + '"]'); return b ? b.textContent.replace(/^\d+\s*/, "") : t; };
+// Hinweis am Rand, wenn die Lehrkraft etwas freischaltet (nimmt keinen Fokus)
+let unlockT = null;
+function unlockToast(msgs) {
+  let t = document.querySelector(".unlockToast");
+  if (!t) { t = document.createElement("div"); t.className = "unlockToast"; t.setAttribute("role", "status"); t.addEventListener("click", () => t.hidden = true); document.body.appendChild(t); }
+  t.innerHTML = "<b>🔓</b><span></span>"; t.querySelector("span").textContent = msgs.join(" · ");
+  t.hidden = false; t.classList.remove("in"); void t.offsetWidth; t.classList.add("in");
+  clearTimeout(unlockT); unlockT = setTimeout(() => t.hidden = true, 8000);
 }
 function setOnline(v) { online = v; $("whoDot").classList.toggle("off", !v); $("whoDot").title = v ? "verbunden" : "keine Verbindung"; }
 function apply() {
   const L = window.__lab; if (!L) return;
   document.querySelectorAll("#mainTabs button").forEach(b => { if (b.dataset.tab !== "pro") b.hidden = !tabOk(b.dataset.tab); });
   L.updProTab(); L.renderLevels();
+  document.querySelectorAll("#mainTabs .tgrp").forEach(g => g.hidden = ![...g.querySelectorAll("button")].some(b => !b.hidden));
   $("winPro").hidden = !tabOk("pro"); $("winProTxt").hidden = !tabOk("pro");
   const vis = [...document.querySelectorAll("#mainTabs button")].filter(b => !b.hidden);
   if (!vis.length) { gate("gWait"); return; }
@@ -832,7 +862,6 @@ function makeTask(l) {
   if (l === 0) {
     const m = pick([-3, -2, -1, -0.5, 0.5, 1, 2, 3, 1.5, -1.5]), b = rnd(11) - 5;
     return { l, want: { m, b }, title: "Lies die Gleichung aus dem Graphen ab.", task: "",
-      hint: "m: Zwei Punkte auf Kästchenecken suchen, Steigungsdreieck einzeichnen, m = hoch durch rechts (Δy : Δx). b: Wo schneidet die Gerade die y-Achse?",
       answer: mbSlots, f: x => m * x + b, given: true, sol: () => lineHTML(m, b, false) };
   }
   if (l === 1) {
@@ -842,7 +871,6 @@ function makeTask(l) {
     const terms = [{ k: a1, x: true }, { k: m - a1, x: true }, { k: c1, x: false }, { k: b - c1, x: false }];
     for (let i = terms.length - 1; i > 0; i--) { const j = rnd(i + 1); [terms[i], terms[j]] = [terms[j], terms[i]]; }
     return { l, want: { m, b }, title: "Bringe die Gleichung in die Normalform y = m·x + b.", task: termsHTML(terms),
-      hint: "Erst alle x-Terme zusammenfassen, dann alle Zahlen ohne x. Negative Zahlen mit Minus eintippen.",
       answer: mbSlots, f: x => m * x + b, sol: () => `${termsHTML(terms)} = ${lineHTML(m, b, false).replace("y = ", "")}` };
   }
   if (l === 2) {
@@ -852,7 +880,6 @@ function makeTask(l) {
     const want = {}; xs.forEach((x, i) => want["y" + i] = r6(m * x + b));
     const head = `<span class="h">x</span><span class="h">y</span>` + xs.map((x, i) => `<span class="h">${num(x)}</span>${inp("y" + i)}`).join("");
     return { l, want, xs, title: "Fülle die Wertetabelle aus.", task: lineHTML(m, b),
-      hint: "x einsetzen: y = m · x + b. Vorsicht bei negativen x-Werten.",
       answer: `<div class="tgrid">${head}</div>`, f: x => m * x + b,
       sol: () => xs.map(x => `x = ${num(x)}: y = ${num(r6(m * x + b))}`).join(" &nbsp; ") };
   }
@@ -869,7 +896,6 @@ function twoPointsTask(l) {
   } while (Math.abs(y1) > 7 || Math.abs(y2) > 7 || x2 > 6);
   return { l, want: { m, b }, P: [x1, y1], Q: [x2, y2], title: "Bestimme die Gerade durch die beiden Punkte.",
     task: `P(${num(x1)} | ${num(y1)}), &nbsp; Q(${num(x2)} | ${num(y2)})`,
-    hint: "m = Δy : Δx = (f(x₂) − f(x₁)) : (x₂ − x₁). Dann einen Punkt in y = m · x + b einsetzen und nach b auflösen.",
     answer: mbSlots, f: x => m * x + b, sol: () => `m = ${num(y2 - y1)} : ${num(x2 - x1)} = ${num(m)}, &nbsp; ${lineHTML(m, b, false)}` };
 }
 
@@ -879,25 +905,25 @@ const STORIES = [
     make() { const b = pick([5, 6, 7.5, 8, 9.5, 10, 12]), m = (5 + rnd(11)) / 100, x = 10 * (3 + rnd(18)); return { b, m, x }; },
     text: o => `Ein Handytarif kostet ${eur(o.b)} Grundgebühr im Monat und ${eur(o.m)} pro Gesprächsminute.`,
     vars: "x = Minuten, y = Kosten in €",
-    ask: (o, y) => `Nach wie vielen Minuten kostet der Monat ${eur(y)}?`, unit: "Minuten",
+    ask: (o, y) => `Nach wie vielen Minuten kostet der Monat ${eur(y)}?`, unit: "Minuten", ax: ["Minuten", "€"],
   },
   { // steigend
     make() { const b = pick([3, 3.5, 4, 4.5, 5]), m = pick([1.5, 1.8, 2, 2.1, 2.2, 2.4, 2.5]), x = 3 + rnd(18); return { b, m, x }; },
     text: o => `Eine Taxifahrt kostet ${eur(o.b)} Grundpreis und ${eur(o.m)} pro Kilometer.`,
     vars: "x = Kilometer, y = Preis in €",
-    ask: (o, y) => `Wie viele Kilometer kann man für ${eur(y)} fahren?`, unit: "km",
+    ask: (o, y) => `Wie viele Kilometer kann man für ${eur(y)} fahren?`, unit: "km", ax: ["km", "€"],
   },
   { // fallend
     make() { const m = pick([0.5, 1, 1.5, 2]), b = 18 + 2 * rnd(7); let x; do x = 2 + rnd(Math.floor((b - 2) / m) - 1); while (b - m * x < 2); return { b, m: -m, x }; },
     text: o => `Eine Kerze ist ${num(o.b)} cm hoch. Pro Stunde brennt sie ${num(-o.m)} cm herunter.`,
     vars: "x = Stunden, y = Höhe in cm",
-    ask: (o, y) => `Nach wie vielen Stunden ist die Kerze noch ${num(y)} cm hoch?`, unit: "Stunden",
+    ask: (o, y) => `Nach wie vielen Stunden ist die Kerze noch ${num(y)} cm hoch?`, unit: "Stunden", ax: ["Stunden", "cm"],
   },
   { // fallend
     make() { const b = pick([80, 85, 90, 95, 100]), m = pick([4, 5, 6, 8, 10]); let x; do x = 2 + rnd(Math.floor((b - 5) / m) - 1); while (b - m * x < 5); return { b, m: -m, x }; },
     text: o => `Ein Handy-Akku ist zu ${num(o.b)} % geladen. Beim Spielen verliert er ${num(-o.m)} % pro Stunde.`,
     vars: "x = Stunden, y = Ladung in %",
-    ask: (o, y) => `Nach wie vielen Stunden hat der Akku noch ${num(y)} %?`, unit: "Stunden",
+    ask: (o, y) => `Nach wie vielen Stunden hat der Akku noch ${num(y)} %?`, unit: "Stunden", ax: ["Stunden", "%"],
   },
 ];
 const eur = v => (Math.abs(v - Math.round(v)) < 1e-9 ? String(Math.round(v)) : r6(v).toFixed(2).replace(".", ",")) + " €";
@@ -918,9 +944,8 @@ function parseLin(str) {
 const linTxt = (m, b) => `y = ${num(m)}x ${b < 0 ? "−" : "+"} ${num(Math.abs(b))}`;
 function storyTask(l) {
   const S = pick(STORIES), o = S.make(), y = r6(o.m * o.x + o.b);
-  return { l, phase: 1, title: "Textaufgabe", f: x => o.m * x + o.b, noSketch: true, key: { eq: linTxt(o.m, o.b).slice(4), x: o.x }, // key: für die Tests
+  return { l, phase: 1, title: "Textaufgabe", f: x => o.m * x + o.b, story: { o, y, ax: S.ax }, key: { eq: linTxt(o.m, o.b).slice(4), x: o.x }, // key: für die Tests
     task: `<p class="story">${S.text(o)}</p>`,
-    hint: "",
     answer: `<p class="q">1. Stelle die Funktionsgleichung auf (${S.vars}).</p>
       <div class="slots"><span>y =</span><input class="in eq" data-k="eq" autocomplete="off" spellcheck="false" aria-label="Funktionsgleichung"></div>
       <div id="st2" hidden><p class="q">2. ${S.ask(o, y)}</p>
@@ -943,11 +968,44 @@ function storyTask(l) {
     sol: () => `1. ${linTxt(o.m, o.b)} &nbsp;&nbsp; 2. ${num(o.x)} ${S.unit}` };
 }
 
+// schöne Schrittweite (1, 2, 5, 10, 20, 50 …) für etwa n Striche
+function niceStep(range, n) { const raw = range / n, p = 10 ** Math.floor(Math.log10(raw)); return [1, 2, 2.5, 5, 10].map(k => k * p).find(k => k >= raw); }
+function drawStory({ o, y, ax }) {
+  const c = $("cTrain"), r = c.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+  c.width = Math.round(r.width * dpr); c.height = Math.round(r.height * dpr);
+  const ctx = c.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, r.width, r.height);
+  // Bereich: steigend bis etwas hinter die Lösung, fallend bis zur Nullstelle
+  const xEnd = o.m < 0 ? o.b / -o.m : o.x * 1.4, sx = niceStep(xEnd, 6), X1 = Math.ceil(xEnd / sx) * sx;
+  const yEnd = Math.max(o.b, o.m * X1 + o.b) * 1.05, sy = niceStep(yEnd, 6), Y1 = Math.ceil(yEnd / sy) * sy;
+  const L = 58, R = 24, T = 30, B = 44, W = r.width - L - R, H = r.height - T - B;
+  const X = x => L + x / X1 * W, Y = v => T + H - v / Y1 * H;
+  ctx.font = `12px ${tok("--body")}`; ctx.lineWidth = 1;
+  for (let x = 0; x <= X1 + 1e-9; x += sx) { ctx.strokeStyle = tok("--grid"); ctx.beginPath(); ctx.moveTo(X(x), Y(0)); ctx.lineTo(X(x), Y(Y1)); ctx.stroke();
+    ctx.fillStyle = tok("--muted"); ctx.textAlign = "center"; ctx.textBaseline = "top"; ctx.fillText(num(r6(x)), X(x), Y(0) + 6); }
+  for (let v = 0; v <= Y1 + 1e-9; v += sy) { ctx.strokeStyle = tok("--grid"); ctx.beginPath(); ctx.moveTo(X(0), Y(v)); ctx.lineTo(X(X1), Y(v)); ctx.stroke();
+    ctx.fillStyle = tok("--muted"); ctx.textAlign = "right"; ctx.textBaseline = "middle"; ctx.fillText(num(r6(v)), X(0) - 6, Y(v)); }
+  ctx.strokeStyle = tok("--ink"); ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(X(0), Y(0)); ctx.lineTo(X(X1), Y(0)); ctx.moveTo(X(0), Y(0)); ctx.lineTo(X(0), Y(Y1)); ctx.stroke();
+  ctx.fillStyle = tok("--ink"); ctx.font = `700 14px ${tok("--body")}`;
+  ctx.textAlign = "right"; ctx.textBaseline = "top"; ctx.fillText("x in " + ax[0], X(X1), Y(0) + 24);
+  ctx.textAlign = "left"; ctx.textBaseline = "bottom"; ctx.fillText("y in " + ax[1], X(0) - 40, T - 10);
+  // Gerade, Lösungspunkt mit Hilfslinien
+  const xe = o.m < 0 ? Math.min(X1, o.b / -o.m) : X1;
+  ctx.strokeStyle = tok("--pencil"); ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(X(0), Y(o.b)); ctx.lineTo(X(xe), Y(o.m * xe + o.b)); ctx.stroke();
+  ctx.strokeStyle = tok("--z"); ctx.lineWidth = 2; ctx.setLineDash([6, 4]); ctx.beginPath();
+  ctx.moveTo(X(0), Y(y)); ctx.lineTo(X(o.x), Y(y)); ctx.lineTo(X(o.x), Y(0)); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle = tok("--z"); ctx.beginPath(); ctx.arc(X(o.x), Y(y), 6, 0, 7); ctx.fill();
+  // Beschriftung auf der Seite, auf der die Gerade nicht verläuft
+  ctx.font = `700 14px ${tok("--body")}`; ctx.textAlign = o.m > 0 ? "right" : "left"; ctx.textBaseline = "bottom";
+  ctx.fillText(`(${num(o.x)} | ${num(y)})`, X(o.x) + (o.m > 0 ? -10 : 10), Y(y) - 6);
+}
+
 function drawTrain() {
   const B = bTrain;
   // Textaufgaben haben keine Skizze im Koordinatensystem
-  document.querySelector("#tab-train .stage").classList.toggle("nosk", !!(task && task.noSketch));
-  if (task && task.noSketch) { $("legTrain").innerHTML = ""; return; }
+  // Textaufgaben: Skizze erst, wenn alles gelöst ist, in einem passenden Koordinatensystem
+  const st = task && task.story;
+  document.querySelector("#tab-train .stage").classList.toggle("nosk", !!st && task.state === "open");
+  if (st) { if (task.state !== "open") drawStory(st); $("legTrain").innerHTML = ""; return; }
   B.begin(); if (!task) return;
   const reveal = task.state !== "open", leg = []; // richtige Skizze erst nach richtiger Antwort oder „Lösung zeigen“, sonst könnte man ablesen
   if (task.l === 0) { B.curve(task.f, tok("--pencil"), 5); leg.push(["--pencil", "Gegebene Gerade"]); }
@@ -1124,7 +1182,7 @@ const EXPLORE = {
 /* =============================================================
    RECHENTRAINER (geteilt)
    Das Labor liefert: LEVELS (4 Stufen), makeTask(l), drawTrain(), EXAMPLES (je Stufe ein Musterbeispiel).
-   makeTask(l) gibt zurück: { l, title, task, hint, answer, want, sol(), … }
+   makeTask(l) gibt zurück: { l, title, task, answer, want, sol(), … }
      want  = { feldname: richtiger Wert } für die inp(…)-Felder in answer
      check(F, fb) optional statt want: eigene Prüfung, gibt true/false zurück oder null (= unvollständig)
      failMsg() optional: eigene Meldung bei falscher Antwort
@@ -1162,7 +1220,7 @@ function renderLevels() {
 function newTask() {
   task = makeTask(prog.lvl); task.state = "open"; task.guess = null;
   $("trTitle").textContent = LEVELS[task.l].t + ": " + task.title;
-  $("trTask").innerHTML = task.task; $("trTask").hidden = !task.task; $("trHint").textContent = task.hint;
+  $("trTask").innerHTML = task.task; $("trTask").hidden = !task.task;
   $("trAnswer").innerHTML = task.answer;
   $("trFb").textContent = ""; $("trFb").className = "feedback"; $("trSol").hidden = true;
   $("trCheck").disabled = false; $("trShow").disabled = false;

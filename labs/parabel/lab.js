@@ -271,7 +271,6 @@ function makeTask(l) {
     const a = pick([1, 1, -1, 2, -2, 3]), d = nz(-5, 5), e = rnd(13) - 6;
     return { l, a, d, e, want: { A: a, B: -2 * a * d, C: a * d * d + e },
       title: "Schreibe in die allgemeine Form um.", task: scheitelHTML(a, d, e),
-      hint: "Erst die Klammer mit der binomischen Formel auflösen, dann mit a malnehmen. Negative Zahlen mit Minus eintippen.",
       answer: `<div class="slots"><span>y =</span><span class="p">a</span><span>x² +</span><span class="p">b</span><span>x +</span><span class="p">c</span>
       <span>y =</span>${inp("A")}<span>x² +</span>${inp("B")}<span>x +</span>${inp("C")}</div>`,
       f: x => a * (x - d) ** 2 + e, sol: () => `${scheitelHTML(a, d, e, false)} = ${polyBody(a, -2 * a * d, a * d * d + e)}` };
@@ -280,7 +279,6 @@ function makeTask(l) {
     const a = pick([1, 1, -1, 2, -2]); let x1 = rnd(13) - 6, x2 = rnd(13) - 6; if (x1 > x2) [x1, x2] = [x2, x1];
     return { l, a, x1, x2, want: { A: a, B: -a * (x1 + x2), C: a * x1 * x2 },
       title: "Schreibe in die allgemeine Form um.", task: nullHTML(a, x1, x2),
-      hint: "Klammern ausmultiplizieren (jedes mit jedem), dann mit a malnehmen.",
       answer: `<div class="slots"><span>y =</span><span class="p">a</span><span>x² +</span><span class="p">b</span><span>x +</span><span class="p">c</span>
       <span>y =</span>${inp("A")}<span>x² +</span>${inp("B")}<span>x +</span>${inp("C")}</div>`,
       f: x => a * (x - x1) * (x - x2), sol: () => `${nullHTML(a, x1, x2, false)} = ${polyBody(a, -a * (x1 + x2), a * x1 * x2)}` };
@@ -292,14 +290,14 @@ function makeTask(l) {
     else { let r1 = rnd(15) - 7, r2 = rnd(15) - 7; if (r1 > r2) [r1, r2] = [r2, r1]; p = -(r1 + r2); q = r1 * r2; roots = r1 === r2 ? [r1] : [r1, r2]; }
     return { l, k, p, q, roots,
       title: "Berechne die Lösungen.", task: polyBody(k, k * p, k * q) + " = 0",
-      hint: k === 1 ? "pq-Formel: x = −p/2 ± √((p/2)² − q). Gibt es nur eine Lösung, trag sie in beide Felder ein." : "Erst durch die Zahl vor x² teilen (Normalform), dann die pq-Formel. Gibt es nur eine Lösung, trag sie in beide Felder ein.",
       answer: `x₁ = ${inp("x1")} &nbsp; x₂ = ${inp("x2")} <label class="chk" style="font-size:17px;font-weight:700"><input type="checkbox" data-k="none"> keine Lösung</label>`,
       f: x => k * (x * x + p * x + q),
       // eigene Prüfung: Reihenfolge egal, Kästchen „keine Lösung“
       check(F, fb) {
         if (F.none.checked) { this.guess = { none: true }; [F.x1, F.x2].forEach(el => el.classList.remove("ok", "bad")); return roots.length === 0; }
-        const g = [parse(F.x1.value), parse(F.x2.value)];
-        if (g.some(isNaN)) { fb.className = "feedback no"; fb.textContent = "Bitte beide Felder ausfüllen (oder „keine Lösung“)."; return null; }
+        let g = [parse(F.x1.value), parse(F.x2.value)];
+        if (g.every(isNaN)) { fb.className = "feedback no"; fb.textContent = "Bitte ausfüllen (oder „keine Lösung“)."; return null; }
+        if (g.some(isNaN)) { const v = g.find(x => !isNaN(x)); g = [v, v]; } // ein Feld leer = nur eine Lösung
         this.guess = { xs: g };
         const want = roots.length === 1 ? [roots[0], roots[0]] : roots.slice();
         if (want.length === 0) { mark(F.x1, false); mark(F.x2, false); return false; }
@@ -317,7 +315,6 @@ function makeTask(l) {
   const a = pick([1, -1, 2, -2, 0.5, -0.5]), d = rnd(11) - 5, e = rnd(11) - 5;
   return { l, a, d, e, want: { a, d, e },
     title: "Lies die Scheitelpunktform aus der Skizze ab.", task: "",
-    hint: "Scheitel S(d | e) ablesen. Für a: vom Scheitel 1 nach rechts, wie viel geht es hoch oder runter? Bei S(−3 | …) ist d = −3.",
     answer: `<div class="slots"><span>y =</span><span class="p ca">a</span><span>·(x −</span><span class="p cd">d</span><span>)² +</span><span class="p ce">e</span>
       <span>y =</span>${inp("a")}<span>·(x −</span>${inp("d")}<span>)² +</span>${inp("e")}</div>`,
     f: x => a * (x - d) ** 2 + e, sol: () => scheitelHTML(a, d, e, false) };
@@ -404,10 +401,10 @@ const EXAMPLES = [
    ============================================================= */
 
 const PRO = [
-  { q: "Eine nach oben geöffnete Normalparabel hat die Nullstellen −1 und 5 (siehe Skizze). Wo liegt ihr Scheitel?",
+  { q: "Eine nach oben geöffnete Parabel hat die Nullstellen −1 und 5 (siehe Skizze). Wo liegt ihr Scheitel?",
     pts: [[-1, 0], [5, 0]], cap: "Nur die Nullstellen sind eingezeichnet.",
-    opts: ["S(2 | −9)", "S(3 | −9)", "S(2 | 9)", "S(2 | −5)"], ok: 0, after: [{ f: x => (x + 1) * (x - 5) }], afterPts: [[2, -9]],
-    ex: "Der Scheitel liegt genau in der Mitte: x = (−1 + 5) : 2 = 2. Einsetzen in y = (x + 1)(x − 5): y = 3 · (−3) = −9." },
+    opts: ["S(2 | −9)", "S(3 | −9)", "S(2 | 9)", "S(−2 | −9)"], ok: 0, after: [{ f: x => (x + 1) * (x - 5) }], afterPts: [[2, -9]],
+    ex: "Der Scheitel liegt genau in der Mitte: x = (−1 + 5) : 2 = 2. Die Parabel ist nach oben geöffnet und schneidet die x-Achse, also liegt der Scheitel darunter: y ist negativ." },
   { q: "Für welches e hat y = −2(x − 1)² + e genau eine Nullstelle?",
     graph: [{ f: x => -2 * (x - 1) ** 2 + 3 }], cap: "So sieht die Parabel zum Beispiel für e = 3 aus.",
     opts: ["e = −2", "e = 0", "e = 1", "e = 2"], ok: 1, after: [{ f: x => -2 * (x - 1) ** 2, c: "--e" }],
@@ -431,10 +428,10 @@ const PRO = [
     opts: ["(p/2)² − q < 0", "q < 0", "p < 0", "q = 0"], ok: 0,
     after: [{ f: x => x * x - 2 * x + 3 }], afterCap: "Beispiel: y = x² − 2x + 3, unter der Wurzel steht 1 − 3 = −2.",
     ex: "Keine Nullstellen heißt: Unter der Wurzel der pq-Formel steht etwas Negatives. Vorsicht: Bei q < 0 gibt es sogar immer zwei Nullstellen, denn dann ist (p/2)² − q sicher positiv." },
-  { q: "Die Parabel y = a(x − 1)² + 4 hat den Scheitel S(1 | 4) und geht durch P(3 | 0). Wie groß ist a?",
-    pts: [[1, 4, "S"], [3, 0, "P"]], cap: "Nur S und P sind eingezeichnet.",
-    opts: ["a = −1", "a = 1", "a = −2", "a = −0,5"], ok: 0, after: [{ f: x => -((x - 1) ** 2) + 4 }],
-    ex: "P einsetzen: 0 = a · (3 − 1)² + 4 = 4a + 4. Also a = −1. In der Skizze: Vom Scheitel 2 nach rechts geht es 4 nach unten, bei der Normalparabel wären es genau 2² = 4 nach oben." },
+  { q: "Die Parabel y = a(x − 1)² + 4 hat den Scheitel S(1 | 4) und geht durch P(2 | 2). Wie groß ist a?",
+    pts: [[1, 4, "S"], [2, 2, "P"]], cap: "Nur S und P sind eingezeichnet.",
+    opts: ["a = −2", "a = 2", "a = −1", "a = −4"], ok: 0, after: [{ f: x => -2 * (x - 1) ** 2 + 4 }],
+    ex: "P einsetzen: 2 = a · (2 − 1)² + 4 = a + 4. Also a = −2. In der Skizze: Vom Scheitel 1 nach rechts geht es 2 nach unten." },
   { q: "Die Parabel y = x² + px + q ist symmetrisch zur gestrichelten Geraden x = 3. Was weißt du über p?",
     graph: [{ f: x => x * x - 6 * x + 5 }], vlines: [3], cap: "Die Parabel ist symmetrisch zur Geraden x = 3.",
     opts: ["p = 3", "p = −3", "p = −6", "p = 6"], ok: 2,

@@ -101,14 +101,32 @@ async function ping() {
     if (!r.known) { clearInterval(pingTimer); me = null; store.del(IDKEY); sess.del(); gate("gBye"); return; }
     // Lehrkraft hat alle zurückgesetzt: neu laden, dann startet alles bei null (Anmeldung bleibt)
     if (r.epoch && epoch && r.epoch !== epoch) { clearInterval(pingTimer); location.reload(); return; }
-    if (JSON.stringify(r.tabs) !== JSON.stringify(allowed) || !!r.alle !== alle || (r.need || 3) !== need) { allowed = r.tabs || []; alle = !!r.alle; need = r.need || 3; apply(); }
+    if (JSON.stringify(r.tabs) !== JSON.stringify(allowed) || !!r.alle !== alle || (r.need || 3) !== need) {
+      const neu = (r.tabs || []).filter(t => allowed.indexOf(t) < 0).map(tabName), msgs = [];
+      if (neu.length) msgs.push("Neu freigeschaltet: " + neu.join(", "));
+      if (r.alle && !alle) msgs.push("Für dich ist jetzt alles freigeschaltet");
+      if ((r.need || 3) < need) msgs.push("Jetzt reichen " + (r.need || 3) + " richtige Aufgaben je Stufe");
+      allowed = r.tabs || []; alle = !!r.alle; need = r.need || 3; apply();
+      if (msgs.length) unlockToast(msgs);
+    }
   } catch (e) { setOnline(false); }
+}
+const tabName = t => { const b = document.querySelector('#mainTabs [data-tab="' + t + '"]'); return b ? b.textContent.replace(/^\d+\s*/, "") : t; };
+// Hinweis am Rand, wenn die Lehrkraft etwas freischaltet (nimmt keinen Fokus)
+let unlockT = null;
+function unlockToast(msgs) {
+  let t = document.querySelector(".unlockToast");
+  if (!t) { t = document.createElement("div"); t.className = "unlockToast"; t.setAttribute("role", "status"); t.addEventListener("click", () => t.hidden = true); document.body.appendChild(t); }
+  t.innerHTML = "<b>🔓</b><span></span>"; t.querySelector("span").textContent = msgs.join(" · ");
+  t.hidden = false; t.classList.remove("in"); void t.offsetWidth; t.classList.add("in");
+  clearTimeout(unlockT); unlockT = setTimeout(() => t.hidden = true, 8000);
 }
 function setOnline(v) { online = v; $("whoDot").classList.toggle("off", !v); $("whoDot").title = v ? "verbunden" : "keine Verbindung"; }
 function apply() {
   const L = window.__lab; if (!L) return;
   document.querySelectorAll("#mainTabs button").forEach(b => { if (b.dataset.tab !== "pro") b.hidden = !tabOk(b.dataset.tab); });
   L.updProTab(); L.renderLevels();
+  document.querySelectorAll("#mainTabs .tgrp").forEach(g => g.hidden = ![...g.querySelectorAll("button")].some(b => !b.hidden));
   $("winPro").hidden = !tabOk("pro"); $("winProTxt").hidden = !tabOk("pro");
   const vis = [...document.querySelectorAll("#mainTabs button")].filter(b => !b.hidden);
   if (!vis.length) { gate("gWait"); return; }

@@ -135,3 +135,8 @@ canvas.procan{max-width:400px;margin:0 0 14px}
 /* Musterbeispiel-Knopf direkt neben dem Aufgabentitel */
 .trhead{display:flex;align-items:center;gap:16px;margin-bottom:6px}
 .trhead .label{margin:0}
+
+/* Tabs in zwei Gruppen: Erkunden | Üben */
+.tabnav{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 20px}
+.tgrp{display:flex;flex-direction:column;gap:4px}
+.tgrp .gl{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}

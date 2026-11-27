@@ -225,7 +225,7 @@ function adminDaten(key, lab, ohneUrl) {
   if (!ohneUrl) { try { url = ScriptApp.getService().getUrl(); } catch (err) {} }
   return {
     labs: Object.keys(LABS).map(k => ({ id: k, title: LABS[k].title, klasse: LABS[k].klasse })),
-    tabs: LABS[lab].tabs.map(([id, label]) => ({ id, label, on: c.tabs.indexOf(id) >= 0 })),
+    tabs: LABS[lab].tabs.map(([id, label, grp]) => ({ id, label, grp, on: c.tabs.indexOf(id) >= 0 })),
     need: c.need, kids, url, now,
   };
 }

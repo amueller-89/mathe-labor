@@ -44,18 +44,20 @@ def fill(t, **kw):
 
 
 def all_tabs(lab):
-    """Erkunden-Tabs aus dem Steckbrief, dann immer Rechentrainer und Profi."""
-    tabs = [(t['id'], t['label']) for t in lab['tabs']]
-    tabs += [('train', 'Rechentrainer'), ('pro', 'Profi ★')]
-    return [(tid, f'{i + 1} {label}') for i, (tid, label) in enumerate(tabs)]
+    """Erkunden-Tabs aus dem Steckbrief, dann immer Rechentrainer und Profi (Gruppe Üben)."""
+    tabs = [(t['id'], t['label'], 'Erkunden') for t in lab['tabs']]
+    tabs += [('train', 'Rechentrainer', 'Üben'), ('pro', 'Profi ★', 'Üben')]
+    return [(tid, f'{i + 1} {label}', grp) for i, (tid, label, grp) in enumerate(tabs)]
 
 
 def page(d, lab, admin):
     tabs = all_tabs(lab)
-    nav = ''.join(
-        f'      <button role="tab" data-tab="{tid}" aria-selected="{"true" if i == 0 else "false"}"'
-        f'{" hidden" if tid == "pro" else ""}>{html.escape(label, quote=False)}</button>\n'
-        for i, (tid, label) in enumerate(tabs))
+    nav = ''
+    for g in dict.fromkeys(grp for _, _, grp in tabs):
+        nav += f'      <div class="tgrp" data-grp="{g}"><span class="gl">{g}</span><div class="seg">\n' + ''.join(
+            f'        <button role="tab" data-tab="{tid}" aria-selected="{"true" if i == 0 else "false"}"'
+            f'{" hidden" if tid == "pro" else ""}>{html.escape(label, quote=False)}</button>\n'
+            for i, (tid, label, grp) in enumerate(tabs) if grp == g) + '      </div></div>\n'
     style = read(SHARED, 'base.css') + read(LABS, d, 'style.css')
     title = html.escape(lab['title'])
     h1 = f'<h1>{title}</h1>'

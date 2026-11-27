@@ -1,7 +1,7 @@
 /* =============================================================
    RECHENTRAINER (geteilt)
    Das Labor liefert: LEVELS (4 Stufen), makeTask(l), drawTrain(), EXAMPLES (je Stufe ein Musterbeispiel).
-   makeTask(l) gibt zurück: { l, title, task, hint, answer, want, sol(), … }
+   makeTask(l) gibt zurück: { l, title, task, answer, want, sol(), … }
      want  = { feldname: richtiger Wert } für die inp(…)-Felder in answer
      check(F, fb) optional statt want: eigene Prüfung, gibt true/false zurück oder null (= unvollständig)
      failMsg() optional: eigene Meldung bei falscher Antwort
@@ -39,7 +39,7 @@ function renderLevels() {
 function newTask() {
   task = makeTask(prog.lvl); task.state = "open"; task.guess = null;
   $("trTitle").textContent = LEVELS[task.l].t + ": " + task.title;
-  $("trTask").innerHTML = task.task; $("trTask").hidden = !task.task; $("trHint").textContent = task.hint;
+  $("trTask").innerHTML = task.task; $("trTask").hidden = !task.task;
   $("trAnswer").innerHTML = task.answer;
   $("trFb").textContent = ""; $("trFb").className = "feedback"; $("trSol").hidden = true;
   $("trCheck").disabled = false; $("trShow").disabled = false;

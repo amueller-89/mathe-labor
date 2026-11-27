@@ -25,7 +25,7 @@ console.log('gate hidden',await kid.isHidden('#gate'),'who',await kid.textConten
 const vis=async()=>kid.$$eval('#mainTabs button',bs=>bs.filter(b=>!b.hidden).map(b=>b.dataset.tab).join(','));
 console.log('tabs',await vis());
 // admin unlocks pts + train
-await admin.click('.tg:nth-child(2)');await admin.waitForTimeout(600);await admin.click('.tg:nth-child(3)');await admin.waitForTimeout(600);
+await admin.click('.tg >> nth=1');await admin.waitForTimeout(600);await admin.click('.tg >> nth=2');await admin.waitForTimeout(600);
 await kid.waitForTimeout(2500);console.log('tabs after unlock',await vis());
 // solve level 1 x3
 await kid.click('#mainTabs [data-tab=train]');
@@ -43,7 +43,7 @@ await kid2.fill('#gWer','mia');await kid2.click('#gGo');await kid2.waitForTimeou
 console.log('device2 prog',JSON.stringify(await kid2.evaluate(()=>window.__lab.prog())), 'name', await kid2.textContent('#whoName'));
 await kc2.close();
 // unlock pro, win trainer
-await admin.click('.tg:nth-child(4)');await admin.waitForTimeout(600);await kid.waitForTimeout(2500);
+await admin.click('.tg >> nth=3');await admin.waitForTimeout(600);await kid.waitForTimeout(2500);
 console.log('pro tab before win (expect visible):',await kid.isVisible('#mainTabs [data-tab=pro]'));
 await kid.click('#mainTabs [data-tab=pro]');await kid.waitForTimeout(300);
 console.log('pro locked: tab shown',await kid.isVisible('#tab-pro'),'toast',await kid.isVisible('.proToast'),'class',await kid.getAttribute('#mainTabs [data-tab=pro]','class'));
@@ -64,7 +64,7 @@ await admin.reload();await admin.waitForTimeout(1200);
 console.log('admin row 2:',await admin.textContent('#rows'));
 await admin.screenshot({path:__dirname+'/a_admin.png',fullPage:true});
 // lock pts → kid loses tab
-await admin.click('.tg:nth-child(2)');await admin.waitForTimeout(600);await kid.waitForTimeout(2500);
+await admin.click('.tg >> nth=1');await admin.waitForTimeout(600);await kid.waitForTimeout(2500);
 console.log('tabs after lock pts',await vis());
 // delete kid
 await admin.click('.del');await admin.click('.del');await admin.waitForTimeout(800);
@@ -87,9 +87,9 @@ await kid.click('#gYes');await kid.waitForTimeout(800);console.log('after yes ga
 // all tabs locked -> wait screen
 for(const t of await admin.$$('.tg[aria-pressed=true]')){}
 const pressed=await admin.$$eval('.tg',bs=>bs.map(b=>b.getAttribute('aria-pressed')));
-for(let i=0;i<pressed.length;i++) if(pressed[i]==='true'){await admin.click(`.tg:nth-child(${i+1})`);await admin.waitForTimeout(500);}
+for(let i=0;i<pressed.length;i++) if(pressed[i]==='true'){await admin.click(`.tg >> nth=${i}`);await admin.waitForTimeout(500);}
 await kid.waitForTimeout(2500);console.log('wait gate',await kid.isVisible('#gWait'));
-await admin.click('.tg:nth-child(1)');await admin.waitForTimeout(500);await kid.waitForTimeout(2500);
+await admin.click('.tg >> nth=0');await admin.waitForTimeout(500);await kid.waitForTimeout(2500);
 console.log('after reopen gate hidden',await kid.isHidden('#gate'),'tabs',await vis());
 // parabel lab quick
 const [pc,par]=await mk();await par.goto(U('?lab=parabel'));await par.waitForTimeout(400);
