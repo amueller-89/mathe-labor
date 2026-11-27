@@ -1,0 +1,126 @@
+/* Geteilter Kern aller Labore: kleine Helfer, Koordinatensystem, Zahlen einlesen.
+   Wird vom Build (build.py) zusammen mit dem Code des Labors in eine Datei kopiert. */
+const $ = id => document.getElementById(id);
+const tok = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const r6 = v => Math.round(v * 1e6) / 1e6;
+const num = v => { const r = r6(v); return (r < 0 ? "−" : "") + String(Math.abs(r)).replace(".", ","); };
+const sp = (cls, t) => cls ? `<span class="${cls}">${t}</span>` : t;
+const rnd = n => Math.floor(Math.random() * n);
+const pick = arr => arr[rnd(arr.length)];
+const near = (u, v, tol = 1e-6) => Math.abs(u - v) <= tol;
+const paren = v => r6(v) < 0 ? `(${num(v)})` : num(v);
+const frac = (a, b) => `<span class="frac"><span>${a}</span><span>${b}</span></span>`;
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+function nz(lo, hi) { let v; do v = lo + rnd(hi - lo + 1); while (v === 0); return v; }
+function shuffle(n) { const a = [...Array(n).keys()]; for (let i = n - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+// Eingabefeld für den Rechentrainer; data-k ist der Schlüssel in task.want
+const inp = k => `<input class="in" data-k="${k}" inputmode="decimal" autocomplete="off" spellcheck="false" aria-label="${k}">`;
+
+// ---------- Koordinatensystem ----------
+class Board {
+  constructor(canvas, R = 8) { this.c = canvas; this.R = R; this.lab = 1; }
+  begin() {
+    const c = this.c, r = c.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+    const w = Math.max(1, Math.round(r.width * dpr)), h = Math.max(1, Math.round(r.height * dpr));
+    if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
+    const ctx = this.ctx = c.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    this.w = r.width; this.h = r.height;
+    const R = this.R, m = 14; this.u = (Math.min(this.w, this.h) - 2 * m) / (2 * R);
+    this.ox = this.w / 2; this.oy = this.h / 2;
+    const X = x => this.X(x), Y = y => this.Y(y);
+    ctx.clearRect(0, 0, this.w, this.h); ctx.setLineDash([]);
+    ctx.lineWidth = 1;
+    for (let i = -R; i <= R; i++) {
+      ctx.strokeStyle = i % 5 ? tok("--grid") : tok("--grid-strong");
+      ctx.beginPath(); ctx.moveTo(X(i), Y(-R)); ctx.lineTo(X(i), Y(R)); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(X(-R), Y(i)); ctx.lineTo(X(R), Y(i)); ctx.stroke();
+    }
+    const ink = tok("--ink"), muted = tok("--muted");
+    ctx.strokeStyle = ink; ctx.fillStyle = ink; ctx.lineWidth = 1.6;
+    ctx.beginPath(); ctx.moveTo(X(-R), Y(0)); ctx.lineTo(X(R), Y(0)); ctx.moveTo(X(0), Y(-R)); ctx.lineTo(X(0), Y(R)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X(R) + 2, Y(0)); ctx.lineTo(X(R) - 7, Y(0) - 4); ctx.lineTo(X(R) - 7, Y(0) + 4); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(X(0), Y(R) - 2); ctx.lineTo(X(0) - 4, Y(R) + 7); ctx.lineTo(X(0) + 4, Y(R) + 7); ctx.fill();
+    ctx.font = `12px ${tok("--body")}`; ctx.fillStyle = muted;
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    for (let i = -R + 1; i < R; i++) if (i && i % this.lab === 0) ctx.fillText(num(i), X(i), Y(0) + 4);
+    ctx.textAlign = "right"; ctx.textBaseline = "middle";
+    for (let i = -R + 1; i < R; i++) if (i && i % this.lab === 0) ctx.fillText(num(i), X(0) - 5, Y(i));
+    ctx.fillStyle = ink; ctx.font = `700 14px ${tok("--body")}`;
+    ctx.textAlign = "right"; ctx.textBaseline = "bottom"; ctx.fillText("x", X(R) - 4, Y(0) - 6);
+    ctx.textAlign = "left"; ctx.textBaseline = "top"; ctx.fillText("y", X(0) + 8, Y(R) + 2);
+    return ctx;
+  }
+  X(x) { return this.ox + x * this.u; }
+  Y(y) { return this.oy - y * this.u; }
+  ix(px) { return (px - this.ox) / this.u; }
+  iy(py) { return (this.oy - py) / this.u; }
+  clip(fn) { const c = this.ctx, R = this.R; c.save(); c.beginPath(); c.rect(this.X(-R), this.Y(R), 2 * R * this.u, 2 * R * this.u); c.clip(); fn(c); c.restore(); }
+  curve(f, color, width, dash) {
+    const R = this.R;
+    this.clip(c => {
+      c.strokeStyle = color; c.lineWidth = width; c.setLineDash(dash || []); c.lineJoin = "round"; c.lineCap = "round";
+      c.beginPath(); let started = false; const N = 700;
+      for (let i = 0; i <= N; i++) {
+        const x = -R + 2 * R * i / N, y = f(x);
+        if (y > R + 4 || y < -R - 4) { if (started) { c.lineTo(this.X(x), this.Y(Math.max(-R - 4, Math.min(R + 4, y)))); c.stroke(); c.beginPath(); started = false; } continue; }
+        if (!started) { c.moveTo(this.X(x), this.Y(y)); started = true; } else c.lineTo(this.X(x), this.Y(y));
+      }
+      c.stroke();
+    });
+  }
+  seg(x1, y1, x2, y2, color, width = 1.5, dash = [5, 4]) {
+    this.clip(c => { c.strokeStyle = color; c.lineWidth = width; c.setLineDash(dash); c.beginPath(); c.moveTo(this.X(x1), this.Y(y1)); c.lineTo(this.X(x2), this.Y(y2)); c.stroke(); });
+  }
+  dot(x, y, color, r = 6, ring = true) {
+    if (Math.abs(x) > this.R || Math.abs(y) > this.R) return;
+    const c = this.ctx; c.setLineDash([]); c.fillStyle = color; c.strokeStyle = tok("--paper"); c.lineWidth = 2;
+    c.beginPath(); c.arc(this.X(x), this.Y(y), r, 0, 2 * Math.PI); c.fill(); if (ring) c.stroke();
+  }
+  // farbiger Text mit Hintergrund; parts = [[text, farbe], ...]
+  tag(parts, px, py, { align = "left", base = "top", size = 15 } = {}) {
+    const c = this.ctx; c.font = `700 ${size}px ${tok("--body")}`; c.textBaseline = "alphabetic"; c.textAlign = "left";
+    const tw = parts.reduce((s, p) => s + c.measureText(p[0]).width, 0);
+    let x = align === "left" ? px : align === "right" ? px - tw : px - tw / 2;
+    x = Math.max(4, Math.min(this.w - tw - 4, x));
+    let y = base === "top" ? py + size : base === "bottom" ? py - 4 : py + size / 2 - 2;
+    y = Math.max(size + 2, Math.min(this.h - 6, y));
+    c.fillStyle = tok("--paper"); c.globalAlpha = .85; c.fillRect(x - 3, y - size, tw + 6, size + 6); c.globalAlpha = 1;
+    for (const [t, col] of parts) { c.fillStyle = col; c.fillText(t, x, y); x += c.measureText(t).width; }
+  }
+  pointer(e) { const r = this.c.getBoundingClientRect(); return [this.ix(e.clientX - r.left), this.iy(e.clientY - r.top), e.clientX - r.left, e.clientY - r.top]; }
+}
+
+// Ziehen: hit(x,y,px,py) liefert Griff oder null; move(griff,x,y)
+function draggable(board, hit, move, redraw) { // redraw optional
+  const c = board.c; let grab = null;
+  c.addEventListener("pointerdown", e => { const [x, y, px, py] = board.pointer(e); grab = hit(x, y, px, py); if (grab) { c.setPointerCapture(e.pointerId); e.preventDefault(); } });
+  c.addEventListener("pointermove", e => {
+    const [x, y, px, py] = board.pointer(e);
+    if (grab) { move(grab, x, y); if (redraw) redraw(); } else c.style.cursor = hit(x, y, px, py) ? "grab" : "default";
+  });
+  const end = () => { grab = null; };
+  c.addEventListener("pointerup", end); c.addEventListener("pointercancel", end);
+}
+const nearPx = (board, x, y, px, py, r = 16) => Math.hypot(board.X(x) - px, board.Y(y) - py) <= r;
+const snapTo = (v, s) => r6(Math.round(v / s) * s);
+
+// ---------- Zahlen einlesen (Komma, Minuszeichen, Brüche wie 3/4) ----------
+function parse(str) {
+  let s = String(str).trim().replace(/[−–—]/g, "-").replace(/\s/g, "").replace(",", ".");
+  if (s === "") return NaN;
+  if (s === "-") return -1;
+  if (s === "+") return 1;
+  const fr = s.match(/^([+-]?\d*\.?\d+)\/(\d*\.?\d+)$/);
+  if (fr) return Number(fr[1]) / Number(fr[2]);
+  if (!/^[+-]?(\d+\.?\d*|\.\d+)$/.test(s)) return NaN;
+  return Number(s);
+}
+
+// ---------- Admin-Version ----------
+// Die Version mit Anmeldung (adminpanel/, docs/) setzt vorher window.LAB_ADMIN, sonst ist es null.
+// alle(): Lehrkraft hat für dieses Kind alles geöffnet · tabOk(t): Tab freigegeben · prog: gespeicherter Fortschritt
+// changed(): Fortschritt geändert (wird gebündelt an den Server geschickt) · proLocked(): Hinweis „Profi noch zu“
+const ADMIN = window.LAB_ADMIN || null;
+const changed = () => { if (ADMIN) ADMIN.changed(); };
+// #alle in der Adresse öffnet alle Stufen und den Profi-Tab (für die Lehrkraft)
+const allOpen = () => ADMIN ? ADMIN.alle() : /alle/i.test(location.hash);

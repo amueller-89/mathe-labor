@@ -6,7 +6,7 @@ Die Originaldateien in `Visualisierungen/` bleiben unverändert.
 
 Dateien in diesem Ordner:
 
-- `Code.gs` kommt in den Apps-Script-Editor (das ist das Einzige, was du kopierst).
+- `Code.gs` und `Labs.gs` (Liste der Labore) gehören ins Apps-Script-Projekt. Das erledigt die automatische Bereitstellung (unten); von Hand: beide Dateien im Editor anlegen und den Inhalt einfügen.
 - `Admin.html`, `Geraden.html`, `Parabel.html` bleiben einfach hier liegen. Das Script liest sie direkt aus diesem Ordner.
   Bitte nicht umbenennen oder verschieben.
 
@@ -60,13 +60,13 @@ Zum Aufräumen nach der Einheit: im Adminpanel *Alle löschen*.
 ## Wenn sich etwas ändern soll
 
 - **Neue Version einer HTML-Datei** (z. B. neue Profi-Fragen): Sie wird einfach hier im Ordner ersetzt und ist sofort aktiv. Du musst nichts tun.
-- **Neue Version von Code.gs:** passiert automatisch, sobald die automatische Bereitstellung (unten) eingerichtet ist.
+- **Neue Version von Code.gs / Labs.gs:** passiert automatisch, sobald die automatische Bereitstellung (unten) eingerichtet ist.
   Von Hand: Inhalt im Editor ersetzen, speichern, dann *Bereitstellen → Bereitstellungen verwalten → Stift (Bearbeiten) → Version: Neue Version → Bereitstellen*.
   So bleibt die Adresse gleich. Eine *neue* Bereitstellung würde eine neue Adresse erzeugen.
 
 ## Automatisch bereitstellen (einmalig einrichten, ca. 10 Minuten)
 
-Danach landet jede Änderung an `Code.gs` im GitHub-Repo von selbst im Apps Script, als neue Version der bestehenden Bereitstellung (gleiche Adresse).
+Danach landet jede Änderung an `Code.gs` oder `Labs.gs` im GitHub-Repo von selbst im Apps Script, als neue Version der bestehenden Bereitstellung (gleiche Adresse).
 Das erledigt der GitHub-Workflow `.github/workflows/apps-script.yml` mit Googles Werkzeug *clasp*.
 
 1. **Apps Script API einschalten:** https://script.google.com/home/usersettings öffnen, *Google Apps Script API* auf **An**.

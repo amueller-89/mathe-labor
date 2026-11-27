@@ -1,0 +1,17 @@
+<div class="gate" id="gate">
+  <div class="box">
+    <h2>__TITLE__</h2>
+    <div id="gLogin">
+      <p>Wie heißt du? Nimm deinen Vornamen und immer genau denselben, dann geht es an jedem Rechner da weiter, wo du aufgehört hast.</p>
+      <div class="gform"><input id="gWer" type="text" maxlength="30" autocomplete="nickname" autocapitalize="words" spellcheck="false" data-lpignore="true" data-1p-ignore placeholder="z. B. Mia" aria-label="Wie heißt du?"><button class="btn primary" id="gGo" type="button">Los geht’s</button></div>
+    </div>
+    <div id="gAgain" hidden>
+      <p>Bist du <b id="gWho"></b>?</p>
+      <div class="row"><button class="btn primary" id="gYes">Ja, weiter</button><button class="btn" id="gNo">Nein, ich bin jemand anderes</button></div>
+    </div>
+    <div id="gWait" hidden><p><b>Gleich geht’s los.</b></p><p>Deine Lehrkraft schaltet die erste Station gleich frei. Diese Seite merkt das von selbst.</p></div>
+    <div id="gBye" hidden><p><b>Du bist abgemeldet.</b></p><p>Lade die Seite neu (Taste F5), damit sich jemand anderes anmelden kann.</p></div>
+    <p class="feedback no" id="gErr" aria-live="polite"></p>
+    <p class="small" id="gLoad" hidden>Einen Moment …</p>
+  </div>
+</div>

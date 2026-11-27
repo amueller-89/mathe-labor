@@ -18,16 +18,7 @@
 // (Apps-Script-Editor → Projekteinstellungen → Skripteigenschaften → ADMIN_SCHLUESSEL).
 // So bleibt er bei jedem Code-Update erhalten und landet nie auf GitHub.
 
-const LABS = {
-  geraden: {
-    title: 'Geraden-Labor', file: 'Geraden', klasse: 'UIIIb',
-    tabs: [['mb', '1 Steigung & y-Achsenabschnitt'], ['pts', '2 Zwei Punkte'], ['train', '3 Rechentrainer'], ['pro', '4 Profi ★']],
-  },
-  parabel: {
-    title: 'Parabel-Labor', file: 'Parabel', klasse: 'OIIIa',
-    tabs: [['sp', '1 Scheitelpunktform'], ['forms', '2 Drei Formen'], ['pq', '3 pq-Formel'], ['train', '4 Rechentrainer'], ['pro', '5 Profi ★']],
-  },
-};
+// LABS (Titel, Klasse, Tabs je Labor) steht in Labs.gs und wird von build.py aus labs/*/lab.json erzeugt.
 
 // Speicher: jedes Kind ist eine eigene Skripteigenschaft (schnell, kein Tabellen-Zugriff, kein Lock beim Speichern).
 //   k_<lab>_<id>   = {"id","name","an","z","st"}   (an = angemeldet, z = zuletzt gespeichert, st = Fortschritt)

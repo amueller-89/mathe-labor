@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%2317212b%22/%3E%3Cpath%20d%3D%22M4%2026H29M7%2029V3%22%20stroke%3D%22%2393a5b6%22%20stroke-width%3D%222%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22/%3E%3Cpath%20d%3D%22{{ICON}}%22%20stroke%3D%22%236b9bff%22%20stroke-width%3D%223.2%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22/%3E%3C/svg%3E">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>{{TITLE}}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+{{STYLE}}</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    {{H1}}
+    <nav class="seg" role="tablist" id="mainTabs">
+{{NAV}}    </nav>
+  </header>
+
+{{TABS}}
+  <!-- ================= {{N_TRAIN}} RECHENTRAINER ================= -->
+  <section id="tab-train" class="tab" hidden>
+    <p class="lede" style="margin-bottom:12px">Rechne auf Papier, tippe das Ergebnis ein und prüfe. Die Skizze zeigt danach deine {{SKIZZE}} (blau) und, sobald es stimmt, die richtige (rot). 3 richtige Aufgaben schalten die nächste Stufe frei.</p>
+    <div class="levels" id="levels" style="margin-bottom:16px"></div>
+    <div class="stage">
+      <section>
+        <canvas id="cTrain" aria-label="Koordinatensystem zur Aufgabe"></canvas>
+        <div class="legend" id="legTrain"></div>
+      </section>
+      <aside class="side">
+        <div class="card">
+          <p class="label" id="trTitle"></p>
+          <div class="formula" id="trTask"></div>
+          <p class="hint" id="trHint"></p>
+          <button class="btn small" id="trEx" type="button">📘 Musterbeispiel ansehen</button>
+        </div>
+        <div class="card">
+          <p class="label">Deine Antwort</p>
+          <div class="answer" id="trAnswer"></div>
+          <div class="row" style="margin-top:8px">
+            <button class="btn primary" id="trCheck">Prüfen</button>
+            <button class="btn" id="trShow">Lösung zeigen</button>
+            <button class="btn" id="trNext">Nächste Aufgabe</button>
+          </div>
+          <div class="feedback" id="trFb" aria-live="polite"></div>
+          <div class="formula small" id="trSol" hidden></div>
+        </div>
+        <div class="card">
+          <p class="label">Dein Fortschritt</p>
+          <div class="prog" id="trProg"></div>
+          <div class="row" style="margin-top:8px"><button class="btn small" id="trReset">Fortschritt zurücksetzen</button></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= {{N_PRO}} PROFI ================= -->
+  <section id="tab-pro" class="tab" hidden>
+    <div class="prowrap">
+      <p class="lede">Profi-Aufgaben für alle, die den Rechentrainer geschafft haben. Erst nachdenken, dann klicken.</p>
+      <div id="proQuiz" class="card">
+        <p class="label" id="proHead"></p>
+        <div class="proq" id="proQ"></div>
+        <div id="proTable" style="margin:0 0 14px;max-width:420px" hidden></div>
+        <canvas id="cPro" class="procan" aria-label="Skizze zur Frage"></canvas>
+        <p class="hint" id="proCap" style="margin:-8px 0 14px" hidden></p>
+        <div class="optwrap">
+          <div class="opts" id="proOpts"></div>
+          <div class="lock" id="proLock" hidden aria-live="assertive"><div><b>Leider nicht. Überleg nochmal …</b><small id="proPicked"></small><div class="count" id="proCount">3</div></div></div>
+        </div>
+        <div class="feedback" id="proFb" aria-live="polite"></div>
+        <p class="proex" id="proEx" hidden></p>
+        <div class="row" style="margin-top:10px"><button class="btn primary" id="proNext" hidden>Nächste Frage</button></div>
+      </div>
+      <div id="proDone" class="card" hidden style="text-align:center;padding:28px 16px">
+        <h2 class="proq" id="proDoneT" style="font-size:34px;margin:0 0 8px"></h2>
+        <p id="proDoneS" style="margin:0 0 16px"></p>
+        <button class="btn primary" id="proAgain">Nochmal von vorn</button>
+        <p class="label" style="text-align:left;margin:24px 0 8px">Alle Fragen zum Nachschauen (Fehler pro Frage):</p>
+        <div class="revlist" id="proList"></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="win" id="exWin" hidden role="dialog" aria-modal="true" aria-labelledby="exT">
+  <div class="box exbox">
+    <button class="exclose" id="exClose" type="button" aria-label="Schließen">×</button>
+    <p class="label" id="exLvl"></p>
+    <h2 id="exT">Musterbeispiel</h2>
+    <p class="exsub" id="exSub"></p>
+    <div class="exg" id="exBody"></div>
+    <div class="row" style="justify-content:center"><button class="btn primary" id="exOk" type="button">Verstanden, jetzt ich!</button></div>
+  </div>
+</div>
+<div class="win" id="win" hidden role="dialog" aria-modal="true" aria-labelledby="winT">
+  <canvas id="confetti" aria-hidden="true"></canvas>
+  <div class="box">
+    <div class="big" aria-hidden="true">🏆</div>
+    <h2 id="winT">Glückwunsch!</h2>
+    <p><b>Du hast alle 4 Stufen geschafft.</b></p>
+    <p>{{WIN}}</p>
+    <p id="winProTxt"><b>Neu freigeschaltet: Tab {{N_PRO}} mit Profi-Aufgaben</b> zum Knobeln.</p>
+    <div class="stats" id="winStats"></div>
+    <div class="row" style="justify-content:center">
+      <button class="btn" id="winClose">Weiter üben</button>
+      <button class="btn primary" id="winPro">Zu den Profi-Aufgaben ★</button>
+    </div>
+  </div>
+</div>
+
+{{ADMIN}}<script>
+{{SCRIPT}}</script>
+</body>
+</html>
