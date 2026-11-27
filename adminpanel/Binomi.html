@@ -163,7 +163,9 @@ table.wt td{font-weight:700}
 .pjump{display:grid;grid-template-columns:repeat(auto-fill,40px);gap:6px;margin-bottom:12px}
 .pjump button{font:inherit;font-size:14px;font-weight:700;height:34px;border-radius:8px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
 .pjump button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
-a.btn{font:inherit;font-size:15px;padding:8px 14px;border-radius:8px;border:1.5px solid var(--curve);background:var(--curve);color:#fff;font-weight:700;text-decoration:none}
+a.btn{font:inherit;font-size:15px;padding:8px 14px;border-radius:8px;border:1.5px solid var(--curve);background:var(--paper);color:var(--curve);font-weight:700;text-decoration:none}
+a.btn.primary{background:var(--curve);color:#fff}
+a.btn::after{content:" →"}
 .formula{font-family:var(--display);font-weight:800;font-size:clamp(24px,3vw,34px);line-height:1.2;white-space:nowrap;overflow-x:auto}
 .ca{color:var(--a)} .cd{color:var(--d)} .ce{color:var(--e)} .cx{color:var(--curve)}
 /* Antwortzeile: = | Eingabe, feste Spalten */
@@ -285,10 +287,12 @@ a.btn{font:inherit;font-size:15px;padding:8px 14px;border-radius:8px;border:1.5p
     <div class="big" id="nextIcon" aria-hidden="true"></div>
     <h2 id="nextT"></h2>
     <p id="nextS"></p>
+    <p id="nextS2" hidden></p>
     <div class="row" style="justify-content:center;margin-top:14px">
       <button class="btn" id="nextClose" type="button">Schließen</button>
       <a class="btn primary" id="nextGo" href="#"></a>
       <button class="btn primary" id="nextAgain" type="button">Nochmal von vorn</button>
+      <a class="btn" id="nextAlt" href="#"></a>
     </div>
   </div>
 </div>

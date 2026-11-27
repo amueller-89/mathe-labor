@@ -164,7 +164,9 @@ table.wt td{font-weight:700}
 .pjump{display:grid;grid-template-columns:repeat(auto-fill,40px);gap:6px;margin-bottom:12px}
 .pjump button{font:inherit;font-size:14px;font-weight:700;height:34px;border-radius:8px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
 .pjump button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
-a.btn{font:inherit;font-size:15px;padding:8px 14px;border-radius:8px;border:1.5px solid var(--curve);background:var(--curve);color:#fff;font-weight:700;text-decoration:none}
+a.btn{font:inherit;font-size:15px;padding:8px 14px;border-radius:8px;border:1.5px solid var(--curve);background:var(--paper);color:var(--curve);font-weight:700;text-decoration:none}
+a.btn.primary{background:var(--curve);color:#fff}
+a.btn::after{content:" →"}
 .formula{font-family:var(--display);font-weight:800;font-size:clamp(24px,3vw,36px);line-height:1.2;white-space:nowrap;overflow-x:auto}
 .formula.off{color:var(--muted);font-weight:600;font-size:17px;white-space:normal}
 .ca{color:var(--a)} .cd{color:var(--d)} .ce{color:var(--e)} .cz{color:var(--z)} .cx{color:var(--curve)}
@@ -430,10 +432,12 @@ footer{font-size:13px;color:var(--muted)}
     <div class="big" id="nextIcon" aria-hidden="true"></div>
     <h2 id="nextT"></h2>
     <p id="nextS"></p>
+    <p id="nextS2" hidden></p>
     <div class="row" style="justify-content:center;margin-top:14px">
       <button class="btn" id="nextClose" type="button">Schließen</button>
       <a class="btn primary" id="nextGo" href="#"></a>
       <button class="btn primary" id="nextAgain" type="button">Nochmal von vorn</button>
+      <a class="btn" id="nextAlt" href="#"></a>
     </div>
   </div>
 </div>
@@ -624,7 +628,7 @@ document.addEventListener("DOMContentLoaded", () => {
 <script>
 window.__startLab = () => {
 "use strict";
-const LAB = {"id": "parabel", "title": "Parabel-Labor", "thema": "Quadratische Funktionen", "reihe": 2, "klasse": "OIIIa", "icon": "M8 4Q17 34 26 4", "tabs": [{"id": "sp", "label": "Scheitelpunktform", "slug": "scheitelpunktform"}, {"id": "forms", "label": "Drei Formen", "slug": "drei-formen"}, {"id": "pq", "label": "pq-Formel", "slug": "pq-formel"}], "skizze": "Parabel", "win": "Scheitelpunktform, Nullstellenform, pq-Formel und Ablesen aus der Skizze: Du kannst Parabeln jetzt in allen Formen. Richtig gut gemacht!", "profi": "Parabel-Profi!", "weiter": {"id": "tangenten", "title": "Tangenten-Labor", "maxFehler": 10}, "file": "Parabel"};
+const LAB = {"id": "parabel", "title": "Parabel-Labor", "thema": "Quadratische Funktionen", "reihe": 2, "klasse": "OIIIa", "icon": "M8 4Q17 34 26 4", "tabs": [{"id": "sp", "label": "Scheitelpunktform", "slug": "scheitelpunktform"}, {"id": "forms", "label": "Drei Formen", "slug": "drei-formen"}, {"id": "pq", "label": "pq-Formel", "slug": "pq-formel"}], "skizze": "Parabel", "win": "Scheitelpunktform, Nullstellenform, pq-Formel und Ablesen aus der Skizze: Du kannst Parabeln jetzt in allen Formen. Richtig gut gemacht!", "profi": "Parabel-Profi!", "weiter": {"maxFehler": 10, "gut": {"id": "tangenten", "title": "Tangenten-Labor"}, "ueben": {"id": "binomi", "title": "Binomi-Labor"}}, "file": "Parabel"};
 /* Geteilter Kern aller Labore: kleine Helfer, Koordinatensystem, Zahlen einlesen.
    Wird vom Build (build.py) zusammen mit dem Code des Labors in eine Datei kopiert. */
 const $ = id => document.getElementById(id);
@@ -1596,19 +1600,24 @@ function nextPro() {
   if (pro.i < PRO.length - 1) { pro.i++; renderPro(); return; }
   showProDone(); proNextLab();
 }
-// Steckbrief "weiter": { id, title, maxFehler }: nach dem Profi-Durchgang wenige Fehler → Einladung ins nächste Labor,
-// sonst Aufforderung, die Fragen nochmal sorgfältig durchzugehen
+// Steckbrief "weiter": { maxFehler, gut: { id, title }, ueben: { id, title } } (ueben optional)
+// Nach dem Profi-Durchgang: weniger als maxFehler Fehler → Einladung ins Labor „gut“,
+// sonst nochmal sorgfältig durchgehen oder im Labor „ueben“ üben
 function proNextLab() {
   const W = LAB.weiter; if (!W) return;
   const f = pro.errs.reduce((s, v) => s + (v || 0), 0), good = f < W.maxFehler;
-  // Adresse des anderen Labors: GitHub Pages (../id/), eigenständige Datei (Titel.html); in der Google-Version kein Link
-  const href = window.LABOR_API ? "../" + W.id + "/" : !ADMIN ? W.title + ".html" : "";
+  // Adresse eines anderen Labors: GitHub Pages (../id/), eigenständige Datei (Titel.html); in der Google-Version kein Link
+  const href = L => !L ? "" : window.LABOR_API ? "../" + L.id + "/" : !ADMIN ? L.title + ".html" : "";
+  const link = (el, L) => { const h = href(L); el.hidden = !h; el.href = h || "#"; el.textContent = L ? "Zum " + L.title : ""; };
   $("nextIcon").textContent = good ? "🚀" : "🧐";
   $("nextT").textContent = good ? "Bereit für mehr?" : "Nochmal mit Ruhe";
   $("nextS").textContent = good
-    ? (f ? `Nur ${f} Fehler.` : "Kein einziger Fehler!") + ` Probier als Nächstes das ${W.title}!` + (href ? "" : " Frag nach dem Link.")
+    ? (f ? `Nur ${f} Fehler.` : "Kein einziger Fehler!") + ` Probier als Nächstes das ${W.gut.title}!`
     : `${f} Fehler, da wurde viel geraten. Geh die Fragen nochmal durch und rate weniger! Lies sorgfältig und rechne auf Papier.`;
-  $("nextGo").hidden = !good || !href; $("nextGo").href = href || "#"; $("nextGo").textContent = "Zum " + W.title;
+  $("nextS2").textContent = !good && W.ueben ? `Oder übe die binomischen Formeln und Termumformungen im ${W.ueben.title}.` : "";
+  $("nextS2").hidden = !$("nextS2").textContent;
+  link($("nextGo"), good ? W.gut : null);
+  link($("nextAlt"), good ? null : W.ueben);
   $("nextAgain").hidden = good;
   $("nextWin").hidden = false;
 }

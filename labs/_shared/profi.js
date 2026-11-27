@@ -99,19 +99,24 @@ function nextPro() {
   if (pro.i < PRO.length - 1) { pro.i++; renderPro(); return; }
   showProDone(); proNextLab();
 }
-// Steckbrief "weiter": { id, title, maxFehler }: nach dem Profi-Durchgang wenige Fehler → Einladung ins nächste Labor,
-// sonst Aufforderung, die Fragen nochmal sorgfältig durchzugehen
+// Steckbrief "weiter": { maxFehler, gut: { id, title }, ueben: { id, title } } (ueben optional)
+// Nach dem Profi-Durchgang: weniger als maxFehler Fehler → Einladung ins Labor „gut“,
+// sonst nochmal sorgfältig durchgehen oder im Labor „ueben“ üben
 function proNextLab() {
   const W = LAB.weiter; if (!W) return;
   const f = pro.errs.reduce((s, v) => s + (v || 0), 0), good = f < W.maxFehler;
-  // Adresse des anderen Labors: GitHub Pages (../id/), eigenständige Datei (Titel.html); in der Google-Version kein Link
-  const href = window.LABOR_API ? "../" + W.id + "/" : !ADMIN ? W.title + ".html" : "";
+  // Adresse eines anderen Labors: GitHub Pages (../id/), eigenständige Datei (Titel.html); in der Google-Version kein Link
+  const href = L => !L ? "" : window.LABOR_API ? "../" + L.id + "/" : !ADMIN ? L.title + ".html" : "";
+  const link = (el, L) => { const h = href(L); el.hidden = !h; el.href = h || "#"; el.textContent = L ? "Zum " + L.title : ""; };
   $("nextIcon").textContent = good ? "🚀" : "🧐";
   $("nextT").textContent = good ? "Bereit für mehr?" : "Nochmal mit Ruhe";
   $("nextS").textContent = good
-    ? (f ? `Nur ${f} Fehler.` : "Kein einziger Fehler!") + ` Probier als Nächstes das ${W.title}!` + (href ? "" : " Frag nach dem Link.")
+    ? (f ? `Nur ${f} Fehler.` : "Kein einziger Fehler!") + ` Probier als Nächstes das ${W.gut.title}!`
     : `${f} Fehler, da wurde viel geraten. Geh die Fragen nochmal durch und rate weniger! Lies sorgfältig und rechne auf Papier.`;
-  $("nextGo").hidden = !good || !href; $("nextGo").href = href || "#"; $("nextGo").textContent = "Zum " + W.title;
+  $("nextS2").textContent = !good && W.ueben ? `Oder übe die binomischen Formeln und Termumformungen im ${W.ueben.title}.` : "";
+  $("nextS2").hidden = !$("nextS2").textContent;
+  link($("nextGo"), good ? W.gut : null);
+  link($("nextAlt"), good ? null : W.ueben);
   $("nextAgain").hidden = good;
   $("nextWin").hidden = false;
 }
