@@ -121,21 +121,18 @@ canvas.procan{max-width:400px;margin:0 0 14px}
 .exbox h2{font-size:clamp(24px,4vw,32px);margin:0 0 4px}
 .exbox .exsub{color:var(--muted);margin:0 0 8px}
 .exclose{position:absolute;top:10px;right:12px;font:inherit;font-size:26px;line-height:1;background:none;border:0;color:var(--muted);cursor:pointer;padding:4px 8px}
-.exg{display:grid;grid-template-columns:max-content max-content minmax(0,1fr);gap:4px 12px;align-items:center;margin:8px 0 14px}
-.exg .l{text-align:right;font-family:var(--display);font-weight:700;font-size:20px;white-space:nowrap}
-.exg .r{font-family:var(--display);font-weight:700;font-size:20px;white-space:nowrap}
+.exg{display:grid;grid-template-columns:max-content max-content minmax(0,1fr);gap:14px 18px;align-items:center;margin:8px 0 14px}
+.exg .l{text-align:right;font-family:var(--display);font-weight:700;font-size:24px;white-space:nowrap}
+.exg .r{font-family:var(--display);font-weight:700;font-size:24px;white-space:nowrap}
 .exg .op{color:var(--muted);font-weight:600;margin-left:14px}
-.exg .c{font-size:14px;line-height:1.35;color:var(--muted);border-left:3px solid var(--line);padding:2px 0 2px 10px}
-.exg .sec{grid-column:1/-1;font-weight:700;margin:12px 0 2px}
+.exg .c{font-size:15px;line-height:1.35;color:var(--muted);border-left:3px solid var(--line);padding:2px 0 2px 10px}
+.exg .c:empty{border:0;padding:0}
+.exg .sec{grid-column:1/-1;font-weight:700;margin:10px 0 -4px}
 .exg .sec:first-child{margin-top:0}
 .exg .note{grid-column:1/-1;font-size:15px;background:var(--surface);border-radius:8px;padding:8px 12px;margin-top:6px}
 .exg .wide{grid-column:1/-1;margin:4px 0}
 .exg .res{background:var(--ok-bg);border-radius:6px;padding:0 6px}
 .exg .frac{font-size:.85em}
-/* luftigere Variante (EXAMPLES[l].airy) für lange Umformungsketten */
-.exg.airy{row-gap:14px;column-gap:18px}
-.exg.airy .l,.exg.airy .r{font-size:24px}
-.exg.airy .c{font-size:15px}
 .exsvg{display:block;width:100%;max-width:330px;height:auto;margin:0 auto}
 .extab{display:inline-grid;grid-template-columns:repeat(5,auto);border:1.5px solid var(--line);border-radius:8px;overflow:hidden;font-weight:700;font-variant-numeric:tabular-nums}
 .extab span{padding:4px 14px;border-left:1px solid var(--line);text-align:center}
@@ -144,7 +141,7 @@ canvas.procan{max-width:400px;margin:0 0 14px}
 @media (max-width:640px){
   .exg{grid-template-columns:max-content minmax(0,1fr)}
   .exg .c{grid-column:1/-1;margin:0 0 6px}
-  .exg .l,.exg .r,.exg.airy .l,.exg.airy .r{font-size:17px;white-space:normal}
+  .exg .l,.exg .r{font-size:19px;white-space:normal}
 }
 .formula{font-family:var(--display);font-weight:800;font-size:clamp(26px,3.4vw,40px);line-height:1.2;white-space:nowrap;overflow-x:auto}
 .cm{color:var(--d)} .cb{color:var(--e)} .cz{color:var(--z)} .ca{color:var(--a)}
@@ -877,69 +874,62 @@ function drawTrain() {
 
 // ---------- Musterbeispiel je Stufe ----------
 
-const M = t => `<span class="cm">${t}</span>`, Bc = t => `<span class="cb">${t}</span>`;
+const M = t => `<span class="cm">${t}</span>`, Bc = t => `<span class="cb">${t}</span>`, Z = t => `<span class="cz">${t}</span>`;
+const res = t => `<span class="res">${t}</span>`;
+// Musterbeispiele: Kommentar steht in der Zeile VOR dem Schritt (wie bei Äquivalenzumformungen).
+// Farben nur für Zahlen/Terme (m orange, b grün, Punkte türkis); Rechenzeichen, Klammern, x bleiben weiß.
 const EXAMPLES = [
   { sub: "Lies die Gleichung der blauen Geraden ab.", rows: [
     { html: exGraph({ x0: -4, x1: 5, y0: -5, y1: 5, f: x => 1.5 * x - 2, label: "Gerade mit zwei Punkten und Steigungsdreieck", skipY: [-2],
         path: [[[2, 1], [4, 1], [4, 4]]], dots: [[2, 1, "--z"], [4, 4, "--z"], [0, -2, "--e"]],
         labels: [[3, 0.35, "2", "--d"], [4.25, 2.6, "3", "--d", "start"], [1.75, 1.45, "P", "--z", "end"], [3.75, 4.45, "Q", "--z", "end"], [-0.3, -2.45, "b", "--e", "end"]] }) },
-    { sec: "1. Zwei Punkte auf Kästchenecken suchen" },
-    ["P", "= (2 | 1)", "Hier geht die Gerade genau durch eine Kästchenecke."],
-    ["Q", "= (4 | 4)", "Die nächste Kästchenecke auf der Geraden."],
+    { sec: "1. Zwei Punkte auf Kästchenecken" },
+    [Z("P"), "= (" + Z("2") + " | " + Z("1") + ")"],
+    [Z("Q"), "= (" + Z("4") + " | " + Z("4") + ")"],
     { sec: "2. Steigungsdreieck von P nach Q" },
-    ["Δx", "= 4 − 2 = 2", "Von P aus nach rechts bis unter Q …"],
-    ["Δy", "= 4 − 1 = 3", "… dann nach oben bis Q. Nach unten wäre Δy negativ."],
+    ["Δx", "= " + Z("4") + " − " + Z("2") + " = " + M("2")],
+    ["Δy", "= " + Z("4") + " − " + Z("1") + " = " + M("3")],
     { sec: "3. m = hoch durch rechts" },
-    [M("m"), "= " + frac("Δy", "Δx"), "hoch durch rechts"],
-    ["", "= " + frac("3", "2"), "Einsetzen"],
-    ["", "= " + M("1,5"), "3 : 2 ausrechnen"],
-    { sec: "4. b ablesen" },
-    [Bc("b"), "= " + Bc("−2"), "Hier schneidet die Gerade die y-Achse."],
-    { sec: "5. In y = m · x + b einsetzen" },
-    ["y", "= " + M("1,5") + " · x + (" + Bc("−2") + ")", "m und b einsetzen"],
-    ["y", "= <span class=\"res\">" + M("1,5") + "x − " + Bc("2") + "</span>", "+ (−2) schreibt man kürzer als − 2"],
+    [M("m"), "= " + frac("Δy", "Δx"), "einsetzen"],
+    ["", "= " + frac(M("3"), M("2"))],
+    ["", "= " + M("1,5")],
+    { sec: "4. b an der y-Achse ablesen" },
+    [Bc("b"), "= " + Bc("−2")],
+    { sec: "5. Einsetzen" },
+    ["y", "= " + res(M("1,5") + "x − " + Bc("2"))],
   ] },
-  { sub: "Bringe y = −2x + 7 + 5x − 9 in die Normalform y = m · x + b.", rows: [
-    ["y", "= −2x + 7 + 5x − 9", "Aufgabe"],
-    ["", "= −2x + 5x + 7 − 9", "Sortieren: x-Terme nach vorn. Das Rechenzeichen vor jedem Term wandert mit!"],
-    ["", "= 3x + 7 − 9", "x-Terme zusammenfassen: −2 + 5 = 3"],
-    ["", "= <span class=\"res\">" + M("3") + "x − " + Bc("2") + "</span>", "Zahlen zusammenfassen: 7 − 9 = −2"],
+  { sub: "Bringe y = " + M("−2x") + " + " + Bc("7") + " + " + M("5x") + " − " + Bc("9") + " in die Normalform y = mx + b.", rows: [
+    ["y", "= " + M("−2x") + " + " + Bc("7") + " + " + M("5x") + " − " + Bc("9"), "sortieren"],
+    ["", "= " + M("−2x") + " + " + M("5x") + " + " + Bc("7") + " − " + Bc("9"), "zusammenfassen"],
+    ["", "= " + res(M("3x") + " − " + Bc("2"))],
     { sec: "Ablesen" },
-    [M("m"), "= " + M("3"), "Die Zahl vor dem x"],
-    [Bc("b"), "= " + Bc("−2"), "Die Zahl ohne x, mit ihrem Vorzeichen"],
+    [M("m"), "= " + M("3")],
+    [Bc("b"), "= " + Bc("−2")],
   ] },
-  { sub: "Fülle die Wertetabelle für y = −2x + 3 aus.", rows: [
-    { sec: "x = −2" },
-    ["y", "= −2 · (−2) + 3", "x einsetzen. Negative Zahlen in Klammern!"],
-    ["", "= 4 + 3", "Minus mal Minus gibt Plus"],
-    ["", "= <span class=\"res\">7</span>", ""],
-    { sec: "x = 0" },
-    ["y", "= −2 · 0 + 3", "x einsetzen"],
-    ["", "= 0 + 3", "Mal 0 gibt 0"],
-    ["", "= <span class=\"res\">3</span>", "Bei x = 0 kommt immer b heraus"],
-    { sec: "x = 1" },
-    ["y", "= −2 · 1 + 3", "x einsetzen"],
-    ["", "= −2 + 3", "Punkt vor Strich: erst mal, dann plus"],
-    ["", "= <span class=\"res\">1</span>", ""],
-    { sec: "x = 3" },
-    ["y", "= −2 · 3 + 3", "x einsetzen"],
-    ["", "= −6 + 3", "Erst mal …"],
-    ["", "= <span class=\"res\">−3</span>", "… dann plus"],
-    { html: `<div class="extab"><span>x</span><span>−2</span><span>0</span><span>1</span><span>3</span><span>y</span><span>7</span><span>3</span><span>1</span><span>−3</span></div>` },
+  { sub: "Fülle die Wertetabelle für y = " + M("−2") + "x + " + Bc("3") + " aus.", rows: [
+    { sec: "x = " + Z("−2") },
+    ["y", "= " + M("−2") + " · (" + Z("−2") + ") + " + Bc("3"), "erst mal, dann plus"],
+    ["", "= 4 + " + Bc("3")],
+    ["", "= " + res("7")],
+    { sec: "x = " + Z("3") },
+    ["y", "= " + M("−2") + " · " + Z("3") + " + " + Bc("3"), "erst mal, dann plus"],
+    ["", "= −6 + " + Bc("3")],
+    ["", "= " + res("−3")],
+    { sec: "Genauso für x = " + Z("0") + " und x = " + Z("1") },
+    { html: `<div class="extab"><span>x</span><span>${Z("−2")}</span><span>${Z("0")}</span><span>${Z("1")}</span><span>${Z("3")}</span><span>y</span><span>7</span><span>3</span><span>1</span><span>−3</span></div>` },
   ] },
-  { sub: "Bestimme die Gerade durch P(−1 | 4) und Q(3 | −4).", rows: [
-    { sec: "1. Steigung m" },
-    [M("m"), "= " + frac("f(x₂) − f(x₁)", "x₂ − x₁"), "Formel hinschreiben. P ist Punkt 1, Q ist Punkt 2."],
-    ["", "= " + frac("−4 − 4", "3 − (−1)"), "Oben die y-Werte, unten die x-Werte, beide Male erst Q, dann P"],
-    ["", "= " + frac("−8", "4"), "3 − (−1) = 3 + 1 = 4"],
-    ["", "= " + M("−2"), "−8 : 4 ausrechnen"],
-    { sec: "2. b berechnen: P(−1 | 4) in y = m · x + b einsetzen" },
-    ["4", "= −2 · (−1) + b", "y = 4, m = −2 und x = −1 einsetzen"],
-    ["4", "= 2 + b", "Minus mal Minus gibt Plus", "| − 2"],
-    ["2", "= " + Bc("b"), "Auf beiden Seiten 2 abziehen"],
-    { sec: "3. Ergebnis und Probe" },
-    ["y", "= <span class=\"res\">" + M("−2") + "x + " + Bc("2") + "</span>", "m und b einsetzen"],
-    ["Probe:", "−2 · 3 + 2 = −6 + 2 = −4", "Q(3 | −4) einsetzen: passt ✓"],
+  { sub: "Bestimme die Gerade durch P(" + Z("−1") + " | " + Z("4") + ") und Q(" + Z("3") + " | " + Z("−4") + ").", rows: [
+    { sec: "1. Steigung" },
+    [M("m"), "= " + frac("f(x₂) − f(x₁)", "x₂ − x₁"), "Q und P einsetzen"],
+    ["", "= " + frac(Z("−4") + " − " + Z("4"), Z("3") + " − (" + Z("−1") + ")")],
+    ["", "= " + frac("−8", "4")],
+    ["", "= " + M("−2")],
+    { sec: "2. b: P in y = mx + b einsetzen" },
+    [Z("4"), "= " + M("−2") + " · (" + Z("−1") + ") + " + Bc("b")],
+    [Z("4"), "= 2 + " + Bc("b"), "", "| − 2"],
+    ["2", "= " + Bc("b")],
+    { sec: "3. Ergebnis" },
+    ["y", "= " + res(M("−2") + "x + " + Bc("2"))],
   ] },
 ];
 
@@ -1133,7 +1123,8 @@ window.addEventListener("hashchange", renderLevels);
 if (!allOpen() && prog.lvl > prog.unl) prog.lvl = prog.unl;
 
 // ---------- Musterbeispiel je Stufe (Popup) ----------
-// EXAMPLES[l] = { sub, rows }; rows: [links, rechts, Kommentar, Umformung] oder {sec}, {note}, {html}
+// EXAMPLES[l] = { sub, rows }; rows: [links, rechts, Kommentar, Umformung] oder {sec}, {html}
+// Der Kommentar steht in der Zeile vor dem Schritt, den er beschreibt (wie „| : 2“ bei Gleichungen).
 function exGraph(o) {
   const u = 30, W = (o.x1 - o.x0) * u, H = (o.y1 - o.y0) * u, X = x => (x - o.x0) * u, Y = y => (o.y1 - y) * u;
   let g = `<svg class="exsvg" viewBox="-4 -4 ${W + 8} ${H + 8}" role="img" aria-label="${o.label}">`;
@@ -1166,7 +1157,7 @@ function openEx(e) {
   const l = task ? task.l : prog.lvl, E = EXAMPLES[l];
   $("exLvl").textContent = LEVELS[l].t + " · " + LEVELS[l].s;
   $("exSub").innerHTML = E.sub;
-  $("exBody").innerHTML = exRender(E); $("exBody").className = "exg" + (E.airy ? " airy" : "");
+  $("exBody").innerHTML = exRender(E);
   $("exWin").hidden = false; document.querySelector(".exbox").scrollTop = 0; $("exOk").focus({ preventScroll: true });
 }
 function closeEx() {

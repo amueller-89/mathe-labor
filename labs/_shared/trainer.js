@@ -90,7 +90,8 @@ window.addEventListener("hashchange", renderLevels);
 if (!allOpen() && prog.lvl > prog.unl) prog.lvl = prog.unl;
 
 // ---------- Musterbeispiel je Stufe (Popup) ----------
-// EXAMPLES[l] = { sub, rows }; rows: [links, rechts, Kommentar, Umformung] oder {sec}, {note}, {html}
+// EXAMPLES[l] = { sub, rows }; rows: [links, rechts, Kommentar, Umformung] oder {sec}, {html}
+// Der Kommentar steht in der Zeile vor dem Schritt, den er beschreibt (wie „| : 2“ bei Gleichungen).
 function exGraph(o) {
   const u = 30, W = (o.x1 - o.x0) * u, H = (o.y1 - o.y0) * u, X = x => (x - o.x0) * u, Y = y => (o.y1 - y) * u;
   let g = `<svg class="exsvg" viewBox="-4 -4 ${W + 8} ${H + 8}" role="img" aria-label="${o.label}">`;
@@ -123,7 +124,7 @@ function openEx(e) {
   const l = task ? task.l : prog.lvl, E = EXAMPLES[l];
   $("exLvl").textContent = LEVELS[l].t + " · " + LEVELS[l].s;
   $("exSub").innerHTML = E.sub;
-  $("exBody").innerHTML = exRender(E); $("exBody").className = "exg" + (E.airy ? " airy" : "");
+  $("exBody").innerHTML = exRender(E);
   $("exWin").hidden = false; document.querySelector(".exbox").scrollTop = 0; $("exOk").focus({ preventScroll: true });
 }
 function closeEx() {

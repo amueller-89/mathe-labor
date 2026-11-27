@@ -349,56 +349,53 @@ function drawTrain() {
 
 // ---------- Musterbeispiel je Stufe ----------
 
-// Farben im Musterbeispiel: nur Zahlen/Terme farbig, Rechenzeichen, Klammern, Exponenten und x bleiben weiß.
-// a und x²-Glieder lila, d orange, x-Glieder blau, e und reine Zahlen grün. Ein Objekt behält seine Farbe über alle Zeilen.
-const A = t => sp("ca", t), D = t => sp("cd", t), E = t => sp("ce", t), X = t => sp("cx", t);
+// Musterbeispiele: Kommentar steht in der Zeile VOR dem Schritt (wie bei Äquivalenzumformungen).
+// Farben nur für Zahlen/Terme, Rechenzeichen, Klammern, Exponenten und x bleiben weiß; jedes Objekt behält seine Farbe.
+// Stufe 1/2: Streckfaktor und x²-Glieder lila, d orange, Nullstellen türkis, x-Glieder blau, Zahlen grün.
+// Stufe 3 wie im pq-Tab: p und Mitte −p/2 orange, q lila, Wurzel grün.
+const A = t => sp("ca", t), D = t => sp("cd", t), E = t => sp("ce", t), X = t => sp("cx", t), Z = t => sp("cz", t);
+const res = t => `<span class="res">${t}</span>`;
 const EXAMPLES = [
-  { airy: true, sub: "Schreibe y = " + A("−2") + "(x − " + D("3") + ")² + " + E("4") + " in Normalform y = ax² + bx + c um.", rows: [
-    ["y", "= " + A("−2") + " · (x − " + D("3") + ")² + " + E("4"), "Aufgabe: a = −2, d = 3, e = 4"],
-    ["", "= " + A("−2") + " · (x² − 2 · x · " + D("3") + " + " + D("3") + "²) + " + E("4"), "2. binomische Formel: (a − b)² = a² − 2ab + b²"],
-    ["", "= " + A("−2") + " · (x² − " + X("6x") + " + " + E("9") + ") + " + E("4"), "In der Klammer ausrechnen"],
-    ["", "= " + A("−2x²") + " + " + X("12x") + " − " + E("18") + " + " + E("4"), "−2 mal jeden Summanden. Achtung: −2 · (−6x) = +12x"],
-    ["", "= <span class=\"res\">" + A("−2x²") + " + " + X("12x") + " − " + E("14") + "</span>", "Zahlen zusammenfassen: −18 + 4 = −14"],
+  { sub: "Schreibe y = " + A("−2") + "(x − " + D("3") + ")² + " + E("4") + " in Normalform um.", rows: [
+    ["y", "= " + A("−2") + " · (x − " + D("3") + ")² + " + E("4"), "binomische Formel"],
+    ["", "= " + A("−2") + " · (x² − 2 · x · " + D("3") + " + " + D("3") + "²) + " + E("4"), "ausrechnen"],
+    ["", "= " + A("−2") + " · (x² − " + X("6x") + " + " + E("9") + ") + " + E("4"), "mal −2, Vorzeichen!"],
+    ["", "= " + A("−2x²") + " + " + X("12x") + " − " + E("18") + " + " + E("4"), "zusammenfassen"],
+    ["", "= " + res(A("−2x²") + " + " + X("12x") + " − " + E("14"))],
   ] },
-  { sub: "Schreibe y = 2(x + 1)(x − 4) in Normalform um.", rows: [
-    ["y", "= 2(x + 1)(x − 4)", "Aufgabe"],
-    ["", "= 2 · (x · x − x · 4 + 1 · x − 1 · 4)", "Die beiden Klammern ausmultiplizieren: jedes mit jedem"],
-    ["", "= 2 · (x² − 4x + x − 4)", "Ausrechnen"],
-    ["", "= 2 · (x² − 3x − 4)", "x-Terme zusammenfassen: −4x + x = −3x"],
-    ["", "= <span class=\"res\">2x² − 6x − 8</span>", "Mal 2: jeden Summanden in der Klammer"],
+  { sub: "Schreibe y = " + A("2") + "(x + " + Z("1") + ")(x − " + Z("4") + ") in Normalform um.", rows: [
+    ["y", "= " + A("2") + " · (x + " + Z("1") + ") · (x − " + Z("4") + ")", "jedes mit jedem"],
+    ["", "= " + A("2") + " · (x · x − x · " + Z("4") + " + " + Z("1") + " · x − " + Z("1") + " · " + Z("4") + ")", "ausrechnen"],
+    ["", "= " + A("2") + " · (x² − " + X("4x") + " + " + X("x") + " − " + E("4") + ")", "zusammenfassen"],
+    ["", "= " + A("2") + " · (x² − " + X("3x") + " − " + E("4") + ")", "mal 2"],
+    ["", "= " + res(A("2x²") + " − " + X("6x") + " − " + E("8"))],
   ] },
   { sub: "Löse 2x² − 4x − 6 = 0 mit der pq-Formel.", rows: [
     { sec: "1. Vor x² muss eine 1 stehen" },
-    ["2x² − 4x − 6", "= 0", "Alles durch 2 teilen", "| : 2"],
-    ["x² − 2x − 3", "= 0", "Jetzt passt die Form x² + px + q = 0"],
-    { sec: "2. p und q ablesen" },
-    ['<span class="cd">p</span>', '= <span class="cd">−2</span>', "Zahl vor dem x, mit Vorzeichen"],
-    ['<span class="ca">q</span>', '= <span class="ca">−3</span>', "Zahl ohne x, mit Vorzeichen"],
-    { sec: "3. pq-Formel" },
-    ["x", '= −<span class="cd">p</span>/2 ± √((<span class="cd">p</span>/2)² − <span class="ca">q</span>)', "Formel hinschreiben"],
-    ["x", '= −(<span class="cd">−2</span>)/2 ± √(((<span class="cd">−2</span>)/2)² − (<span class="ca">−3</span>))', "Einsetzen, negative Zahlen in Klammern"],
-    ["x", "= 1 ± √((−1)² + 3)", "−(−2)/2 = 2/2 = 1 und − (−3) = + 3"],
-    ["x", "= 1 ± √(1 + 3)", "(−1)² = 1"],
-    ["x", "= 1 ± √4", "Unter der Wurzel zusammenrechnen"],
-    ["x", "= 1 ± 2", "√4 = 2"],
-    { sec: "4. Die zwei Lösungen" },
-    ["x₁", "= 1 − 2 = <span class=\"res\">−1</span>", "Mit Minus"],
-    ["x₂", "= 1 + 2 = <span class=\"res\">3</span>", "Mit Plus"],
-    ["Probe:", "(−1)² − 2 · (−1) − 3 = 1 + 2 − 3 = 0", "x₁ einsetzen: passt ✓"],
+    ["2x² − 4x − 6", "= 0", "", "| : 2"],
+    ["x² − " + D("2") + "x − " + A("3"), "= 0"],
+    { sec: "2. pq-Formel" },
+    ["x", "= −" + D("p") + "/2 ± √((" + D("p") + "/2)² − " + A("q") + ")", "einsetzen"],
+    ["", "= −(" + D("−2") + ")/2 ± √((" + D("−2") + "/2)² − (" + A("−3") + "))", "ausrechnen"],
+    ["", "= " + D("1") + " ± " + E("√") + "((" + E("−1") + ")² + " + E("3") + ")"],
+    ["", "= " + D("1") + " ± " + E("√") + "(" + E("1") + " + " + E("3") + ")"],
+    ["", "= " + D("1") + " ± " + E("√4")],
+    ["", "= " + D("1") + " ± " + E("2")],
+    { sec: "3. Die zwei Lösungen" },
+    ["x₁", "= " + D("1") + " − " + E("2") + " = " + res("−1")],
+    ["x₂", "= " + D("1") + " + " + E("2") + " = " + res("3")],
   ] },
-  { sub: "Lies die Scheitelpunktform y = a(x − d)² + e der blauen Parabel ab.", rows: [
+  { sub: "Lies die Scheitelpunktform der blauen Parabel ab.", rows: [
     { html: exGraph({ x0: -6, x1: 3, y0: -5, y1: 5, f: x => -2 * (x + 2) ** 2 + 3, label: "Parabel mit Scheitel und Schritt", skipY: [3],
-        path: [[[-2, 3], [-1, 3], [-1, 1]]], dots: [[-2, 3, "--pencil"], [-1, 1, "--d"]],
-        labels: [[-1.5, 3.3, "1", "--d"], [-0.75, 2.2, "2", "--d", "start"], [-2.3, 3.6, "S", "--pencil", "end"]] }) },
+        path: [[[-2, 3], [-1, 3], [-1, 1]]], pathColor: "--a", dots: [[-2, 3, "--pencil"], [-1, 1, "--a"]],
+        labels: [[-1.5, 3.3, "1", "--ink"], [-0.75, 2.2, "2", "--a", "start"], [-2.3, 3.6, "S", "--pencil", "end"]] }) },
     { sec: "1. Scheitel ablesen" },
-    ["S", "= (−2 | 3)", "Der höchste (oder tiefste) Punkt"],
-    ['<span class="cd">d</span>', '= <span class="cd">−2</span>', "x-Wert des Scheitels"],
-    ['<span class="ce">e</span>', '= <span class="ce">3</span>', "y-Wert des Scheitels"],
-    { sec: "2. a bestimmen" },
-    ['<span class="ca">a</span>', '= <span class="ca">−2</span>', "Vom Scheitel 1 nach rechts: die Parabel geht 2 nach unten. Nach unten offen, also a negativ."],
-    { sec: "3. In y = a(x − d)² + e einsetzen" },
-    ["y", '= <span class="ca">−2</span>(x − (<span class="cd">−2</span>))² + <span class="ce">3</span>', "a, d und e einsetzen"],
-    ["y", "= <span class=\"res\">−2(x + 2)² + 3</span>", "− (−2) = + 2"],
+    ["S", "= (" + D("−2") + " | " + E("3") + ")"],
+    { sec: "2. Vom Scheitel 1 nach rechts" },
+    ["", A("2") + " nach unten, also " + A("−2")],
+    { sec: "3. Einsetzen" },
+    ["y", "= " + A("−2") + " · (x − (" + D("−2") + "))² + " + E("3"), "− (−2) = + 2"],
+    ["y", "= " + res(A("−2") + " · (x + " + D("2") + ")² + " + E("3"))],
   ] },
 ];
 

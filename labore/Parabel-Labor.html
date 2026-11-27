@@ -120,21 +120,18 @@ canvas.procan{max-width:400px;margin:0 0 14px}
 .exbox h2{font-size:clamp(24px,4vw,32px);margin:0 0 4px}
 .exbox .exsub{color:var(--muted);margin:0 0 8px}
 .exclose{position:absolute;top:10px;right:12px;font:inherit;font-size:26px;line-height:1;background:none;border:0;color:var(--muted);cursor:pointer;padding:4px 8px}
-.exg{display:grid;grid-template-columns:max-content max-content minmax(0,1fr);gap:4px 12px;align-items:center;margin:8px 0 14px}
-.exg .l{text-align:right;font-family:var(--display);font-weight:700;font-size:20px;white-space:nowrap}
-.exg .r{font-family:var(--display);font-weight:700;font-size:20px;white-space:nowrap}
+.exg{display:grid;grid-template-columns:max-content max-content minmax(0,1fr);gap:14px 18px;align-items:center;margin:8px 0 14px}
+.exg .l{text-align:right;font-family:var(--display);font-weight:700;font-size:24px;white-space:nowrap}
+.exg .r{font-family:var(--display);font-weight:700;font-size:24px;white-space:nowrap}
 .exg .op{color:var(--muted);font-weight:600;margin-left:14px}
-.exg .c{font-size:14px;line-height:1.35;color:var(--muted);border-left:3px solid var(--line);padding:2px 0 2px 10px}
-.exg .sec{grid-column:1/-1;font-weight:700;margin:12px 0 2px}
+.exg .c{font-size:15px;line-height:1.35;color:var(--muted);border-left:3px solid var(--line);padding:2px 0 2px 10px}
+.exg .c:empty{border:0;padding:0}
+.exg .sec{grid-column:1/-1;font-weight:700;margin:10px 0 -4px}
 .exg .sec:first-child{margin-top:0}
 .exg .note{grid-column:1/-1;font-size:15px;background:var(--surface);border-radius:8px;padding:8px 12px;margin-top:6px}
 .exg .wide{grid-column:1/-1;margin:4px 0}
 .exg .res{background:var(--ok-bg);border-radius:6px;padding:0 6px}
 .exg .frac{font-size:.85em}
-/* luftigere Variante (EXAMPLES[l].airy) für lange Umformungsketten */
-.exg.airy{row-gap:14px;column-gap:18px}
-.exg.airy .l,.exg.airy .r{font-size:24px}
-.exg.airy .c{font-size:15px}
 .exsvg{display:block;width:100%;max-width:330px;height:auto;margin:0 auto}
 .extab{display:inline-grid;grid-template-columns:repeat(5,auto);border:1.5px solid var(--line);border-radius:8px;overflow:hidden;font-weight:700;font-variant-numeric:tabular-nums}
 .extab span{padding:4px 14px;border-left:1px solid var(--line);text-align:center}
@@ -143,7 +140,7 @@ canvas.procan{max-width:400px;margin:0 0 14px}
 @media (max-width:640px){
   .exg{grid-template-columns:max-content minmax(0,1fr)}
   .exg .c{grid-column:1/-1;margin:0 0 6px}
-  .exg .l,.exg .r,.exg.airy .l,.exg.airy .r{font-size:17px;white-space:normal}
+  .exg .l,.exg .r{font-size:19px;white-space:normal}
 }
 .formula{font-family:var(--display);font-weight:800;font-size:clamp(24px,3vw,36px);line-height:1.2;white-space:nowrap;overflow-x:auto}
 .formula.off{color:var(--muted);font-weight:600;font-size:17px;white-space:normal}
@@ -883,56 +880,53 @@ function drawTrain() {
 
 // ---------- Musterbeispiel je Stufe ----------
 
-// Farben im Musterbeispiel: nur Zahlen/Terme farbig, Rechenzeichen, Klammern, Exponenten und x bleiben weiß.
-// a und x²-Glieder lila, d orange, x-Glieder blau, e und reine Zahlen grün. Ein Objekt behält seine Farbe über alle Zeilen.
-const A = t => sp("ca", t), D = t => sp("cd", t), E = t => sp("ce", t), X = t => sp("cx", t);
+// Musterbeispiele: Kommentar steht in der Zeile VOR dem Schritt (wie bei Äquivalenzumformungen).
+// Farben nur für Zahlen/Terme, Rechenzeichen, Klammern, Exponenten und x bleiben weiß; jedes Objekt behält seine Farbe.
+// Stufe 1/2: Streckfaktor und x²-Glieder lila, d orange, Nullstellen türkis, x-Glieder blau, Zahlen grün.
+// Stufe 3 wie im pq-Tab: p und Mitte −p/2 orange, q lila, Wurzel grün.
+const A = t => sp("ca", t), D = t => sp("cd", t), E = t => sp("ce", t), X = t => sp("cx", t), Z = t => sp("cz", t);
+const res = t => `<span class="res">${t}</span>`;
 const EXAMPLES = [
-  { airy: true, sub: "Schreibe y = " + A("−2") + "(x − " + D("3") + ")² + " + E("4") + " in Normalform y = ax² + bx + c um.", rows: [
-    ["y", "= " + A("−2") + " · (x − " + D("3") + ")² + " + E("4"), "Aufgabe: a = −2, d = 3, e = 4"],
-    ["", "= " + A("−2") + " · (x² − 2 · x · " + D("3") + " + " + D("3") + "²) + " + E("4"), "2. binomische Formel: (a − b)² = a² − 2ab + b²"],
-    ["", "= " + A("−2") + " · (x² − " + X("6x") + " + " + E("9") + ") + " + E("4"), "In der Klammer ausrechnen"],
-    ["", "= " + A("−2x²") + " + " + X("12x") + " − " + E("18") + " + " + E("4"), "−2 mal jeden Summanden. Achtung: −2 · (−6x) = +12x"],
-    ["", "= <span class=\"res\">" + A("−2x²") + " + " + X("12x") + " − " + E("14") + "</span>", "Zahlen zusammenfassen: −18 + 4 = −14"],
+  { sub: "Schreibe y = " + A("−2") + "(x − " + D("3") + ")² + " + E("4") + " in Normalform um.", rows: [
+    ["y", "= " + A("−2") + " · (x − " + D("3") + ")² + " + E("4"), "binomische Formel"],
+    ["", "= " + A("−2") + " · (x² − 2 · x · " + D("3") + " + " + D("3") + "²) + " + E("4"), "ausrechnen"],
+    ["", "= " + A("−2") + " · (x² − " + X("6x") + " + " + E("9") + ") + " + E("4"), "mal −2, Vorzeichen!"],
+    ["", "= " + A("−2x²") + " + " + X("12x") + " − " + E("18") + " + " + E("4"), "zusammenfassen"],
+    ["", "= " + res(A("−2x²") + " + " + X("12x") + " − " + E("14"))],
   ] },
-  { sub: "Schreibe y = 2(x + 1)(x − 4) in Normalform um.", rows: [
-    ["y", "= 2(x + 1)(x − 4)", "Aufgabe"],
-    ["", "= 2 · (x · x − x · 4 + 1 · x − 1 · 4)", "Die beiden Klammern ausmultiplizieren: jedes mit jedem"],
-    ["", "= 2 · (x² − 4x + x − 4)", "Ausrechnen"],
-    ["", "= 2 · (x² − 3x − 4)", "x-Terme zusammenfassen: −4x + x = −3x"],
-    ["", "= <span class=\"res\">2x² − 6x − 8</span>", "Mal 2: jeden Summanden in der Klammer"],
+  { sub: "Schreibe y = " + A("2") + "(x + " + Z("1") + ")(x − " + Z("4") + ") in Normalform um.", rows: [
+    ["y", "= " + A("2") + " · (x + " + Z("1") + ") · (x − " + Z("4") + ")", "jedes mit jedem"],
+    ["", "= " + A("2") + " · (x · x − x · " + Z("4") + " + " + Z("1") + " · x − " + Z("1") + " · " + Z("4") + ")", "ausrechnen"],
+    ["", "= " + A("2") + " · (x² − " + X("4x") + " + " + X("x") + " − " + E("4") + ")", "zusammenfassen"],
+    ["", "= " + A("2") + " · (x² − " + X("3x") + " − " + E("4") + ")", "mal 2"],
+    ["", "= " + res(A("2x²") + " − " + X("6x") + " − " + E("8"))],
   ] },
   { sub: "Löse 2x² − 4x − 6 = 0 mit der pq-Formel.", rows: [
     { sec: "1. Vor x² muss eine 1 stehen" },
-    ["2x² − 4x − 6", "= 0", "Alles durch 2 teilen", "| : 2"],
-    ["x² − 2x − 3", "= 0", "Jetzt passt die Form x² + px + q = 0"],
-    { sec: "2. p und q ablesen" },
-    ['<span class="cd">p</span>', '= <span class="cd">−2</span>', "Zahl vor dem x, mit Vorzeichen"],
-    ['<span class="ca">q</span>', '= <span class="ca">−3</span>', "Zahl ohne x, mit Vorzeichen"],
-    { sec: "3. pq-Formel" },
-    ["x", '= −<span class="cd">p</span>/2 ± √((<span class="cd">p</span>/2)² − <span class="ca">q</span>)', "Formel hinschreiben"],
-    ["x", '= −(<span class="cd">−2</span>)/2 ± √(((<span class="cd">−2</span>)/2)² − (<span class="ca">−3</span>))', "Einsetzen, negative Zahlen in Klammern"],
-    ["x", "= 1 ± √((−1)² + 3)", "−(−2)/2 = 2/2 = 1 und − (−3) = + 3"],
-    ["x", "= 1 ± √(1 + 3)", "(−1)² = 1"],
-    ["x", "= 1 ± √4", "Unter der Wurzel zusammenrechnen"],
-    ["x", "= 1 ± 2", "√4 = 2"],
-    { sec: "4. Die zwei Lösungen" },
-    ["x₁", "= 1 − 2 = <span class=\"res\">−1</span>", "Mit Minus"],
-    ["x₂", "= 1 + 2 = <span class=\"res\">3</span>", "Mit Plus"],
-    ["Probe:", "(−1)² − 2 · (−1) − 3 = 1 + 2 − 3 = 0", "x₁ einsetzen: passt ✓"],
+    ["2x² − 4x − 6", "= 0", "", "| : 2"],
+    ["x² − " + D("2") + "x − " + A("3"), "= 0"],
+    { sec: "2. pq-Formel" },
+    ["x", "= −" + D("p") + "/2 ± √((" + D("p") + "/2)² − " + A("q") + ")", "einsetzen"],
+    ["", "= −(" + D("−2") + ")/2 ± √((" + D("−2") + "/2)² − (" + A("−3") + "))", "ausrechnen"],
+    ["", "= " + D("1") + " ± " + E("√") + "((" + E("−1") + ")² + " + E("3") + ")"],
+    ["", "= " + D("1") + " ± " + E("√") + "(" + E("1") + " + " + E("3") + ")"],
+    ["", "= " + D("1") + " ± " + E("√4")],
+    ["", "= " + D("1") + " ± " + E("2")],
+    { sec: "3. Die zwei Lösungen" },
+    ["x₁", "= " + D("1") + " − " + E("2") + " = " + res("−1")],
+    ["x₂", "= " + D("1") + " + " + E("2") + " = " + res("3")],
   ] },
-  { sub: "Lies die Scheitelpunktform y = a(x − d)² + e der blauen Parabel ab.", rows: [
+  { sub: "Lies die Scheitelpunktform der blauen Parabel ab.", rows: [
     { html: exGraph({ x0: -6, x1: 3, y0: -5, y1: 5, f: x => -2 * (x + 2) ** 2 + 3, label: "Parabel mit Scheitel und Schritt", skipY: [3],
-        path: [[[-2, 3], [-1, 3], [-1, 1]]], dots: [[-2, 3, "--pencil"], [-1, 1, "--d"]],
-        labels: [[-1.5, 3.3, "1", "--d"], [-0.75, 2.2, "2", "--d", "start"], [-2.3, 3.6, "S", "--pencil", "end"]] }) },
+        path: [[[-2, 3], [-1, 3], [-1, 1]]], pathColor: "--a", dots: [[-2, 3, "--pencil"], [-1, 1, "--a"]],
+        labels: [[-1.5, 3.3, "1", "--ink"], [-0.75, 2.2, "2", "--a", "start"], [-2.3, 3.6, "S", "--pencil", "end"]] }) },
     { sec: "1. Scheitel ablesen" },
-    ["S", "= (−2 | 3)", "Der höchste (oder tiefste) Punkt"],
-    ['<span class="cd">d</span>', '= <span class="cd">−2</span>', "x-Wert des Scheitels"],
-    ['<span class="ce">e</span>', '= <span class="ce">3</span>', "y-Wert des Scheitels"],
-    { sec: "2. a bestimmen" },
-    ['<span class="ca">a</span>', '= <span class="ca">−2</span>', "Vom Scheitel 1 nach rechts: die Parabel geht 2 nach unten. Nach unten offen, also a negativ."],
-    { sec: "3. In y = a(x − d)² + e einsetzen" },
-    ["y", '= <span class="ca">−2</span>(x − (<span class="cd">−2</span>))² + <span class="ce">3</span>', "a, d und e einsetzen"],
-    ["y", "= <span class=\"res\">−2(x + 2)² + 3</span>", "− (−2) = + 2"],
+    ["S", "= (" + D("−2") + " | " + E("3") + ")"],
+    { sec: "2. Vom Scheitel 1 nach rechts" },
+    ["", A("2") + " nach unten, also " + A("−2")],
+    { sec: "3. Einsetzen" },
+    ["y", "= " + A("−2") + " · (x − (" + D("−2") + "))² + " + E("3"), "− (−2) = + 2"],
+    ["y", "= " + res(A("−2") + " · (x + " + D("2") + ")² + " + E("3"))],
   ] },
 ];
 
@@ -1098,7 +1092,8 @@ window.addEventListener("hashchange", renderLevels);
 if (!allOpen() && prog.lvl > prog.unl) prog.lvl = prog.unl;
 
 // ---------- Musterbeispiel je Stufe (Popup) ----------
-// EXAMPLES[l] = { sub, rows }; rows: [links, rechts, Kommentar, Umformung] oder {sec}, {note}, {html}
+// EXAMPLES[l] = { sub, rows }; rows: [links, rechts, Kommentar, Umformung] oder {sec}, {html}
+// Der Kommentar steht in der Zeile vor dem Schritt, den er beschreibt (wie „| : 2“ bei Gleichungen).
 function exGraph(o) {
   const u = 30, W = (o.x1 - o.x0) * u, H = (o.y1 - o.y0) * u, X = x => (x - o.x0) * u, Y = y => (o.y1 - y) * u;
   let g = `<svg class="exsvg" viewBox="-4 -4 ${W + 8} ${H + 8}" role="img" aria-label="${o.label}">`;
@@ -1131,7 +1126,7 @@ function openEx(e) {
   const l = task ? task.l : prog.lvl, E = EXAMPLES[l];
   $("exLvl").textContent = LEVELS[l].t + " · " + LEVELS[l].s;
   $("exSub").innerHTML = E.sub;
-  $("exBody").innerHTML = exRender(E); $("exBody").className = "exg" + (E.airy ? " airy" : "");
+  $("exBody").innerHTML = exRender(E);
   $("exWin").hidden = false; document.querySelector(".exbox").scrollTop = 0; $("exOk").focus({ preventScroll: true });
 }
 function closeEx() {
