@@ -280,7 +280,7 @@ function render() {
       // feste Felder: Stand · beim 1. Versuch richtig · Fehler
       const g = el("div", "pro"); tdP.appendChild(g);
       g.appendChild(q.done ? el("span", "won", "fertig ✓") : el("span", "", (q.i + 1) + "/" + q.n));
-      g.appendChild(el("span", "", q.score + "/" + q.n + " sofort ✓"));
+      g.appendChild(el("span", "", q.score + "/" + q.n));
       g.appendChild(el("span", errs ? "f" : "muted", errs + " Fehler"));
     }
     tr.appendChild(tdP);
