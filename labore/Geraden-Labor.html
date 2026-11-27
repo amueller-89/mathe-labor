@@ -398,7 +398,7 @@ input.rm{accent-color:var(--d)} input.rb{accent-color:var(--e)}
 <script>
 (() => {
 "use strict";
-const LAB = {"id": "geraden", "title": "Geraden-Labor", "thema": "Lineare Funktionen", "reihe": 1, "klasse": "UIIIb", "icon": "M4 25L28 6", "tabs": [{"id": "mb", "label": "Steigung & y-Achsenabschnitt", "slug": "steigung"}, {"id": "pts", "label": "Zwei Punkte", "slug": "zwei-punkte"}], "skizze": "Gerade", "win": "Ablesen, Normalform, Wertetabelle und Textaufgaben: Lineare Funktionen hast du drauf. Richtig gut gemacht!", "profi": "Geraden-Profi!", "weiter": {"maxFehler": 10, "gut": {"id": "tangenten", "title": "Tangenten-Labor"}, "ueben": {"id": "binomi", "title": "Binomi-Labor"}}, "file": "Geraden"};
+const LAB = {"id": "geraden", "title": "Geraden-Labor", "thema": "Lineare Funktionen", "reihe": 1, "klasse": "UIIIb", "icon": "M4 25L28 6", "tabs": [{"id": "mb", "label": "Steigung & y-Achsenabschnitt", "slug": "steigung"}, {"id": "pts", "label": "Zwei Punkte", "slug": "zwei-punkte"}], "skizze": "Gerade", "win": "Ablesen, Normalform, Wertetabelle und Textaufgaben: Lineare Funktionen hast du drauf. Richtig gut gemacht!", "profi": "Geraden-Profi!", "weiter": {"maxFehler": 10, "gut": {"id": "tangenten", "title": "Tangenten-Labor", "hinweis": "Das ist eigentlich Stoff für später. Keine Sorge: Steigungen kannst du ja jetzt!"}, "ueben": {"id": "binomi", "title": "Binomi-Labor"}}, "file": "Geraden"};
 /* Geteilter Kern aller Labore: kleine Helfer, Koordinatensystem, Zahlen einlesen.
    Wird vom Build (build.py) zusammen mit dem Code des Labors in eine Datei kopiert. */
 const $ = id => document.getElementById(id);
@@ -1315,7 +1315,7 @@ function nextPro() {
   if (pro.i < PRO.length - 1) { pro.i++; renderPro(); return; }
   showProDone(); proNextLab();
 }
-// Steckbrief "weiter": { maxFehler, gut: { id, title }, ueben: { id, title } } (ueben optional)
+// Steckbrief "weiter": { maxFehler, gut: { id, title, hinweis? }, ueben?: { id, title } }
 // Nach dem Profi-Durchgang: weniger als maxFehler Fehler → Einladung ins Labor „gut“,
 // sonst nochmal sorgfältig durchgehen oder im Labor „ueben“ üben
 function proNextLab() {
@@ -1329,7 +1329,7 @@ function proNextLab() {
   $("nextS").textContent = good
     ? (f ? `Nur ${f} Fehler.` : "Kein einziger Fehler!") + ` Probier als Nächstes das ${W.gut.title}!`
     : `${f} Fehler, da wurde viel geraten. Geh die Fragen nochmal durch und rate weniger! Lies sorgfältig und rechne auf Papier.`;
-  $("nextS2").textContent = !good && W.ueben ? `Oder übe die binomischen Formeln und Termumformungen im ${W.ueben.title}.` : "";
+  $("nextS2").textContent = good ? W.gut.hinweis || "" : W.ueben ? `Oder übe die binomischen Formeln und Termumformungen im ${W.ueben.title}.` : "";
   $("nextS2").hidden = !$("nextS2").textContent;
   link($("nextGo"), good ? W.gut : null);
   link($("nextAlt"), good ? null : W.ueben);

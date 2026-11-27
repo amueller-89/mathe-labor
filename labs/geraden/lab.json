@@ -12,5 +12,5 @@
   "skizze": "Gerade",
   "win": "Ablesen, Normalform, Wertetabelle und Textaufgaben: Lineare Funktionen hast du drauf. Richtig gut gemacht!",
   "profi": "Geraden-Profi!",
-  "weiter": { "maxFehler": 10, "gut": { "id": "tangenten", "title": "Tangenten-Labor" }, "ueben": { "id": "binomi", "title": "Binomi-Labor" } }
+  "weiter": { "maxFehler": 10, "gut": { "id": "tangenten", "title": "Tangenten-Labor", "hinweis": "Das ist eigentlich Stoff für später. Keine Sorge: Steigungen kannst du ja jetzt!" }, "ueben": { "id": "binomi", "title": "Binomi-Labor" } }
 }

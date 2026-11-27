@@ -1411,7 +1411,7 @@ function nextPro() {
   if (pro.i < PRO.length - 1) { pro.i++; renderPro(); return; }
   showProDone(); proNextLab();
 }
-// Steckbrief "weiter": { maxFehler, gut: { id, title }, ueben: { id, title } } (ueben optional)
+// Steckbrief "weiter": { maxFehler, gut: { id, title, hinweis? }, ueben?: { id, title } }
 // Nach dem Profi-Durchgang: weniger als maxFehler Fehler → Einladung ins Labor „gut“,
 // sonst nochmal sorgfältig durchgehen oder im Labor „ueben“ üben
 function proNextLab() {
@@ -1425,7 +1425,7 @@ function proNextLab() {
   $("nextS").textContent = good
     ? (f ? `Nur ${f} Fehler.` : "Kein einziger Fehler!") + ` Probier als Nächstes das ${W.gut.title}!`
     : `${f} Fehler, da wurde viel geraten. Geh die Fragen nochmal durch und rate weniger! Lies sorgfältig und rechne auf Papier.`;
-  $("nextS2").textContent = !good && W.ueben ? `Oder übe die binomischen Formeln und Termumformungen im ${W.ueben.title}.` : "";
+  $("nextS2").textContent = good ? W.gut.hinweis || "" : W.ueben ? `Oder übe die binomischen Formeln und Termumformungen im ${W.ueben.title}.` : "";
   $("nextS2").hidden = !$("nextS2").textContent;
   link($("nextGo"), good ? W.gut : null);
   link($("nextAlt"), good ? null : W.ueben);
