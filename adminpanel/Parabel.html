@@ -1050,7 +1050,9 @@ function makeTask(l) {
     const k = pick([1, 1, 2, -1, 2, 3, -2]);
     let p, q, roots;
     if (Math.random() < 0.12) { const h = rnd(7) - 3; p = 2 * h; q = h * h + 1 + rnd(5); roots = []; }
-    else { let r1 = rnd(15) - 7, r2 = rnd(15) - 7; if (r1 > r2) [r1, r2] = [r2, r1]; p = -(r1 + r2); q = r1 * r2; roots = r1 === r2 ? [r1] : [r1, r2]; }
+    else { // gleiche Parität: p gerade, also p/2 und √D ganzzahlig (alle Zwischenschritte schön)
+      let r1 = rnd(15) - 7, r2; do r2 = rnd(15) - 7; while ((r1 - r2) % 2);
+      if (r1 > r2) [r1, r2] = [r2, r1]; p = -(r1 + r2); q = r1 * r2; roots = r1 === r2 ? [r1] : [r1, r2]; }
     const want = roots.length === 1 ? [roots[0], roots[0]] : roots.slice();
     const same = (g, w) => (near(g[0], w[0], 0.01) && near(g[1], w[1], 0.01)) || (near(g[0], w[1], 0.01) && near(g[1], w[0], 0.01));
     return { l, k, p, q, roots, phase: 1, key: { a: k, xs: want }, // key: für die Tests
