@@ -68,7 +68,10 @@ function checkTask() {
     $("trCheck").disabled = true; $("trShow").disabled = true; $("trNext").focus();
     if (!prog.won && prog.c.every(c => c >= need())) { prog.won = true; save(); updProTab(); setTimeout(showWin, 500); }
   } else {
-    prog.f[task.l]++;
+    // Dieselbe falsche Antwort nochmal prüfen (z. B. Enter mehrfach gedrückt) zählt nicht als neuer Fehlversuch
+    const sig = JSON.stringify(Object.values(F).map(el => el.type === "checkbox" ? el.checked : el.value.trim()));
+    if (sig !== task.lastBad) prog.f[task.l]++;
+    task.lastBad = sig;
     fb.className = "feedback no"; fb.textContent = "Noch nicht. Rot markierte Felder nochmal prüfen.";
     const m = task.failMsg && task.failMsg(); if (m) fb.textContent = m;
   }

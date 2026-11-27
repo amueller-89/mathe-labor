@@ -153,6 +153,11 @@ canvas.procan{max-width:400px;margin:0 0 14px}
 .tgrp{display:flex;flex-direction:column;gap:4px}
 .tgrp .gl{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
 .fx{display:inline-block;text-align:center}
+/* Wertetabelle (Erkunden + Profi) */
+table.wt{border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:18px;width:100%}
+table.wt td,table.wt th{border:1.5px solid var(--line);padding:4px 6px;text-align:center;min-width:2.6em}
+table.wt th{color:var(--muted);font-weight:700;background:var(--paper)}
+table.wt td{font-weight:700}
 .formula{font-family:var(--display);font-weight:800;font-size:clamp(24px,3vw,36px);line-height:1.2;white-space:nowrap;overflow-x:auto}
 .formula.off{color:var(--muted);font-weight:600;font-size:17px;white-space:normal}
 .ca{color:var(--a)} .cd{color:var(--d)} .ce{color:var(--e)} .cz{color:var(--z)} .cx{color:var(--curve)}
@@ -1191,6 +1196,25 @@ const PRO = [
     ex: "Scheitel ablesen: S(2 | −3), also y = (x − 2)² − 3. Die steht hier nicht, aber ausmultipliziert: x² − 4x + 4 − 3 = x² − 4x + 1." },
   { q: "Welcher Graph gehört zu y = −(x + 1)(x − 3)?", gopts: [x => (x + 1) * (x - 3), x => -(x - 1) * (x + 3), x => -(x + 1) * (x - 3), x => -((x - 1) ** 2) - 4], ok: 2,
     ex: "Minus vorne: nach unten geöffnet. Nullstellen dort, wo eine Klammer 0 wird: x = −1 und x = 3. Der Scheitel liegt in der Mitte bei x = 1." },
+  { q: "Welcher Graph gehört zu y = 0,5(x − 2)² − 3?", gopts: [x => 0.5 * (x - 2) ** 2 - 3, x => 0.5 * (x + 2) ** 2 - 3, x => 2 * (x - 2) ** 2 - 3, x => -0.5 * (x - 2) ** 2 - 3], ok: 0,
+    ex: "Scheitel S(2 | −3), a = 0,5 ist positiv: nach oben geöffnet, und kleiner als 1: breiter als die Normalparabel." },
+  { q: "Welcher Graph gehört zu y = −x² + 2x + 3?", gopts: [x => -(x * x) + 2 * x + 3, x => x * x - 2 * x - 3, x => -(x * x) - 2 * x + 3, x => -(x * x) + 2 * x - 3], ok: 0,
+    ex: "Minus vor x²: nach unten geöffnet. x = 0 einsetzen: y = 3, also schneidet sie die y-Achse bei 3. Mit der pq-Formel: Nullstellen −1 und 3, Scheitel S(1 | 4)." },
+  { q: "Welcher Graph gehört zu dieser Wertetabelle?", table: [[-1, 0, 1, 2, 3], [3, 0, -1, 0, 3]],
+    gopts: [x => (x - 1) ** 2 - 1, x => (x + 1) ** 2 - 1, x => -((x - 1) ** 2) + 1, x => 2 * (x - 1) ** 2 - 1], ok: 0,
+    ex: "Bei x = 0 und x = 2 ist y gleich, also liegt der Scheitel genau dazwischen: S(1 | −1). Einen Schritt weiter nach rechts geht es 1 hoch, also a = 1: y = (x − 1)² − 1." },
+  { q: "Die Parabel y = (x − 1)(x − 5) wird zu y = 0,5 · (x − 1)(x − 5) gestaucht. Was passiert?",
+    graph: [{ f: x => (x - 1) * (x - 5) }], pts: [[1, 0], [5, 0]], cap: "Das ist y = (x − 1)(x − 5).",
+    after: [{ f: x => 0.5 * (x - 1) * (x - 5), c: "--pencil", dash: true }], afterPts: [[3, -2]],
+    afterCap: "Gestrichelt: die gestauchte Parabel.",
+    opts: ["Die Nullstellen bleiben, der Scheitel rückt näher an die x-Achse.", "Die Nullstellen rücken auseinander.", "Die Nullstellen rücken zusammen.", "Der Scheitel wandert nach rechts."], ok: 0,
+    ex: "Wo y = 0 ist, ist auch die Hälfte davon 0: Die Nullstellen bleiben bei 1 und 5. Alle anderen y-Werte werden halbiert, der Scheitel wandert von −4 auf −2." },
+  { q: "Die Parabel y = (x − 2)² − 4 wird um 2 nach rechts verschoben. Was passiert mit dem Abstand der Nullstellen?",
+    graph: [{ f: x => (x - 2) ** 2 - 4 }], pts: [[0, 0], [4, 0]], cap: "Das ist y = (x − 2)² − 4 mit den Nullstellen 0 und 4.",
+    after: [{ f: x => (x - 4) ** 2 - 4, c: "--pencil", dash: true }], afterPts: [[2, 0], [6, 0]],
+    afterCap: "Gestrichelt: die verschobene Parabel.",
+    opts: ["Er bleibt gleich.", "Er wird größer.", "Er wird kleiner.", "Es gibt danach keine Nullstellen mehr."], ok: 0,
+    ex: "Die ganze Parabel wandert mit, ihre Form bleibt gleich. Beide Nullstellen rutschen 2 nach rechts: Aus 0 und 4 werden 2 und 6, der Abstand bleibt 4." },
 ];
 
 /* ---------- Anbindung an das gemeinsame Gerüst ---------- */
@@ -1272,7 +1296,10 @@ function checkTask() {
     $("trCheck").disabled = true; $("trShow").disabled = true; $("trNext").focus();
     if (!prog.won && prog.c.every(c => c >= need())) { prog.won = true; save(); updProTab(); setTimeout(showWin, 500); }
   } else {
-    prog.f[task.l]++;
+    // Dieselbe falsche Antwort nochmal prüfen (z. B. Enter mehrfach gedrückt) zählt nicht als neuer Fehlversuch
+    const sig = JSON.stringify(Object.values(F).map(el => el.type === "checkbox" ? el.checked : el.value.trim()));
+    if (sig !== task.lastBad) prog.f[task.l]++;
+    task.lastBad = sig;
     fb.className = "feedback no"; fb.textContent = "Noch nicht. Rot markierte Felder nochmal prüfen.";
     const m = task.failMsg && task.failMsg(); if (m) fb.textContent = m;
   }

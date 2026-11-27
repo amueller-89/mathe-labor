@@ -141,3 +141,8 @@ canvas.procan{max-width:400px;margin:0 0 14px}
 .tgrp{display:flex;flex-direction:column;gap:4px}
 .tgrp .gl{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
 .fx{display:inline-block;text-align:center}
+/* Wertetabelle (Erkunden + Profi) */
+table.wt{border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:18px;width:100%}
+table.wt td,table.wt th{border:1.5px solid var(--line);padding:4px 6px;text-align:center;min-width:2.6em}
+table.wt th{color:var(--muted);font-weight:700;background:var(--paper)}
+table.wt td{font-weight:700}
