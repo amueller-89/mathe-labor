@@ -1517,11 +1517,11 @@ function proNextLab() {
   const link = (el, L) => { const h = href(L); el.hidden = !h; el.href = h || "#"; el.textContent = L ? "Zum " + L.title : ""; };
   const line = (el, t) => { el.textContent = t || ""; el.hidden = !t; };
   const alt = good ? null : W.ueben;
-  $("nextIcon").textContent = good ? "🚀" : "🧐";
-  $("nextT").textContent = good ? "Bereit für mehr?" : "Nochmal mit Ruhe";
+  $("nextIcon").textContent = good ? "🚀" : "💪";
+  $("nextT").textContent = good ? "Super gemacht!" : "Geschafft!";
   $("nextS").textContent = good
-    ? (f ? `Nur ${f} Fehler.` : "Kein einziger Fehler!") + ` Probier als Nächstes das ${W.gut.title}!`
-    : `${f} Fehler, da wurde viel geraten. Geh die Fragen nochmal durch und rate weniger! Lies sorgfältig und rechne auf Papier.`;
+    ? (f ? `Nur ${f} Fehler!` : "Kein einziger Fehler!") + ` Wenn du bereit für mehr bist, probier das ${W.gut.title}.`
+    : `Du bist durch! Bei ${f} Fehlern war aber wohl etwas Raten dabei. Geh die Fragen gern nochmal in Ruhe durch: Lies sorgfältig und rechne auf Papier, dann klappt es noch besser.`;
   line($("nextS2"), good ? W.gut.hinweis : alt && alt.text);
   line($("nextS3"), W.auch && W.auch.text);
   link($("nextGo"), good ? W.gut : null);
