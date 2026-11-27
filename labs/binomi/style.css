@@ -1,9 +1,7 @@
 .formula{font-family:var(--display);font-weight:800;font-size:clamp(24px,3vw,34px);line-height:1.2;white-space:nowrap;overflow-x:auto}
 .ca{color:var(--a)} .cd{color:var(--d)} .ce{color:var(--e)} .cx{color:var(--curve)}
-/* Antwortzeilen: Aufgabe | = | Eingabe, feste Spalten, damit alle „=“ untereinander stehen */
-.brows{display:grid;grid-template-columns:9.5em 1em 13em;column-gap:10px;row-gap:12px;align-items:center;flex-basis:100%}
-.brows .t{text-align:right;white-space:nowrap}
+/* Antwortzeile: = | Eingabe, feste Spalten */
+.brows{display:grid;grid-template-columns:1em 18em;column-gap:10px;align-items:center;flex-basis:100%}
 .brows .eqs{text-align:center}
-.brows.wide{grid-template-columns:1em 18em}
 .answer input.in.poly{width:100%;text-align:left;font-size:24px;line-height:1.25;padding:4px 10px}
 .trterm{white-space:normal}

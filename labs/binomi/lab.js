@@ -1,12 +1,14 @@
 /* =============================================================
    BINOMI-LABOR: nur Rechentrainer, keine Erkunden-Tabs, keine Skizze
-   Stufe 1: je Aufgabe alle drei binomischen Formeln
-   Stufe 2: Terme mit einer Variablen ausmultiplizieren und zusammenfassen
+   Stufe 1–3: je eine binomische Formel (1., 2., 3.)
+   Stufe 4: Terme mit einer Variablen ausmultiplizieren und zusammenfassen
    ============================================================= */
 
 const LEVELS = [
-  { t: "Stufe 1", s: "Binomische Formeln" },
-  { t: "Stufe 2", s: "Terme zusammenfassen" },
+  { t: "Stufe 1", s: "1. binomische Formel" },
+  { t: "Stufe 2", s: "2. binomische Formel" },
+  { t: "Stufe 3", s: "3. binomische Formel" },
+  { t: "Stufe 4", s: "Terme zusammenfassen" },
 ];
 
 // ---------- Terme als Text ----------
@@ -85,38 +87,34 @@ function termTask() {
   }
 }
 
+const ANSWER = `<div class="brows"><span class="eqs">=</span><input class="in poly" data-k="t0" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Ergebnis"></div>`;
 const NAMES = ["x²-Glied", "x-Glied", "Zahl ohne x"];
 function makeTask(l) {
-  if (l === 0) {
-    const B = [binom(1), binom(2), binom(3)];
-    return { l, B, key: B.map(b => b.c), // key: für die Tests
-      title: "Rechne mit den binomischen Formeln aus.", task: "",
-      answer: `<div class="brows">${B.map((b, i) => `<span class="t">${b.html}</span><span class="eqs">=</span>
-        <input class="in poly" data-k="t${i}" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Ergebnis ${i + 1}">`).join("")}</div>`,
+  if (l < 3) {
+    const b = binom(l + 1);
+    return { l, b, key: [b.c], // key: für die Tests
+      title: `Rechne mit der ${l + 1}. binomischen Formel aus.`, task: b.html,
+      answer: ANSWER,
       check(F, fb) {
-        const G = B.map((b, i) => F["t" + i].value.trim() ? parsePoly(F["t" + i].value) : undefined);
-        if (G.some(g => g === undefined)) { fb.className = "feedback no"; fb.textContent = "Bitte alle drei ausrechnen."; return null; }
-        const bad = G.findIndex(g => g === null);
-        if (bad >= 0) { mark(F["t" + bad], false); fb.className = "feedback no"; fb.textContent = "Das rote Feld kann ich nicht lesen."; return null; }
-        const dup = G.findIndex((g, i) => g.dup && samePoly(g, B[i].c));
-        if (dup >= 0) { F["t" + dup].classList.remove("ok", "bad"); fb.className = "feedback no"; fb.textContent = "Fast: noch zusammenfassen."; return null; }
-        let ok = true;
-        G.forEach((g, i) => { const good = samePoly(g, B[i].c) && !g.dup; mark(F["t" + i], good); ok = ok && good; });
-        this.guess = G; return ok;
+        if (!F.t0.value.trim()) { fb.className = "feedback no"; fb.textContent = "Bitte ausrechnen."; return null; }
+        const g = parsePoly(F.t0.value);
+        if (!g) { mark(F.t0, false); fb.className = "feedback no"; fb.textContent = "Das kann ich nicht lesen. Bitte ohne Klammern."; return null; }
+        if (g.dup && samePoly(g, b.c)) { fb.className = "feedback no"; fb.textContent = "Fast: noch zusammenfassen."; return null; }
+        this.guess = g; const ok = samePoly(g, b.c) && !g.dup; mark(F.t0, ok); return ok;
       },
       failMsg() {
-        const i = this.guess.findIndex((g, j) => !(samePoly(g, B[j].c) && !g.dup)), g = this.guess[i], b = B[i];
+        const g = this.guess;
         if (g.c[2] !== b.c[2] && b.a > 1 && near(g.c[2], b.a, 1e-9)) return `Auch die Zahl vor dem x wird quadriert: (${num(b.a)}x)² = ${num(b.a * b.a)}x².`;
         if (b.type < 3 && g.c[1] === 0) return "Das Mittelglied fehlt.";
         if (b.type < 3 && near(g.c[1], -b.c[1], 1e-9)) return "Vorzeichen beim Mittelglied prüfen.";
         if (b.type === 3 && near(g.c[0], b.b * b.b, 1e-9)) return "Bei (a + b)(a − b) kommt hinten minus.";
       },
-      sol: () => `<div class="brows">${B.map(b => `<span class="t">${b.plain}</span><span class="eqs">=</span><span>${polyT(b.c)}</span>`).join("")}</div>` };
+      sol: () => `${b.plain} = ${polyT(b.c)}` };
   }
   const T = termTask();
   return { l, T, key: [T.c],
     title: "Löse die Klammern auf und fasse zusammen.", task: `<span class="trterm">${T.html}</span>`,
-    answer: `<div class="brows wide"><span class="eqs">=</span><input class="in poly" data-k="t0" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Ergebnis"></div>`,
+    answer: ANSWER,
     check(F, fb) {
       if (!F.t0.value.trim()) { fb.className = "feedback no"; fb.textContent = "Bitte ausrechnen."; return null; }
       const g = parsePoly(F.t0.value);
@@ -139,14 +137,18 @@ const A = t => sp("ca", t), D = t => sp("cd", t), E = t => sp("ce", t), X = t =>
 const res = t => `<span class="res">${t}</span>`;
 const pad = `<span style="visibility:hidden">= </span>`; // erste Zeile ohne „=“, Terme trotzdem bündig
 const EXAMPLES = [
-  { sub: "Rechne mit den binomischen Formeln aus.", rows: [
-    { sec: "1. binomische Formel: (a + b)² = a² + 2ab + b²" },
+  { sub: "Rechne mit der 1. binomischen Formel aus.", rows: [
+    { sec: "(a + b)² = a² + 2ab + b²" },
     ["(" + A("2x") + " + " + D("3") + ")²", "= (" + A("2x") + ")² + 2 · " + A("2x") + " · " + D("3") + " + " + D("3") + "²", "ausrechnen"],
     ["", "= " + res(A("4x²") + " + " + X("12x") + " + " + E("9"))],
-    { sec: "2. binomische Formel: (a − b)² = a² − 2ab + b²" },
+  ] },
+  { sub: "Rechne mit der 2. binomischen Formel aus.", rows: [
+    { sec: "(a − b)² = a² − 2ab + b²" },
     ["(" + A("x") + " − " + D("5") + ")²", "= " + A("x") + "² − 2 · " + A("x") + " · " + D("5") + " + " + D("5") + "²", "ausrechnen"],
     ["", "= " + res(A("x²") + " − " + X("10x") + " + " + E("25"))],
-    { sec: "3. binomische Formel: (a + b)(a − b) = a² − b²" },
+  ] },
+  { sub: "Rechne mit der 3. binomischen Formel aus.", rows: [
+    { sec: "(a + b)(a − b) = a² − b²" },
     ["(" + A("3x") + " + " + D("4") + ")(" + A("3x") + " − " + D("4") + ")", "= (" + A("3x") + ")² − " + D("4") + "²", "ausrechnen"],
     ["", "= " + res(A("9x²") + " − " + E("16"))],
   ] },
