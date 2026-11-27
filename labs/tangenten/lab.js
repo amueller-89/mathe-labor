@@ -9,7 +9,7 @@ const r2 = v => Math.round(v * 100) / 100;
 // Erkunden-Stand merken (in der Version mit Anmeldung je Name, falls sich mehrere ein Gerät teilen)
 const EX_KEY = (() => {
   let n = ""; try { if (ADMIN) n = (localStorage.getItem("labor-" + LAB.id + "-name") || "").toLowerCase(); } catch (_) {}
-  return LAB.id + "-erkunden-v2" + (n ? "-" + n : "");
+  return LAB.id + "-erkunden-v3" + (n ? "-" + n : "");
 })();
 let EXS = {}; try { EXS = JSON.parse(localStorage.getItem(EX_KEY)) || {}; } catch (_) {}
 const exSave = () => { try { localStorage.setItem(EX_KEY, JSON.stringify(EXS)); } catch (_) {} changed(); };
@@ -33,7 +33,8 @@ function triSide(B, f, df, a) { const y0 = f(a), m = df(a); return y0 + m > B.cy
 function pLabel(B, a, y, side) {
   B.tag([["P", C("--ink")]], B.X(a) + 12 * side, B.Y(y) - 10, { align: side < 0 ? "right" : "left", base: "bottom", size: 16 });
 }
-const pHTML = (x, y) => `<span class="nw">P(${fx("", x, 2.9)}|${fx("", y, 2.9)})</span>`;
+// feste Breiten (x bis „−2,95“, y bis „8,7025“), x rechtsbündig, y linksbündig: „|“ bleibt stehen
+const pHTML = (x, y, wy = 4.1) => `<span class="nw">P(${fx("", x, 3.3, "right")} | ${fx("", y, wy, "left")})</span>`;
 // neue Frage ins Bild holen, falls sie unten aus dem Fenster ragt
 const seen = el => requestAnimationFrame(() => { try { el.scrollIntoView({ block: "nearest", behavior: "smooth" }); } catch (_) {} });
 // Multiple Choice: opts = [[Text, richtig?], …]; fertig() nach der richtigen Antwort
@@ -246,11 +247,11 @@ const NOR = slopeLab("nor", [{
 
 /* =============================================================
    3 KUBISCHE FUNKTION (angeleitet: Punkte sammeln → Parabel)
-   y = ¼(x − 1)³ − 3(x − 1) + 1, Hochpunkt (−1|5), Tiefpunkt (3|−3), Wendepunkt (1|1)
+   y = ¼x³ − 3x + 1, Hochpunkt (−2|5), Tiefpunkt (2|−3), Wendepunkt (0|1)
    Steigung: ¾(x − 1)² − 3 (Parabel mit Scheitel (1|−3), Nullstellen −1 und 3)
    ============================================================= */
-const fk = x => 0.25 * (x - 1) ** 3 - 3 * (x - 1) + 1, dk = x => 0.75 * (x - 1) ** 2 - 3;
-const bK = new Board($("cKub"), 5, 1, 1), sK = new Board($("kubS"), 7, 1, 3);
+const fk = x => 0.25 * x ** 3 - 3 * x + 1, dk = x => 0.75 * x * x - 3;
+const bK = new Board($("cKub"), 5, 0, 1), sK = new Board($("kubS"), 7, 0, 3);
 sK.lab = 2;
 const kubX = $("kubX"), KUB_N = 6;
 let kub = Object.assign({ pts: [], stage: -1 }, EXS.kub || {}); // stage −1: nur der Graph
@@ -258,27 +259,27 @@ const kubSave = () => { EXS.kub = kub; exSave(); };
 function updKub() {
   const a = +kubX.value;
   $("kubXo").textContent = num(a);
-  $("kubP").innerHTML = `${pHTML(num(a), num(r2(fk(a))))}<span class="gap"></span>Steigung ${fx("ce", num(r2(dk(a))), 3.6)}`;
+  $("kubP").innerHTML = `${pHTML(num(a), num(r2(fk(a))), 3.3)}<span class="gap"></span>Steigung ${fx("ce", num(r2(dk(a))), 3.6)}`;
   drawKub();
 }
 function drawKub() {
   const a = +kubX.value, ink = C("--ink"), ce = C("--e"), B = bK, S = sK;
   B.begin();
-  if (kub.stage >= 3) [-1, 3].forEach(x => B.seg(x, B.cy - B.R, x, B.cy + B.R, C("--z"), 1.5));
+  if (kub.stage >= 3) [-2, 2].forEach(x => B.seg(x, B.cy - B.R, x, B.cy + B.R, C("--z"), 1.5));
   B.curve(fk, C("--curve"), 3.5);
   if (kub.stage < 0) return;
   tangent(B, fk, dk, a);
   triangle(B, fk, dk, a, num(r2(dk(a))));
   if (kub.stage >= 3) {
-    [[-1, 5, "H"], [3, -3, "T"], [1, 1, "W"]].forEach(([x, y, t]) => { B.dot(x, y, C("--z"), 6); B.tag([[t, C("--z")]], B.X(x) + 10, B.Y(y) - 8, { base: "bottom", size: 15 }); });
+    [[-2, 5, "H"], [2, -3, "T"], [0, 1, "W"]].forEach(([x, y, t]) => { B.dot(x, y, C("--z"), 6); B.tag([[t, C("--z")]], B.X(x) + 10, B.Y(y) - 8, { base: "bottom", size: 15 }); });
   }
   B.dot(a, fk(a), ink, 7);
   pLabel(B, a, fk(a), -triSide(B, fk, dk, a));
   S.begin();
   if (kub.stage >= 2) S.curve(dk, ce, 2.5, [8, 6]);
   if (kub.stage >= 3) {
-    [-1, 3].forEach(x => { S.seg(x, 0, x, sK.cy + sK.R, C("--z"), 1.5); S.dot(x, 0, C("--z"), 6); });
-    S.dot(1, -3, C("--z"), 6);
+    [-2, 2].forEach(x => { S.seg(x, 0, x, sK.cy + sK.R, C("--z"), 1.5); S.dot(x, 0, C("--z"), 6); });
+    S.dot(0, -3, C("--z"), 6);
   }
   kub.pts.forEach(([x, m]) => S.dot(x, m, ce, 6));
   S.dot(a, dk(a), ink, 6);
@@ -298,13 +299,13 @@ function kubQuestion() {
     box.insertAdjacentHTML("beforeend", `<p class="qh">Wo ist die Tangente waagerecht?</p>`);
     mc(box, [["an den Nullstellen der grünen Parabel", true], ["am Scheitel der grünen Parabel", false], ["an den Nullstellen der blauen Kurve", false], ["nur bei x = 0", false]], next, "kubMcFb");
   } else if (kub.stage >= 3) {
-    box.insertAdjacentHTML("beforeend", `<div class="done"><span>Waagerecht bei x = −1 und x = 3: Hochpunkt H und Tiefpunkt T</span></div>
+    box.insertAdjacentHTML("beforeend", `<div class="done"><span>Waagerecht bei x = −2 und x = 2: Hochpunkt H und Tiefpunkt T</span></div>
       <div class="rule">Am „Wendepunkt“ W fällt die Kurve am steilsten. Dort liegt der Scheitel der grünen Parabel.</div>`);
   }
 }
 kubX.addEventListener("input", updKub);
 draggable(bK, (x, y, px, py) => Math.abs(bK.Y(fk(x)) - py) < 16 ? {} : null,
-  (g, x) => { kubX.value = clamp(snapTo(x, STEP.look), -3, 5); updKub(); });
+  (g, x) => { kubX.value = clamp(snapTo(x, STEP.look), -4, 4); updKub(); });
 $("kubAdd").addEventListener("click", () => {
   const a = r6(+kubX.value);
   kub.pts = kub.pts.filter(p => !near(p[0], a)); kub.pts.push([a, r6(dk(a))]);

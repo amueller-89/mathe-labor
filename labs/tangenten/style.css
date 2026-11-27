@@ -27,3 +27,11 @@ table.tt td.act input{border-color:var(--d)}
 .live{font-family:var(--display);font-weight:800;font-size:22px;white-space:nowrap;font-variant-numeric:tabular-nums}
 .pt .gap{display:inline-block;width:1.2em}
 .nw{white-space:nowrap}
+/* Kubische Funktion: Koeffizienten farbig (eigene Farben, weil Grün/Orange/Türkis schon belegt sind) */
+:root{--k3:#8e44ad;--k1:#b8860b;--k0:#c2185b}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--k3:#c387e0;--k1:#f0c94a;--k0:#f06292}}
+:root[data-theme="dark"]{--k3:#c387e0;--k1:#f0c94a;--k0:#f06292}
+.k3{color:var(--k3)} .k1{color:var(--k1)} .k0{color:var(--k0)}
+.pt.kubeq{font-size:38px;margin:6px 0 16px}
+.legend .leq{font-weight:400}
+.legend .leq span{display:inline}

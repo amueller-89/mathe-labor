@@ -70,19 +70,19 @@
       <section>
         <canvas id="cKub" aria-label="Kurve mit Tangente"></canvas>
         <div class="legend">
-          <span><i style="background:var(--curve)"></i>y = ¼·(x − 1)³ − 3·(x − 1) + 1</span>
+          <span><i style="background:var(--curve)"></i><b class="leq">y = <span class="k3">¼</span>x³ − <span class="k1">3</span>x + <span class="k0">1</span></b></span>
           <span id="kubLegT"><i style="background:var(--d)"></i>Tangente</span>
         </div>
       </section>
       <aside class="side">
         <div class="card" id="kubIntro">
           <p class="def">Das ist der Graph von</p>
-          <p class="pt" style="margin:6px 0 14px">y = ¼·(x − 1)³ − 3·(x − 1) + 1</p>
+          <p class="pt kubeq">y = <span class="k3">¼</span>x³ − <span class="k1">3</span>x + <span class="k0">1</span></p>
           <button class="btn primary" id="kubOk" type="button">OK, weiter</button>
         </div>
         <div class="card" id="kubCtl">
           <div class="pt" id="kubP"></div>
-          <div class="sl"><b>x</b><input type="range" id="kubX" min="-3" max="5" data-step="look" value="-2"><output id="kubXo"></output></div>
+          <div class="sl"><b>x</b><input type="range" id="kubX" min="-4" max="4" data-step="look" value="-3"><output id="kubXo"></output></div>
           <div class="row" style="margin-top:4px">
             <button class="btn primary" id="kubAdd">Punkt eintragen</button>
             <button class="btn small" id="kubClear">Punkte löschen</button>
