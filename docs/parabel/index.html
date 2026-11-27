@@ -1052,13 +1052,12 @@ function drawTrain() {
 // Farben im Musterbeispiel: a / x²-Glieder lila, d orange, x-Glieder blau, e / Zahlen grün
 const A = t => sp("ca", t), D = t => sp("cd", t), E = t => sp("ce", t), X = t => sp("cx", t);
 const EXAMPLES = [
-  { airy: true, sub: "Schreibe y = " + A("−2") + "(x − " + D("3") + ")² " + E("+ 4") + " in Normalform y = ax² + bx + c um. Farben: " + A("x²-Glieder") + ", " + X("x-Glieder") + ", " + E("Zahlen") + ".", rows: [
+  { airy: true, sub: "Schreibe y = " + A("−2") + "(x − " + D("3") + ")² " + E("+ 4") + " in Normalform y = ax² + bx + c um.", rows: [
     ["y", "= " + A("−2") + " · (x − " + D("3") + ")² " + E("+ 4"), "Aufgabe: a = −2, d = 3, e = 4"],
     ["", "= " + A("−2") + " · (" + A("x²") + " " + X("− 2 · x · " + D("3")) + " " + E("+ " + D("3") + "²") + ") " + E("+ 4"), "2. binomische Formel: (a − b)² = a² − 2ab + b²"],
     ["", "= " + A("−2") + " · (" + A("x²") + " " + X("− 6x") + " " + E("+ 9") + ") " + E("+ 4"), "In der Klammer ausrechnen"],
     ["", "= " + A("−2x²") + " " + X("+ 12x") + " " + E("− 18") + " " + E("+ 4"), "−2 mal jeden Summanden. Achtung: −2 · (−6x) = +12x"],
     ["", "= <span class=\"res\">" + A("−2x²") + " " + X("+ 12x") + " " + E("− 14") + "</span>", "Zahlen zusammenfassen: −18 + 4 = −14"],
-    { note: "Eintippen: a = " + A("−2") + ", b = " + X("12") + ", c = " + E("−14") + ". Erst die Klammer auflösen, dann mit a malnehmen, dann e dazurechnen." },
   ] },
   { sub: "Schreibe y = 2(x + 1)(x − 4) in Normalform um.", rows: [
     ["y", "= 2(x + 1)(x − 4)", "Aufgabe"],
@@ -1066,7 +1065,6 @@ const EXAMPLES = [
     ["", "= 2 · (x² − 4x + x − 4)", "Ausrechnen"],
     ["", "= 2 · (x² − 3x − 4)", "x-Terme zusammenfassen: −4x + x = −3x"],
     ["", "= <span class=\"res\">2x² − 6x − 8</span>", "Mal 2: jeden Summanden in der Klammer"],
-    { note: "Eintippen: a = 2, b = −6, c = −8. Die Zahl vor den Klammern erst ganz am Ende malnehmen." },
   ] },
   { sub: "Löse 2x² − 4x − 6 = 0 mit der pq-Formel.", rows: [
     { sec: "1. Vor x² muss eine 1 stehen" },
@@ -1086,7 +1084,6 @@ const EXAMPLES = [
     ["x₁", "= 1 − 2 = <span class=\"res\">−1</span>", "Mit Minus"],
     ["x₂", "= 1 + 2 = <span class=\"res\">3</span>", "Mit Plus"],
     ["Probe:", "(−1)² − 2 · (−1) − 3 = 1 + 2 − 3 = 0", "x₁ einsetzen: passt ✓"],
-    { note: "Ist die Zahl unter der Wurzel negativ, gibt es keine Lösung. Ist sie genau 0, gibt es nur eine Lösung (in beide Felder eintragen)." },
   ] },
   { sub: "Lies die Scheitelpunktform y = a(x − d)² + e der blauen Parabel ab.", rows: [
     { html: exGraph({ x0: -6, x1: 3, y0: -5, y1: 5, f: x => -2 * (x + 2) ** 2 + 3, label: "Parabel mit Scheitel und Schritt", skipY: [3],
@@ -1101,7 +1098,6 @@ const EXAMPLES = [
     { sec: "3. In y = a(x − d)² + e einsetzen" },
     ["y", '= <span class="ca">−2</span>(x − (<span class="cd">−2</span>))² + <span class="ce">3</span>', "a, d und e einsetzen"],
     ["y", "= <span class=\"res\">−2(x + 2)² + 3</span>", "− (−2) = + 2"],
-    { note: "Eintippen: a = −2, d = −2, e = 3. Ins Feld d kommt die −2, nicht die +2 aus der Klammer! Bei a = 0,5 geht man besser 2 nach rechts: dann geht es 2 hoch (0,5 · 2² = 2)." },
   ] },
 ];
 
