@@ -11,5 +11,6 @@
   ],
   "skizze": "Parabel",
   "win": "Scheitelpunktform, Nullstellenform, pq-Formel und Ablesen aus der Skizze: Du kannst Parabeln jetzt in allen Formen. Richtig gut gemacht!",
-  "profi": "Parabel-Profi!"
+  "profi": "Parabel-Profi!",
+  "weiter": { "id": "tangenten", "title": "Tangenten-Labor", "maxFehler": 10 }
 }

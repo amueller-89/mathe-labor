@@ -97,8 +97,26 @@ function nextPro() {
   changed();
   if (pro.review) { showProDone(); return; }
   if (pro.i < PRO.length - 1) { pro.i++; renderPro(); return; }
-  showProDone();
+  showProDone(); proNextLab();
 }
+// Steckbrief "weiter": { id, title, maxFehler }: nach dem Profi-Durchgang wenige Fehler → Einladung ins nächste Labor,
+// sonst Aufforderung, die Fragen nochmal sorgfältig durchzugehen
+function proNextLab() {
+  const W = LAB.weiter; if (!W) return;
+  const f = pro.errs.reduce((s, v) => s + (v || 0), 0), good = f < W.maxFehler;
+  // Adresse des anderen Labors: GitHub Pages (../id/), eigenständige Datei (Titel.html); in der Google-Version kein Link
+  const href = window.LABOR_API ? "../" + W.id + "/" : !ADMIN ? W.title + ".html" : "";
+  $("nextIcon").textContent = good ? "🚀" : "🧐";
+  $("nextT").textContent = good ? "Bereit für mehr?" : "Nochmal mit Ruhe";
+  $("nextS").textContent = good
+    ? (f ? `Nur ${f} Fehler.` : "Kein einziger Fehler!") + ` Probier als Nächstes das ${W.title}!` + (href ? "" : " Frag nach dem Link.")
+    : `${f} Fehler, da wurde viel geraten. Geh die Fragen nochmal durch und rate weniger! Lies sorgfältig und rechne auf Papier.`;
+  $("nextGo").hidden = !good || !href; $("nextGo").href = href || "#"; $("nextGo").textContent = "Zum " + W.title;
+  $("nextAgain").hidden = good;
+  $("nextWin").hidden = false;
+}
+$("nextClose").addEventListener("click", () => $("nextWin").hidden = true);
+$("nextAgain").addEventListener("click", () => { $("nextWin").hidden = true; $("proAgain").click(); window.scrollTo({ top: 0 }); });
 function showProDone() {
   pro.review = false;
   $("proQuiz").hidden = true; $("proDone").hidden = false;

@@ -161,6 +161,7 @@ table.wt td{font-weight:700}
 .pjump{display:grid;grid-template-columns:repeat(auto-fill,40px);gap:6px;margin-bottom:12px}
 .pjump button{font:inherit;font-size:14px;font-weight:700;height:34px;border-radius:8px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
 .pjump button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+a.btn{font:inherit;font-size:15px;padding:8px 14px;border-radius:8px;border:1.5px solid var(--curve);background:var(--curve);color:#fff;font-weight:700;text-decoration:none}
 .formula{font-family:var(--display);font-weight:800;font-size:clamp(26px,3.4vw,40px);line-height:1.2;white-space:nowrap;overflow-x:auto}
 .cm{color:var(--d)} .cb{color:var(--e)} .cz{color:var(--z)} .ca{color:var(--a)}
 .info{font-size:17px;font-weight:700;margin-top:6px;white-space:nowrap}
@@ -378,6 +379,18 @@ input.rm{accent-color:var(--d)} input.rb{accent-color:var(--e)}
     <p class="exsub" id="exSub"></p>
     <div class="exg" id="exBody"></div>
     <div class="row" style="justify-content:center"><button class="btn primary" id="exOk" type="button">Verstanden, jetzt ich!</button></div>
+  </div>
+</div>
+<div class="win" id="nextWin" hidden role="dialog" aria-modal="true" aria-labelledby="nextT">
+  <div class="box">
+    <div class="big" id="nextIcon" aria-hidden="true"></div>
+    <h2 id="nextT"></h2>
+    <p id="nextS"></p>
+    <div class="row" style="justify-content:center;margin-top:14px">
+      <button class="btn" id="nextClose" type="button">Schließen</button>
+      <a class="btn primary" id="nextGo" href="#"></a>
+      <button class="btn primary" id="nextAgain" type="button">Nochmal von vorn</button>
+    </div>
   </div>
 </div>
 <div class="win" id="win" hidden role="dialog" aria-modal="true" aria-labelledby="winT">
@@ -1477,8 +1490,26 @@ function nextPro() {
   changed();
   if (pro.review) { showProDone(); return; }
   if (pro.i < PRO.length - 1) { pro.i++; renderPro(); return; }
-  showProDone();
+  showProDone(); proNextLab();
 }
+// Steckbrief "weiter": { id, title, maxFehler }: nach dem Profi-Durchgang wenige Fehler → Einladung ins nächste Labor,
+// sonst Aufforderung, die Fragen nochmal sorgfältig durchzugehen
+function proNextLab() {
+  const W = LAB.weiter; if (!W) return;
+  const f = pro.errs.reduce((s, v) => s + (v || 0), 0), good = f < W.maxFehler;
+  // Adresse des anderen Labors: GitHub Pages (../id/), eigenständige Datei (Titel.html); in der Google-Version kein Link
+  const href = window.LABOR_API ? "../" + W.id + "/" : !ADMIN ? W.title + ".html" : "";
+  $("nextIcon").textContent = good ? "🚀" : "🧐";
+  $("nextT").textContent = good ? "Bereit für mehr?" : "Nochmal mit Ruhe";
+  $("nextS").textContent = good
+    ? (f ? `Nur ${f} Fehler.` : "Kein einziger Fehler!") + ` Probier als Nächstes das ${W.title}!` + (href ? "" : " Frag nach dem Link.")
+    : `${f} Fehler, da wurde viel geraten. Geh die Fragen nochmal durch und rate weniger! Lies sorgfältig und rechne auf Papier.`;
+  $("nextGo").hidden = !good || !href; $("nextGo").href = href || "#"; $("nextGo").textContent = "Zum " + W.title;
+  $("nextAgain").hidden = good;
+  $("nextWin").hidden = false;
+}
+$("nextClose").addEventListener("click", () => $("nextWin").hidden = true);
+$("nextAgain").addEventListener("click", () => { $("nextWin").hidden = true; $("proAgain").click(); window.scrollTo({ top: 0 }); });
 function showProDone() {
   pro.review = false;
   $("proQuiz").hidden = true; $("proDone").hidden = false;

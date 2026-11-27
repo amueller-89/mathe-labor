@@ -150,3 +150,4 @@ table.wt td{font-weight:700}
 .pjump{display:grid;grid-template-columns:repeat(auto-fill,40px);gap:6px;margin-bottom:12px}
 .pjump button{font:inherit;font-size:14px;font-weight:700;height:34px;border-radius:8px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
 .pjump button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+a.btn{font:inherit;font-size:15px;padding:8px 14px;border-radius:8px;border:1.5px solid var(--curve);background:var(--curve);color:#fff;font-weight:700;text-decoration:none}
