@@ -131,3 +131,7 @@ canvas.procan{max-width:400px;margin:0 0 14px}
   .exg .c{grid-column:1/-1;margin:0 0 6px}
   .exg .l,.exg .r{font-size:19px;white-space:normal}
 }
+
+/* Musterbeispiel-Knopf direkt neben dem Aufgabentitel */
+.trhead{display:flex;align-items:center;gap:16px;margin-bottom:6px}
+.trhead .label{margin:0}

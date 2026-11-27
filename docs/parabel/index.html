@@ -143,6 +143,10 @@ canvas.procan{max-width:400px;margin:0 0 14px}
   .exg .c{grid-column:1/-1;margin:0 0 6px}
   .exg .l,.exg .r{font-size:19px;white-space:normal}
 }
+
+/* Musterbeispiel-Knopf direkt neben dem Aufgabentitel */
+.trhead{display:flex;align-items:center;gap:16px;margin-bottom:6px}
+.trhead .label{margin:0}
 .formula{font-family:var(--display);font-weight:800;font-size:clamp(24px,3vw,36px);line-height:1.2;white-space:nowrap;overflow-x:auto}
 .formula.off{color:var(--muted);font-weight:600;font-size:17px;white-space:normal}
 .ca{color:var(--a)} .cd{color:var(--d)} .ce{color:var(--e)} .cz{color:var(--z)} .cx{color:var(--curve)}
@@ -325,10 +329,9 @@ footer{font-size:13px;color:var(--muted)}
       </section>
       <aside class="side">
         <div class="card">
-          <p class="label" id="trTitle"></p>
+          <div class="trhead"><p class="label" id="trTitle"></p><button class="btn small" id="trEx" type="button">📘 Musterbeispiel ansehen</button></div>
           <div class="formula" id="trTask"></div>
           <p class="hint" id="trHint"></p>
-          <button class="btn small" id="trEx" type="button">📘 Musterbeispiel ansehen</button>
         </div>
         <div class="card">
           <p class="label">Deine Antwort</p>
