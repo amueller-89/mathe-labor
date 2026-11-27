@@ -1320,6 +1320,9 @@ const need = () => (ADMIN && ADMIN.need && ADMIN.need()) || 3, KEY = LAB.id + "-
 const NL = LEVELS.length, freshProg = () => ({ c: LEVELS.map(() => 0), f: LEVELS.map(() => 0), unl: 0, lvl: 0, won: false });
 let prog = freshProg();
 try { const s = ADMIN ? ADMIN.prog : JSON.parse(localStorage.getItem(KEY)); if (s && Array.isArray(s.c)) prog = Object.assign(prog, s); } catch (_) {}
+// Stufenzahl geändert (gespeicherter Stand passt nicht): auf die aktuelle Zahl Stufen bringen
+["c", "f"].forEach(k => { prog[k] = LEVELS.map((_, i) => prog[k][i] || 0); });
+if (prog.unl > NL - 1) prog.unl = NL - 1; if (prog.lvl > NL - 1) prog.lvl = 0;
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(prog)); } catch (_) {} changed(); };
 const bTrain = new Board($("cTrain"));
 let task = null;
