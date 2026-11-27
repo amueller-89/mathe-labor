@@ -10,6 +10,6 @@ const LABS = {
   },
   tangenten: {
     title: "Tangenten-Labor", file: "Tangenten", klasse: "OIIIa",
-    tabs: [["tan", "1 Tangente", "Erkunden"], ["nor", "2 Steigung an y = x²", "Erkunden"], ["par", "3 Andere Parabeln", "Erkunden"], ["kub", "4 Kurve mit x³", "Erkunden"]],
+    tabs: [["tan", "1 Tangente", "Erkunden"], ["nor", "2 Steigung an y = x²", "Erkunden"], ["kub", "3 Kubische Funktionen", "Erkunden"]],
   },
 };

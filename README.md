@@ -36,7 +36,7 @@ Erzeugte Dateien nie von Hand ändern, sie werden überschrieben.
 |---|---|---|
 | `Geraden-Labor.html` | 8 | Lineare Funktionen: Steigung und y-Achsenabschnitt erkunden, Gerade durch zwei Punkte, Rechentrainer mit 4 Stufen (Stufe 4: Textaufgaben), Profi-Fragen |
 | `Parabel-Labor.html` | 9 | Quadratische Funktionen: Scheitelpunktform, drei Formen (allgemeine Form, Scheitelpunkt-, Nullstellenform), pq-Formel, Rechentrainer, Profi-Fragen |
-| `Tangenten-Labor.html` | 9 | Zusatz für Schnelle, nur Erkunden: Tangente an y = x² mit Lupe, Steigungen an Parabeln bestimmen → die Punkte (Stelle | Steigung) liegen auf einer Geraden, Kurve mit x³ → sie liegen auf einer Parabel |
+| `Tangenten-Labor.html` | 9 | Zusatz für Schnelle, nur Erkunden: Tangente an y = x² mit Lupe, Steigungen an y = x² bestimmen → die Punkte (Stelle | Steigung) liegen auf einer Geraden, kubische Funktion → sie liegen auf einer Parabel |
 | `Scheitelpunktform.html` | 9 | ältere Einzeldatei, nicht Teil des Builds |
 
 Jede Datei ist eigenständig und läuft ohne Server direkt im Browser.

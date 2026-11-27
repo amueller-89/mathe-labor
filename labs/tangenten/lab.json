@@ -8,7 +8,6 @@
   "tabs": [
     { "id": "tan", "label": "Tangente", "slug": "tangente" },
     { "id": "nor", "label": "Steigung an y = x²", "slug": "normalparabel" },
-    { "id": "par", "label": "Andere Parabeln", "slug": "parabeln" },
-    { "id": "kub", "label": "Kurve mit x³", "slug": "kurve-x3" }
+    { "id": "kub", "label": "Kubische Funktionen", "slug": "kubisch" }
   ]
 }
