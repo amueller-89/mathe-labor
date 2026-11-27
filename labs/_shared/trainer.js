@@ -115,7 +115,9 @@ function exRender(E) {
     if (r.note) return `<div class="note">${r.note}</div>`;
     if (r.html) return `<div class="wide">${r.html}</div>`;
     const [l, rr, c, op] = r;
-    return `<div class="l">${l}</div><div class="r">${rr}${op ? `<span class="op">${op}</span>` : ""}</div><div class="c">${c || ""}</div>`;
+    // Umformung („| − 2“) und Kommentar teilen sich eine Spalte, damit alle Striche untereinander stehen
+    const cc = op ? `<span class="op">${op.replace(/^\|\s*/, "")}</span>${c ? " " + c : ""}` : (c || "");
+    return `<div class="l">${l}</div><div class="r">${rr}</div><div class="c">${cc}</div>`;
   }).join("");
 }
 let exByKey = false;

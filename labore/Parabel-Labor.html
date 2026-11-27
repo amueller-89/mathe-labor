@@ -123,7 +123,7 @@ canvas.procan{max-width:400px;margin:0 0 14px}
 .exg{display:grid;grid-template-columns:max-content max-content minmax(0,1fr);gap:14px 18px;align-items:center;margin:8px 0 14px}
 .exg .l{text-align:right;font-family:var(--display);font-weight:700;font-size:24px;white-space:nowrap}
 .exg .r{font-family:var(--display);font-weight:700;font-size:24px;white-space:nowrap}
-.exg .op{color:var(--muted);font-weight:600;margin-left:14px}
+.exg .op{font-family:var(--display);font-weight:700;font-size:22px;color:var(--ink)}
 .exg .c{font-size:15px;line-height:1.35;color:var(--muted);border-left:3px solid var(--line);padding:2px 0 2px 10px}
 .exg .c:empty{border:0;padding:0}
 .exg .sec{grid-column:1/-1;font-weight:700;margin:10px 0 -4px}
@@ -1117,7 +1117,9 @@ function exRender(E) {
     if (r.note) return `<div class="note">${r.note}</div>`;
     if (r.html) return `<div class="wide">${r.html}</div>`;
     const [l, rr, c, op] = r;
-    return `<div class="l">${l}</div><div class="r">${rr}${op ? `<span class="op">${op}</span>` : ""}</div><div class="c">${c || ""}</div>`;
+    // Umformung („| − 2“) und Kommentar teilen sich eine Spalte, damit alle Striche untereinander stehen
+    const cc = op ? `<span class="op">${op.replace(/^\|\s*/, "")}</span>${c ? " " + c : ""}` : (c || "");
+    return `<div class="l">${l}</div><div class="r">${rr}</div><div class="c">${cc}</div>`;
   }).join("");
 }
 let exByKey = false;
