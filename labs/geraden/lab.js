@@ -100,17 +100,18 @@ const bPts = new Board($("cPts"));
 let P = { x: -2, y: -1 }, Q = { x: 2, y: 1 };
 function updPts() {
   const dx = r6(Q.x - P.x), dy = r6(Q.y - P.y);
-  $("ptsPQ").innerHTML = `${sp("cz", "P")}(${num(P.x)} | ${num(P.y)}) &nbsp; ${sp("cz", "Q")}(${num(Q.x)} | ${num(Q.y)})`;
+  const cx = v => fx("", num(v) + "&nbsp;", 2.7, "right"), cy = v => fx("", "&nbsp;" + num(v), 2.7, "left");
+  $("ptsPQ").innerHTML = `${sp("cz", "P")}(${cx(P.x)}|${cy(P.y)})<br>${sp("cz", "Q")}(${cx(Q.x)}|${cy(Q.y)})`;
   if (dx === 0) {
-    $("ptsM").innerHTML = `m = ${frac("Δy", "Δx")} = ${frac(`${num(Q.y)} − ${paren(P.y)}`, `${num(Q.x)} − ${paren(P.x)}`)} = ${frac(sp("cm", num(dy)), "0")} &nbsp;<span style="color:var(--pencil)">geht nicht!</span>`;
+    $("ptsM").innerHTML = `m = ${frac("Δy", "Δx")} = ${frac(fx("", `${num(Q.y)} − ${paren(P.y)}`, 6.5), fx("", `${num(Q.x)} − ${paren(P.x)}`, 6.5))} = ${frac(fx("cm", num(dy), 2.6), fx("", "0", 2.6))} &nbsp;<span style="color:var(--pencil)">geht nicht!</span>`;
     $("ptsB").innerHTML = `<span style="color:var(--pencil)">Senkrechte Gerade: Zu x = ${num(P.x)} gehören viele y-Werte. Das ist keine Funktion.</span>`;
     $("ptsEq").innerHTML = `<span style="color:var(--pencil);font-size:.7em">keine Funktion (x = ${num(P.x)})</span>`;
   } else {
     const m = dy / dx, mr = Math.round(m * 1000) / 1000, exact = near(m, mr, 1e-9);
     const b = P.y - m * P.x, br = Math.round(b * 1000) / 1000;
     const eq = exact ? "=" : "≈";
-    $("ptsM").innerHTML = `m = ${frac("Δy", "Δx")} = ${frac(`${num(Q.y)} − ${paren(P.y)}`, `${num(Q.x)} − ${paren(P.x)}`)} = ${frac(sp("cm", num(dy)), num(dx))} ${eq} ${sp("cm", num(mr))}`;
-    $("ptsB").innerHTML = `${num(P.y)} = ${sp("cm", paren(mr))} · ${paren(P.x)} + ${sp("cb", "b")} &nbsp;→&nbsp; ${sp("cb", "b")} ${near(b, br, 1e-9) && exact ? "=" : "≈"} ${sp("cb", num(br))}`;
+    $("ptsM").innerHTML = `m = ${frac("Δy", "Δx")} = ${frac(fx("", `${num(Q.y)} − ${paren(P.y)}`, 6.5), fx("", `${num(Q.x)} − ${paren(P.x)}`, 6.5))} = ${frac(fx("cm", num(dy), 2.6), fx("", num(dx), 2.6))} ${eq} ${fx("cm", num(mr), 3.6)}`;
+    $("ptsB").innerHTML = `${fx("", num(P.y), 2.6, "right")} = ${fx("cm", paren(mr), 3.8, "left")} · ${fx("", paren(P.x), 3.2, "left")} + ${sp("cb", "b")} &nbsp;→&nbsp; ${sp("cb", "b")} ${near(b, br, 1e-9) && exact ? "=" : "≈"} ${sp("cb", num(br))}`;
     $("ptsEq").innerHTML = (exact && near(b, br, 1e-9)) ? lineHTML(mr, br) : lineHTML(mr, br).replace(/^y = /, "y ≈ ");
   }
   drawPts();

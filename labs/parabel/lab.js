@@ -114,7 +114,7 @@ function updForms(fromSlider) {
     nul.innerHTML = nullHTML(a, Z[0], Z[1], true, approx);
     $("fmMid").innerHTML = near(Z[0], Z[1])
       ? `Doppelte Nullstelle bei ${sp("cz", zfmt(Z[0]))}: Der Scheitel liegt auf der x-Achse.`
-      : `Mitte der Nullstellen: (${sp("cz", zfmt(Z[0]))} + ${sp("cz", zfmt(Z[1]))}) : 2 = ${sp("cd", num(r6(d)))} &nbsp;=&nbsp; x-Wert des Scheitels`;
+      : `Mitte der Nullstellen: (${fx("cz", zfmt(Z[0]))} + ${fx("cz", zfmt(Z[1]))}) : 2 = ${fx("cd", num(r6(d)))} = x-Wert des Scheitels`;
   }
   drawForms();
 }
@@ -195,9 +195,9 @@ function updSp() {
   $("spAo").textContent = num(a); $("spDo").textContent = num(d); $("spEo").textContent = num(e);
   $("spForm").innerHTML = scheitelHTML(a, d, e);
   $("spVertex").innerHTML = vText(a, d, e);
-  const st = stepsHTML(a, d, e);
-  $("spSteps").innerHTML = st; $("spSteps").hidden = !st;
-  $("spNf").innerHTML = (st ? "&nbsp;&nbsp;= " : "y = ") + polyBody(a, r6(-2 * a * d), r6(a * d * d + e));
+  // immer zwei Zeilen, „=“ in fester Spalte, damit beim Ziehen nichts springt
+  const st = stepsHTML(a, d, e) || scheitelHTML(a, d, e);
+  $("spNf").innerHTML = `<span>y</span><span>${st.replace(/^y /, "")}</span><span></span><span>= ${polyBody(a, r6(-2 * a * d), r6(a * d * d + e))}</span>`;
   drawSp();
 }
 function drawSp() {

@@ -140,3 +140,4 @@ canvas.procan{max-width:400px;margin:0 0 14px}
 .tabnav{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 20px}
 .tgrp{display:flex;flex-direction:column;gap:4px}
 .tgrp .gl{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.fx{display:inline-block;text-align:center}

@@ -6,7 +6,7 @@
 .vertex.probe{position:fixed;left:0;top:0;visibility:hidden;overflow:visible;margin:0;pointer-events:none}
 input.ra{accent-color:var(--a)} input.rd{accent-color:var(--d)} input.re{accent-color:var(--e)} input.rz{accent-color:var(--z)}
 label.chk{display:inline-flex;gap:6px;align-items:center;font-size:15px;color:var(--muted);cursor:pointer}
-.eqgrid{display:grid;grid-template-columns:repeat(7,auto);justify-content:start;align-items:baseline;column-gap:10px;row-gap:2px;font-family:var(--display);font-weight:800;font-size:clamp(24px,3vw,34px);line-height:1.25}
+.eqgrid{display:grid;grid-template-columns:1.4em .6em 2.6em .6em .6em 2.6em auto;justify-content:start;align-items:baseline;column-gap:10px;row-gap:2px;font-family:var(--display);font-weight:800;font-size:clamp(24px,3vw,34px);line-height:1.25}
 .eqgrid .v{text-align:center;min-width:1.2em}
 .eqgrid span:nth-child(-n+7){font-size:.8em;font-weight:600;color:var(--muted)}
 .eqgrid span.v:nth-child(-n+7){color:inherit}
@@ -15,3 +15,6 @@ label.chk{display:inline-flex;gap:6px;align-items:center;font-size:15px;color:va
 .steps div{white-space:nowrap}
 .lock small{display:block;font-family:var(--body);font-size:14px;color:var(--muted)}
 footer{font-size:13px;color:var(--muted)}
+
+/* Gleichungskette: linke Seite und „=“ in fester Spalte */
+.eqrows{display:grid;grid-template-columns:1em auto;column-gap:.3em;justify-content:start}

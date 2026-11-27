@@ -151,6 +151,7 @@ canvas.procan{max-width:400px;margin:0 0 14px}
 .tabnav{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 20px}
 .tgrp{display:flex;flex-direction:column;gap:4px}
 .tgrp .gl{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.fx{display:inline-block;text-align:center}
 .formula{font-family:var(--display);font-weight:800;font-size:clamp(24px,3vw,36px);line-height:1.2;white-space:nowrap;overflow-x:auto}
 .formula.off{color:var(--muted);font-weight:600;font-size:17px;white-space:normal}
 .ca{color:var(--a)} .cd{color:var(--d)} .ce{color:var(--e)} .cz{color:var(--z)} .cx{color:var(--curve)}
@@ -159,7 +160,7 @@ canvas.procan{max-width:400px;margin:0 0 14px}
 .vertex.probe{position:fixed;left:0;top:0;visibility:hidden;overflow:visible;margin:0;pointer-events:none}
 input.ra{accent-color:var(--a)} input.rd{accent-color:var(--d)} input.re{accent-color:var(--e)} input.rz{accent-color:var(--z)}
 label.chk{display:inline-flex;gap:6px;align-items:center;font-size:15px;color:var(--muted);cursor:pointer}
-.eqgrid{display:grid;grid-template-columns:repeat(7,auto);justify-content:start;align-items:baseline;column-gap:10px;row-gap:2px;font-family:var(--display);font-weight:800;font-size:clamp(24px,3vw,34px);line-height:1.25}
+.eqgrid{display:grid;grid-template-columns:1.4em .6em 2.6em .6em .6em 2.6em auto;justify-content:start;align-items:baseline;column-gap:10px;row-gap:2px;font-family:var(--display);font-weight:800;font-size:clamp(24px,3vw,34px);line-height:1.25}
 .eqgrid .v{text-align:center;min-width:1.2em}
 .eqgrid span:nth-child(-n+7){font-size:.8em;font-weight:600;color:var(--muted)}
 .eqgrid span.v:nth-child(-n+7){color:inherit}
@@ -168,6 +169,9 @@ label.chk{display:inline-flex;gap:6px;align-items:center;font-size:15px;color:va
 .steps div{white-space:nowrap}
 .lock small{display:block;font-family:var(--body);font-size:14px;color:var(--muted)}
 footer{font-size:13px;color:var(--muted)}
+
+/* Gleichungskette: linke Seite und „=“ in fester Spalte */
+.eqrows{display:grid;grid-template-columns:1em auto;column-gap:.3em;justify-content:start}
 #mainTabs button.locked{opacity:.55}
 #mainTabs button.locked::before{content:"\1F512\00A0"}
 .proToast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:70;background:var(--surface);color:var(--ink);border:2px solid var(--line);border-radius:12px;padding:12px 18px;box-shadow:0 12px 40px rgb(0 0 0 / .4);max-width:calc(100vw - 32px);text-align:center}
@@ -254,8 +258,7 @@ footer{font-size:13px;color:var(--muted)}
         </div>
         <div class="card">
           <p class="label">Ausmultipliziert (allgemeine Form)</p>
-          <div class="formula small" id="spSteps"></div>
-          <div class="formula small" id="spNf" style="margin-top:4px"></div>
+          <div class="formula small eqrows" id="spNf"></div>
         </div>
       </aside>
     </div>
@@ -602,6 +605,8 @@ const rnd = n => Math.floor(Math.random() * n);
 const pick = arr => arr[rnd(arr.length)];
 const near = (u, v, tol = 1e-6) => Math.abs(u - v) <= tol;
 const paren = v => r6(v) < 0 ? `(${num(v)})` : num(v);
+// Zahl in fester Breite, damit Text dahinter beim Ziehen nicht springt
+const fx = (cls, t, w = 3.2, al = "center") => `<span class="fx ${cls}" style="width:${w}em;text-align:${al}">${t}</span>`;
 const frac = (a, b) => `<span class="frac"><span>${a}</span><span>${b}</span></span>`;
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 function nz(lo, hi) { let v; do v = lo + rnd(hi - lo + 1); while (v === 0); return v; }
@@ -844,7 +849,7 @@ function updForms(fromSlider) {
     nul.innerHTML = nullHTML(a, Z[0], Z[1], true, approx);
     $("fmMid").innerHTML = near(Z[0], Z[1])
       ? `Doppelte Nullstelle bei ${sp("cz", zfmt(Z[0]))}: Der Scheitel liegt auf der x-Achse.`
-      : `Mitte der Nullstellen: (${sp("cz", zfmt(Z[0]))} + ${sp("cz", zfmt(Z[1]))}) : 2 = ${sp("cd", num(r6(d)))} &nbsp;=&nbsp; x-Wert des Scheitels`;
+      : `Mitte der Nullstellen: (${fx("cz", zfmt(Z[0]))} + ${fx("cz", zfmt(Z[1]))}) : 2 = ${fx("cd", num(r6(d)))} = x-Wert des Scheitels`;
   }
   drawForms();
 }
@@ -925,9 +930,9 @@ function updSp() {
   $("spAo").textContent = num(a); $("spDo").textContent = num(d); $("spEo").textContent = num(e);
   $("spForm").innerHTML = scheitelHTML(a, d, e);
   $("spVertex").innerHTML = vText(a, d, e);
-  const st = stepsHTML(a, d, e);
-  $("spSteps").innerHTML = st; $("spSteps").hidden = !st;
-  $("spNf").innerHTML = (st ? "&nbsp;&nbsp;= " : "y = ") + polyBody(a, r6(-2 * a * d), r6(a * d * d + e));
+  // immer zwei Zeilen, „=“ in fester Spalte, damit beim Ziehen nichts springt
+  const st = stepsHTML(a, d, e) || scheitelHTML(a, d, e);
+  $("spNf").innerHTML = `<span>y</span><span>${st.replace(/^y /, "")}</span><span></span><span>= ${polyBody(a, r6(-2 * a * d), r6(a * d * d + e))}</span>`;
   drawSp();
 }
 function drawSp() {

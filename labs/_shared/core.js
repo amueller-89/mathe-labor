@@ -9,6 +9,8 @@ const rnd = n => Math.floor(Math.random() * n);
 const pick = arr => arr[rnd(arr.length)];
 const near = (u, v, tol = 1e-6) => Math.abs(u - v) <= tol;
 const paren = v => r6(v) < 0 ? `(${num(v)})` : num(v);
+// Zahl in fester Breite, damit Text dahinter beim Ziehen nicht springt
+const fx = (cls, t, w = 3.2, al = "center") => `<span class="fx ${cls}" style="width:${w}em;text-align:${al}">${t}</span>`;
 const frac = (a, b) => `<span class="frac"><span>${a}</span><span>${b}</span></span>`;
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 function nz(lo, hi) { let v; do v = lo + rnd(hi - lo + 1); while (v === 0); return v; }
