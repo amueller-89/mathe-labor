@@ -1429,7 +1429,7 @@ function proNextLab() {
   $("nextT").textContent = good ? "Super gemacht!" : "Geschafft!";
   $("nextS").textContent = good
     ? (f ? `Nur ${f} Fehler!` : "Kein einziger Fehler!") + ` Wenn du bereit für mehr bist, probier das ${W.gut.title}.`
-    : `Du bist durch! Bei ${f} Fehlern war aber wohl etwas Raten dabei. Geh die Fragen gerne nochmal in Ruhe durch: Lies sorgfältig und rechne auf Papier, dann klappt es noch besser.`;
+    : `Du bist durch! Bei ${f} Fehlern war aber wohl etwas Raten dabei. Geh die Fragen bitte nochmal in Ruhe durch: Lies sorgfältig und rechne auf Papier, dann klappt es noch besser.`;
   line($("nextS2"), good ? W.gut.hinweis : alt && alt.text);
   line($("nextS3"), W.auch && W.auch.text);
   link($("nextGo"), good ? W.gut : null);
