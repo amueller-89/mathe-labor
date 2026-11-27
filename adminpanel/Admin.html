@@ -53,7 +53,7 @@ h2{font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 10px}
 .tablewrap{overflow-x:auto}
 /* Tabelle: feste Spalten und feste Felder, damit gleiche Angaben in jeder Zeile genau untereinander stehen (ausgelegt auf MacBook Air 14") */
 table{border-collapse:collapse;width:100%;min-width:1416px;table-layout:fixed;font-size:15px;font-variant-numeric:tabular-nums}
-col.c-name{width:125px} col.c-on{width:85px} col.c-tab{width:140px} col.c-tr{width:595px} col.c-pro{width:300px} col.c-act{width:auto}
+col.c-name{width:125px} col.c-on{width:85px} col.c-tab{width:140px} col.c-tr{width:595px} col.c-pro{width:285px} col.c-act{width:auto}
 th{text-align:left;font-size:13px;font-weight:700;color:var(--muted);padding:6px 10px;border-bottom:1.5px solid var(--line);white-space:nowrap}
 td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
 td.name{font-weight:700;white-space:nowrap}
@@ -66,7 +66,7 @@ td.name,td.tab{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lv .dots{color:var(--e);letter-spacing:1px}
 .lv.locked{opacity:.35}
 .lv .f{font-size:12px;color:var(--pencil);text-align:right}
-.pro{display:grid;grid-template-columns:85px 125px 70px;align-items:baseline;white-space:nowrap}
+.pro{display:grid;grid-template-columns:70px 125px 70px;align-items:baseline;white-space:nowrap}
 .pro .f{color:var(--pencil)}
 .won{color:var(--e);font-weight:700}
 .del{font:inherit;font-size:13px;padding:2px 8px;border-radius:6px;border:1px solid var(--line);background:none;color:var(--muted);cursor:pointer;white-space:nowrap}
@@ -279,7 +279,7 @@ function render() {
     else {
       // feste Felder: Stand · beim 1. Versuch richtig · Fehler
       const g = el("div", "pro"); tdP.appendChild(g);
-      g.appendChild(q.done ? el("span", "won", "fertig ✓") : el("span", "", "Frage " + (q.i + 1) + "/" + q.n));
+      g.appendChild(q.done ? el("span", "won", "fertig ✓") : el("span", "", (q.i + 1) + "/" + q.n));
       g.appendChild(el("span", "", q.score + "/" + q.n + " sofort ✓"));
       g.appendChild(el("span", errs ? "f" : "muted", errs + " Fehler"));
     }
