@@ -172,9 +172,9 @@ table.tt th:first-child{width:100px;text-align:left}
 table.tt th,table.tt td{width:58px;padding:3px}
 table.tt th button{font:inherit;font-weight:700;width:100%;padding:3px 0;border:0;border-radius:6px;background:none;color:var(--ink);cursor:pointer}
 table.tt th.act button{background:var(--d);color:#fff}
-table.tt input{font:inherit;font-weight:700;width:100%;padding:3px 0;text-align:center;border:2px solid var(--line);border-radius:6px;background:var(--paper);color:var(--e)}
-table.tt input.ok{border-color:var(--e);background:var(--ok-bg)}
-table.tt input.bad{border-color:var(--pencil);background:var(--bad-bg)}
+table.tt input{font:inherit;font-weight:700;width:100%;padding:3px 0;text-align:center;border:2px solid var(--line);border-radius:6px;background:var(--paper);color:var(--ink)}
+table.tt input.ok{border-color:var(--e);background:var(--ok-bg);color:var(--e)}
+table.tt input.bad{border-color:var(--pencil);background:var(--bad-bg);color:var(--pencil)}
 table.tt td.act input{border-color:var(--d)}
 .qh{font-family:var(--display);font-weight:800;font-size:21px;line-height:1.3;margin:0 0 10px}
 .done{display:flex;flex-direction:column;gap:2px;margin:0 0 10px;color:var(--muted);font-size:16px}
@@ -873,6 +873,7 @@ function slopeLab(P, presets) {
       const i = +el.dataset.i;
       if (filled(i)) { el.value = num(st.v[i]); el.readOnly = true; el.classList.add("ok"); }
       el.addEventListener("focus", () => setAct(i));
+      el.addEventListener("input", () => el.classList.remove("bad"));
       el.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); check(); } });
     });
     $(P + "Tbl").querySelectorAll("th button").forEach(b => b.addEventListener("click", () => setAct(+b.dataset.i, true)));
@@ -980,7 +981,6 @@ function slopeLab(P, presets) {
     pLabel(B, a, q.f(a), -triSide(B, q.f, q.df, a));
     S.begin();
     if (st.stage >= 2) S.curve(x => q.m * x + q.b, ce, 2.5, [8, 6]);
-    if (st.stage < 4) S.seg(a, S.cy - S.R, a, S.cy + S.R, C("--d"), 1.5, [3, 5]);
     q.xs.forEach((x, i) => { if (filled(i)) S.dot(x, q.df(x), ce, 6); });
     if (st.stage >= 4) S.dot(a, q.df(a), ink, 7);
   }

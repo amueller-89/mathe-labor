@@ -118,6 +118,7 @@ function slopeLab(P, presets) {
       const i = +el.dataset.i;
       if (filled(i)) { el.value = num(st.v[i]); el.readOnly = true; el.classList.add("ok"); }
       el.addEventListener("focus", () => setAct(i));
+      el.addEventListener("input", () => el.classList.remove("bad"));
       el.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); check(); } });
     });
     $(P + "Tbl").querySelectorAll("th button").forEach(b => b.addEventListener("click", () => setAct(+b.dataset.i, true)));
@@ -225,7 +226,6 @@ function slopeLab(P, presets) {
     pLabel(B, a, q.f(a), -triSide(B, q.f, q.df, a));
     S.begin();
     if (st.stage >= 2) S.curve(x => q.m * x + q.b, ce, 2.5, [8, 6]);
-    if (st.stage < 4) S.seg(a, S.cy - S.R, a, S.cy + S.R, C("--d"), 1.5, [3, 5]);
     q.xs.forEach((x, i) => { if (filled(i)) S.dot(x, q.df(x), ce, 6); });
     if (st.stage >= 4) S.dot(a, q.df(a), ink, 7);
   }
