@@ -167,6 +167,7 @@ table.wt td{font-weight:700}
 a.btn{font:inherit;font-size:15px;padding:8px 14px;border-radius:8px;border:1.5px solid var(--curve);background:var(--paper);color:var(--curve);font-weight:700;text-decoration:none}
 a.btn.primary{background:var(--curve);color:#fff}
 a.btn::after{content:" →"}
+#nextWin .box{max-width:680px}
 .formula{font-family:var(--display);font-weight:800;font-size:clamp(24px,3vw,34px);line-height:1.2;white-space:nowrap;overflow-x:auto}
 .ca{color:var(--a)} .cd{color:var(--d)} .ce{color:var(--e)} .cx{color:var(--curve)}
 /* Antwortzeile: = | Eingabe, feste Spalten */
@@ -289,11 +290,13 @@ a.btn::after{content:" →"}
     <h2 id="nextT"></h2>
     <p id="nextS"></p>
     <p id="nextS2" hidden></p>
+    <p id="nextS3" hidden></p>
     <div class="row" style="justify-content:center;margin-top:14px">
       <button class="btn" id="nextClose" type="button">Schließen</button>
       <a class="btn primary" id="nextGo" href="#"></a>
       <button class="btn primary" id="nextAgain" type="button">Nochmal von vorn</button>
       <a class="btn" id="nextAlt" href="#"></a>
+      <a class="btn" id="nextAlt2" href="#"></a>
     </div>
   </div>
 </div>

@@ -99,24 +99,27 @@ function nextPro() {
   if (pro.i < PRO.length - 1) { pro.i++; renderPro(); return; }
   showProDone(); proNextLab();
 }
-// Steckbrief "weiter": { maxFehler, gut: { id, title, hinweis? }, ueben?: { id, title } }
+// Steckbrief "weiter": { maxFehler, gut: { id, title, hinweis? }, ueben?: { id, title, text }, auch?: { id, title, text } }
 // Nach dem Profi-Durchgang: weniger als maxFehler Fehler → Einladung ins Labor „gut“,
-// sonst nochmal sorgfältig durchgehen oder im Labor „ueben“ üben
+// sonst nochmal sorgfältig durchgehen oder im Labor „ueben“ üben; „auch“ wird in beiden Fällen angeboten
 function proNextLab() {
   const W = LAB.weiter; if (!W) return;
   const f = pro.errs.reduce((s, v) => s + (v || 0), 0), good = f < W.maxFehler;
   // Adresse eines anderen Labors: GitHub Pages (../id/), eigenständige Datei (Titel.html); in der Google-Version kein Link
   const href = L => !L ? "" : window.LABOR_API ? "../" + L.id + "/" : !ADMIN ? L.title + ".html" : "";
   const link = (el, L) => { const h = href(L); el.hidden = !h; el.href = h || "#"; el.textContent = L ? "Zum " + L.title : ""; };
+  const line = (el, t) => { el.textContent = t || ""; el.hidden = !t; };
+  const alt = good ? null : W.ueben;
   $("nextIcon").textContent = good ? "🚀" : "🧐";
   $("nextT").textContent = good ? "Bereit für mehr?" : "Nochmal mit Ruhe";
   $("nextS").textContent = good
     ? (f ? `Nur ${f} Fehler.` : "Kein einziger Fehler!") + ` Probier als Nächstes das ${W.gut.title}!`
     : `${f} Fehler, da wurde viel geraten. Geh die Fragen nochmal durch und rate weniger! Lies sorgfältig und rechne auf Papier.`;
-  $("nextS2").textContent = good ? W.gut.hinweis || "" : W.ueben ? `Oder übe die binomischen Formeln und Termumformungen im ${W.ueben.title}.` : "";
-  $("nextS2").hidden = !$("nextS2").textContent;
+  line($("nextS2"), good ? W.gut.hinweis : alt && alt.text);
+  line($("nextS3"), W.auch && W.auch.text);
   link($("nextGo"), good ? W.gut : null);
-  link($("nextAlt"), good ? null : W.ueben);
+  link($("nextAlt"), alt);
+  link($("nextAlt2"), W.auch);
   $("nextAgain").hidden = good;
   $("nextWin").hidden = false;
 }

@@ -166,6 +166,7 @@ table.wt td{font-weight:700}
 a.btn{font:inherit;font-size:15px;padding:8px 14px;border-radius:8px;border:1.5px solid var(--curve);background:var(--paper);color:var(--curve);font-weight:700;text-decoration:none}
 a.btn.primary{background:var(--curve);color:#fff}
 a.btn::after{content:" →"}
+#nextWin .box{max-width:680px}
 .formula{font-family:var(--display);font-weight:800;font-size:clamp(24px,3vw,36px);line-height:1.2;white-space:nowrap;overflow-x:auto}
 .formula.off{color:var(--muted);font-weight:600;font-size:17px;white-space:normal}
 .ca{color:var(--a)} .cd{color:var(--d)} .ce{color:var(--e)} .cz{color:var(--z)} .cx{color:var(--curve)}
@@ -412,11 +413,13 @@ footer{font-size:13px;color:var(--muted)}
     <h2 id="nextT"></h2>
     <p id="nextS"></p>
     <p id="nextS2" hidden></p>
+    <p id="nextS3" hidden></p>
     <div class="row" style="justify-content:center;margin-top:14px">
       <button class="btn" id="nextClose" type="button">Schließen</button>
       <a class="btn primary" id="nextGo" href="#"></a>
       <button class="btn primary" id="nextAgain" type="button">Nochmal von vorn</button>
       <a class="btn" id="nextAlt" href="#"></a>
+      <a class="btn" id="nextAlt2" href="#"></a>
     </div>
   </div>
 </div>
@@ -439,7 +442,7 @@ footer{font-size:13px;color:var(--muted)}
 <script>
 (() => {
 "use strict";
-const LAB = {"id": "parabel", "title": "Parabel-Labor", "thema": "Quadratische Funktionen", "reihe": 2, "klasse": "OIIIa", "icon": "M8 4Q17 34 26 4", "tabs": [{"id": "sp", "label": "Scheitelpunktform", "slug": "scheitelpunktform"}, {"id": "forms", "label": "Drei Formen", "slug": "drei-formen"}, {"id": "pq", "label": "pq-Formel", "slug": "pq-formel"}], "skizze": "Parabel", "win": "Scheitelpunktform, Nullstellenform, pq-Formel und Ablesen aus der Skizze: Du kannst Parabeln jetzt in allen Formen. Richtig gut gemacht!", "profi": "Parabel-Profi!", "weiter": {"maxFehler": 10, "gut": {"id": "tangenten", "title": "Tangenten-Labor"}, "ueben": {"id": "binomi", "title": "Binomi-Labor"}}, "file": "Parabel"};
+const LAB = {"id": "parabel", "title": "Parabel-Labor", "thema": "Quadratische Funktionen", "reihe": 2, "klasse": "OIIIa", "icon": "M8 4Q17 34 26 4", "tabs": [{"id": "sp", "label": "Scheitelpunktform", "slug": "scheitelpunktform"}, {"id": "forms", "label": "Drei Formen", "slug": "drei-formen"}, {"id": "pq", "label": "pq-Formel", "slug": "pq-formel"}], "skizze": "Parabel", "win": "Scheitelpunktform, Nullstellenform, pq-Formel und Ablesen aus der Skizze: Du kannst Parabeln jetzt in allen Formen. Richtig gut gemacht!", "profi": "Parabel-Profi!", "weiter": {"maxFehler": 10, "gut": {"id": "tangenten", "title": "Tangenten-Labor"}, "ueben": {"id": "binomi", "title": "Binomi-Labor", "text": "Oder übe die binomischen Formeln und Termumformungen im Binomi-Labor."}, "auch": {"id": "geraden", "title": "Geraden-Labor", "text": "Oder wiederhole den Stoff der 8. Klasse im Geraden-Labor."}}, "file": "Parabel"};
 /* Geteilter Kern aller Labore: kleine Helfer, Koordinatensystem, Zahlen einlesen.
    Wird vom Build (build.py) zusammen mit dem Code des Labors in eine Datei kopiert. */
 const $ = id => document.getElementById(id);
@@ -1411,24 +1414,27 @@ function nextPro() {
   if (pro.i < PRO.length - 1) { pro.i++; renderPro(); return; }
   showProDone(); proNextLab();
 }
-// Steckbrief "weiter": { maxFehler, gut: { id, title, hinweis? }, ueben?: { id, title } }
+// Steckbrief "weiter": { maxFehler, gut: { id, title, hinweis? }, ueben?: { id, title, text }, auch?: { id, title, text } }
 // Nach dem Profi-Durchgang: weniger als maxFehler Fehler → Einladung ins Labor „gut“,
-// sonst nochmal sorgfältig durchgehen oder im Labor „ueben“ üben
+// sonst nochmal sorgfältig durchgehen oder im Labor „ueben“ üben; „auch“ wird in beiden Fällen angeboten
 function proNextLab() {
   const W = LAB.weiter; if (!W) return;
   const f = pro.errs.reduce((s, v) => s + (v || 0), 0), good = f < W.maxFehler;
   // Adresse eines anderen Labors: GitHub Pages (../id/), eigenständige Datei (Titel.html); in der Google-Version kein Link
   const href = L => !L ? "" : window.LABOR_API ? "../" + L.id + "/" : !ADMIN ? L.title + ".html" : "";
   const link = (el, L) => { const h = href(L); el.hidden = !h; el.href = h || "#"; el.textContent = L ? "Zum " + L.title : ""; };
+  const line = (el, t) => { el.textContent = t || ""; el.hidden = !t; };
+  const alt = good ? null : W.ueben;
   $("nextIcon").textContent = good ? "🚀" : "🧐";
   $("nextT").textContent = good ? "Bereit für mehr?" : "Nochmal mit Ruhe";
   $("nextS").textContent = good
     ? (f ? `Nur ${f} Fehler.` : "Kein einziger Fehler!") + ` Probier als Nächstes das ${W.gut.title}!`
     : `${f} Fehler, da wurde viel geraten. Geh die Fragen nochmal durch und rate weniger! Lies sorgfältig und rechne auf Papier.`;
-  $("nextS2").textContent = good ? W.gut.hinweis || "" : W.ueben ? `Oder übe die binomischen Formeln und Termumformungen im ${W.ueben.title}.` : "";
-  $("nextS2").hidden = !$("nextS2").textContent;
+  line($("nextS2"), good ? W.gut.hinweis : alt && alt.text);
+  line($("nextS3"), W.auch && W.auch.text);
   link($("nextGo"), good ? W.gut : null);
-  link($("nextAlt"), good ? null : W.ueben);
+  link($("nextAlt"), alt);
+  link($("nextAlt2"), W.auch);
   $("nextAgain").hidden = good;
   $("nextWin").hidden = false;
 }

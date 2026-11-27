@@ -13,5 +13,10 @@
   "skizze": "Parabel",
   "win": "Scheitelpunktform, Nullstellenform, pq-Formel und Ablesen aus der Skizze: Du kannst Parabeln jetzt in allen Formen. Richtig gut gemacht!",
   "profi": "Parabel-Profi!",
-  "weiter": { "maxFehler": 10, "gut": { "id": "tangenten", "title": "Tangenten-Labor" }, "ueben": { "id": "binomi", "title": "Binomi-Labor" } }
+  "weiter": {
+    "maxFehler": 10,
+    "gut": { "id": "tangenten", "title": "Tangenten-Labor" },
+    "ueben": { "id": "binomi", "title": "Binomi-Labor", "text": "Oder übe die binomischen Formeln und Termumformungen im Binomi-Labor." },
+    "auch": { "id": "geraden", "title": "Geraden-Labor", "text": "Oder wiederhole den Stoff der 8. Klasse im Geraden-Labor." }
+  }
 }

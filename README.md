@@ -51,7 +51,7 @@ Mit `#alle` am Ende der Adresse sind alle Stufen und der Profi-Tab sofort offen 
    - `icon`: SVG-Pfad für das Symbol, 32×32
    - `tabs`: die Erkunden-Tabs mit `id`, `label`, `slug` (für die Adresse). Rechentrainer und Profi kommen automatisch dahinter.
    - `skizze` („Gerade“, „Parabel“ …), `win` (Text im Glückwunsch-Popup), `profi` (Titel bei fast allen Profi-Fragen richtig)
-   - `weiter` (optional) `{ maxFehler, gut: { id, title, hinweis? }, ueben: { id, title } }`: nach dem Profi-Durchgang mit weniger als `maxFehler` Fehlern Einladung ins Labor `gut`, sonst Aufforderung, die Fragen sorgfältig nochmal zu machen, oder im Labor `ueben` zu üben
+   - `weiter` (optional) `{ maxFehler, gut: { id, title, hinweis? }, ueben?: { id, title, text }, auch?: { id, title, text } }`: nach dem Profi-Durchgang mit weniger als `maxFehler` Fehlern Einladung ins Labor `gut`, sonst Aufforderung, die Fragen sorgfältig nochmal zu machen, oder im Labor `ueben` zu üben; `auch` wird in beiden Fällen zusätzlich angeboten
    - `"ueben": false`: nur Erkunden-Tabs, ohne Rechentrainer und Profi (dann entfallen `skizze`, `win`, `profi` und in `lab.js` `LEVELS` … `PRO`; siehe `labs/tangenten/`)
 3. `tabs.html`: je Erkunden-Tab eine `<section id="tab-<id>" class="tab">`.
 4. `style.css`: nur was dieses Labor zusätzlich braucht (Farbklassen, Formeln).
