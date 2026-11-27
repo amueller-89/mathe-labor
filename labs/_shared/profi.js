@@ -15,6 +15,7 @@ function updProTab() {
   b.hidden = !vis;
   if (ADMIN) { const lk = proLocked(); b.classList.toggle("locked", lk); b.title = lk ? "Erst den Rechentrainer schaffen" : ""; }
   if (!vis && typeof current !== "undefined" && current === "pro") show(LAB.tabs[0].id);
+  try { renderJump(); } catch (_) {} // beim Start ist pro evtl. noch nicht angelegt
 }
 function proHasPic(Q, answered) { return !!((Q.graph && (!Q.hideGraphUntil || answered)) || Q.pts || Q.segs || Q.vlines || (answered && (Q.after || Q.afterPts))); }
 function buildOpts(Q) {
@@ -34,6 +35,17 @@ function buildOpts(Q) {
   });
   requestAnimationFrame(drawPro);
 }
+// „alles frei“: Fragenliste zum freien Springen
+function renderJump() {
+  const box = $("proJump"), on = allOpen(); box.hidden = !on; if (!on) return;
+  box.innerHTML = "";
+  PRO.forEach((_, i) => {
+    const b = document.createElement("button"); b.type = "button"; b.textContent = i + 1;
+    b.setAttribute("aria-pressed", i === pro.i && $("proDone").hidden);
+    b.addEventListener("click", () => { pro.review = false; pro.i = i; renderPro(); });
+    box.appendChild(b);
+  });
+}
 function proHead() { $("proHead").textContent = `Frage ${pro.i + 1} von ${PRO.length} · ${pro.score} beim ersten Versuch richtig`; }
 function renderPro() {
   const Q = PRO[pro.i]; pro.answered = false; pro.missed = false; pro.order = [];
@@ -46,6 +58,7 @@ function renderPro() {
   $("cPro").hidden = !proHasPic(Q, false); $("proCap").textContent = Q.cap || ""; $("proCap").hidden = !Q.cap;
   buildOpts(Q);
   $("proFb").textContent = ""; $("proFb").className = "feedback"; $("proEx").hidden = true; $("proNext").hidden = true;
+  renderJump();
 }
 function revealPro(Q) {
   $("proEx").textContent = Q.ex; $("proEx").hidden = false;
