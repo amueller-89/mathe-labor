@@ -120,6 +120,10 @@ canvas.procan{max-width:400px;margin:0 0 14px}
 .exg .wide{grid-column:1/-1;margin:4px 0}
 .exg .res{background:var(--ok-bg);border-radius:6px;padding:0 6px}
 .exg .frac{font-size:.85em}
+/* luftigere Variante (EXAMPLES[l].airy) für lange Umformungsketten */
+.exg.airy{row-gap:14px;column-gap:18px}
+.exg.airy .l,.exg.airy .r{font-size:24px}
+.exg.airy .c{font-size:15px}
 .exsvg{display:block;width:100%;max-width:330px;height:auto;margin:0 auto}
 .extab{display:inline-grid;grid-template-columns:repeat(5,auto);border:1.5px solid var(--line);border-radius:8px;overflow:hidden;font-weight:700;font-variant-numeric:tabular-nums}
 .extab span{padding:4px 14px;border-left:1px solid var(--line);text-align:center}
@@ -128,5 +132,5 @@ canvas.procan{max-width:400px;margin:0 0 14px}
 @media (max-width:640px){
   .exg{grid-template-columns:max-content minmax(0,1fr)}
   .exg .c{grid-column:1/-1;margin:0 0 6px}
-  .exg .l,.exg .r{font-size:17px;white-space:normal}
+  .exg .l,.exg .r,.exg.airy .l,.exg.airy .r{font-size:17px;white-space:normal}
 }

@@ -131,6 +131,10 @@ canvas.procan{max-width:400px;margin:0 0 14px}
 .exg .wide{grid-column:1/-1;margin:4px 0}
 .exg .res{background:var(--ok-bg);border-radius:6px;padding:0 6px}
 .exg .frac{font-size:.85em}
+/* luftigere Variante (EXAMPLES[l].airy) für lange Umformungsketten */
+.exg.airy{row-gap:14px;column-gap:18px}
+.exg.airy .l,.exg.airy .r{font-size:24px}
+.exg.airy .c{font-size:15px}
 .exsvg{display:block;width:100%;max-width:330px;height:auto;margin:0 auto}
 .extab{display:inline-grid;grid-template-columns:repeat(5,auto);border:1.5px solid var(--line);border-radius:8px;overflow:hidden;font-weight:700;font-variant-numeric:tabular-nums}
 .extab span{padding:4px 14px;border-left:1px solid var(--line);text-align:center}
@@ -139,7 +143,7 @@ canvas.procan{max-width:400px;margin:0 0 14px}
 @media (max-width:640px){
   .exg{grid-template-columns:max-content minmax(0,1fr)}
   .exg .c{grid-column:1/-1;margin:0 0 6px}
-  .exg .l,.exg .r{font-size:17px;white-space:normal}
+  .exg .l,.exg .r,.exg.airy .l,.exg.airy .r{font-size:17px;white-space:normal}
 }
 .formula{font-family:var(--display);font-weight:800;font-size:clamp(26px,3.4vw,40px);line-height:1.2;white-space:nowrap;overflow-x:auto}
 .cm{color:var(--d)} .cb{color:var(--e)} .cz{color:var(--z)} .ca{color:var(--a)}
@@ -1157,14 +1161,20 @@ function exRender(E) {
     return `<div class="l">${l}</div><div class="r">${rr}${op ? `<span class="op">${op}</span>` : ""}</div><div class="c">${c || ""}</div>`;
   }).join("");
 }
-function openEx() {
+let exByKey = false;
+function openEx(e) {
+  exByKey = !!e && e.detail === 0; // per Tastatur geöffnet (Enter/Leertaste)
   const l = task ? task.l : prog.lvl, E = EXAMPLES[l];
   $("exLvl").textContent = LEVELS[l].t + " · " + LEVELS[l].s;
   $("exSub").innerHTML = E.sub;
-  $("exBody").innerHTML = exRender(E);
+  $("exBody").innerHTML = exRender(E); $("exBody").className = "exg" + (E.airy ? " airy" : "");
   $("exWin").hidden = false; document.querySelector(".exbox").scrollTop = 0; $("exOk").focus({ preventScroll: true });
 }
-function closeEx() { $("exWin").hidden = true; const b = $("trEx"); if (b) b.focus(); }
+function closeEx() {
+  $("exWin").hidden = true; const b = $("trEx");
+  // Fokus nur nach Tastatur-Bedienung zurück auf den Knopf, sonst bleibt er hässlich blau umrandet
+  if (exByKey) b.focus(); else if (document.activeElement) document.activeElement.blur();
+}
 $("trEx").addEventListener("click", openEx);
 $("exOk").addEventListener("click", closeEx);
 $("exClose").addEventListener("click", closeEx);

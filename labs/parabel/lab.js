@@ -349,14 +349,16 @@ function drawTrain() {
 
 // ---------- Musterbeispiel je Stufe ----------
 
+// Farben im Musterbeispiel: a / x²-Glieder lila, d orange, x-Glieder blau, e / Zahlen grün
+const A = t => sp("ca", t), D = t => sp("cd", t), E = t => sp("ce", t), X = t => sp("cx", t);
 const EXAMPLES = [
-  { sub: "Schreibe y = −2(x − 3)² + 4 in Normalform y = ax² + bx + c um.", rows: [
-    ["y", "= −2(x − 3)² + 4", "Aufgabe"],
-    ["", "= −2 · (x² − 2 · x · 3 + 3²) + 4", "2. binomische Formel: (a − b)² = a² − 2ab + b²"],
-    ["", "= −2 · (x² − 6x + 9) + 4", "In der Klammer ausrechnen"],
-    ["", "= −2x² + 12x − 18 + 4", "−2 mal jeden Summanden. Achtung: −2 · (−6x) = +12x"],
-    ["", "= <span class=\"res\">−2x² + 12x − 14</span>", "Zahlen zusammenfassen: −18 + 4 = −14"],
-    { note: "Eintippen: a = −2, b = 12, c = −14. Erst die Klammer auflösen, dann mit a malnehmen, dann e dazurechnen." },
+  { airy: true, sub: "Schreibe y = " + A("−2") + "(x − " + D("3") + ")² " + E("+ 4") + " in Normalform y = ax² + bx + c um. Farben: " + A("x²-Glieder") + ", " + X("x-Glieder") + ", " + E("Zahlen") + ".", rows: [
+    ["y", "= " + A("−2") + " · (x − " + D("3") + ")² " + E("+ 4"), "Aufgabe: a = −2, d = 3, e = 4"],
+    ["", "= " + A("−2") + " · (" + A("x²") + " " + X("− 2 · x · " + D("3")) + " " + E("+ " + D("3") + "²") + ") " + E("+ 4"), "2. binomische Formel: (a − b)² = a² − 2ab + b²"],
+    ["", "= " + A("−2") + " · (" + A("x²") + " " + X("− 6x") + " " + E("+ 9") + ") " + E("+ 4"), "In der Klammer ausrechnen"],
+    ["", "= " + A("−2x²") + " " + X("+ 12x") + " " + E("− 18") + " " + E("+ 4"), "−2 mal jeden Summanden. Achtung: −2 · (−6x) = +12x"],
+    ["", "= <span class=\"res\">" + A("−2x²") + " " + X("+ 12x") + " " + E("− 14") + "</span>", "Zahlen zusammenfassen: −18 + 4 = −14"],
+    { note: "Eintippen: a = " + A("−2") + ", b = " + X("12") + ", c = " + E("−14") + ". Erst die Klammer auflösen, dann mit a malnehmen, dann e dazurechnen." },
   ] },
   { sub: "Schreibe y = 2(x + 1)(x − 4) in Normalform um.", rows: [
     ["y", "= 2(x + 1)(x − 4)", "Aufgabe"],

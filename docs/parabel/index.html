@@ -132,6 +132,10 @@ canvas.procan{max-width:400px;margin:0 0 14px}
 .exg .wide{grid-column:1/-1;margin:4px 0}
 .exg .res{background:var(--ok-bg);border-radius:6px;padding:0 6px}
 .exg .frac{font-size:.85em}
+/* luftigere Variante (EXAMPLES[l].airy) für lange Umformungsketten */
+.exg.airy{row-gap:14px;column-gap:18px}
+.exg.airy .l,.exg.airy .r{font-size:24px}
+.exg.airy .c{font-size:15px}
 .exsvg{display:block;width:100%;max-width:330px;height:auto;margin:0 auto}
 .extab{display:inline-grid;grid-template-columns:repeat(5,auto);border:1.5px solid var(--line);border-radius:8px;overflow:hidden;font-weight:700;font-variant-numeric:tabular-nums}
 .extab span{padding:4px 14px;border-left:1px solid var(--line);text-align:center}
@@ -140,11 +144,11 @@ canvas.procan{max-width:400px;margin:0 0 14px}
 @media (max-width:640px){
   .exg{grid-template-columns:max-content minmax(0,1fr)}
   .exg .c{grid-column:1/-1;margin:0 0 6px}
-  .exg .l,.exg .r{font-size:17px;white-space:normal}
+  .exg .l,.exg .r,.exg.airy .l,.exg.airy .r{font-size:17px;white-space:normal}
 }
 .formula{font-family:var(--display);font-weight:800;font-size:clamp(24px,3vw,36px);line-height:1.2;white-space:nowrap;overflow-x:auto}
 .formula.off{color:var(--muted);font-weight:600;font-size:17px;white-space:normal}
-.ca{color:var(--a)} .cd{color:var(--d)} .ce{color:var(--e)} .cz{color:var(--z)}
+.ca{color:var(--a)} .cd{color:var(--d)} .ce{color:var(--e)} .cz{color:var(--z)} .cx{color:var(--curve)}
 .vertex{font-size:19px;font-weight:700;margin-top:6px;white-space:nowrap;overflow:hidden;font-variant-numeric:tabular-nums}
 .vertex .gap{display:inline-block;width:1.2em}
 .vertex.probe{position:fixed;left:0;top:0;visibility:hidden;overflow:visible;margin:0;pointer-events:none}
@@ -1045,14 +1049,16 @@ function drawTrain() {
 
 // ---------- Musterbeispiel je Stufe ----------
 
+// Farben im Musterbeispiel: a / x²-Glieder lila, d orange, x-Glieder blau, e / Zahlen grün
+const A = t => sp("ca", t), D = t => sp("cd", t), E = t => sp("ce", t), X = t => sp("cx", t);
 const EXAMPLES = [
-  { sub: "Schreibe y = −2(x − 3)² + 4 in Normalform y = ax² + bx + c um.", rows: [
-    ["y", "= −2(x − 3)² + 4", "Aufgabe"],
-    ["", "= −2 · (x² − 2 · x · 3 + 3²) + 4", "2. binomische Formel: (a − b)² = a² − 2ab + b²"],
-    ["", "= −2 · (x² − 6x + 9) + 4", "In der Klammer ausrechnen"],
-    ["", "= −2x² + 12x − 18 + 4", "−2 mal jeden Summanden. Achtung: −2 · (−6x) = +12x"],
-    ["", "= <span class=\"res\">−2x² + 12x − 14</span>", "Zahlen zusammenfassen: −18 + 4 = −14"],
-    { note: "Eintippen: a = −2, b = 12, c = −14. Erst die Klammer auflösen, dann mit a malnehmen, dann e dazurechnen." },
+  { airy: true, sub: "Schreibe y = " + A("−2") + "(x − " + D("3") + ")² " + E("+ 4") + " in Normalform y = ax² + bx + c um. Farben: " + A("x²-Glieder") + ", " + X("x-Glieder") + ", " + E("Zahlen") + ".", rows: [
+    ["y", "= " + A("−2") + " · (x − " + D("3") + ")² " + E("+ 4"), "Aufgabe: a = −2, d = 3, e = 4"],
+    ["", "= " + A("−2") + " · (" + A("x²") + " " + X("− 2 · x · " + D("3")) + " " + E("+ " + D("3") + "²") + ") " + E("+ 4"), "2. binomische Formel: (a − b)² = a² − 2ab + b²"],
+    ["", "= " + A("−2") + " · (" + A("x²") + " " + X("− 6x") + " " + E("+ 9") + ") " + E("+ 4"), "In der Klammer ausrechnen"],
+    ["", "= " + A("−2x²") + " " + X("+ 12x") + " " + E("− 18") + " " + E("+ 4"), "−2 mal jeden Summanden. Achtung: −2 · (−6x) = +12x"],
+    ["", "= <span class=\"res\">" + A("−2x²") + " " + X("+ 12x") + " " + E("− 14") + "</span>", "Zahlen zusammenfassen: −18 + 4 = −14"],
+    { note: "Eintippen: a = " + A("−2") + ", b = " + X("12") + ", c = " + E("−14") + ". Erst die Klammer auflösen, dann mit a malnehmen, dann e dazurechnen." },
   ] },
   { sub: "Schreibe y = 2(x + 1)(x − 4) in Normalform um.", rows: [
     ["y", "= 2(x + 1)(x − 4)", "Aufgabe"],
@@ -1288,14 +1294,20 @@ function exRender(E) {
     return `<div class="l">${l}</div><div class="r">${rr}${op ? `<span class="op">${op}</span>` : ""}</div><div class="c">${c || ""}</div>`;
   }).join("");
 }
-function openEx() {
+let exByKey = false;
+function openEx(e) {
+  exByKey = !!e && e.detail === 0; // per Tastatur geöffnet (Enter/Leertaste)
   const l = task ? task.l : prog.lvl, E = EXAMPLES[l];
   $("exLvl").textContent = LEVELS[l].t + " · " + LEVELS[l].s;
   $("exSub").innerHTML = E.sub;
-  $("exBody").innerHTML = exRender(E);
+  $("exBody").innerHTML = exRender(E); $("exBody").className = "exg" + (E.airy ? " airy" : "");
   $("exWin").hidden = false; document.querySelector(".exbox").scrollTop = 0; $("exOk").focus({ preventScroll: true });
 }
-function closeEx() { $("exWin").hidden = true; const b = $("trEx"); if (b) b.focus(); }
+function closeEx() {
+  $("exWin").hidden = true; const b = $("trEx");
+  // Fokus nur nach Tastatur-Bedienung zurück auf den Knopf, sonst bleibt er hässlich blau umrandet
+  if (exByKey) b.focus(); else if (document.activeElement) document.activeElement.blur();
+}
 $("trEx").addEventListener("click", openEx);
 $("exOk").addEventListener("click", closeEx);
 $("exClose").addEventListener("click", closeEx);

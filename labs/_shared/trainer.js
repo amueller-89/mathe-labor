@@ -117,14 +117,20 @@ function exRender(E) {
     return `<div class="l">${l}</div><div class="r">${rr}${op ? `<span class="op">${op}</span>` : ""}</div><div class="c">${c || ""}</div>`;
   }).join("");
 }
-function openEx() {
+let exByKey = false;
+function openEx(e) {
+  exByKey = !!e && e.detail === 0; // per Tastatur geöffnet (Enter/Leertaste)
   const l = task ? task.l : prog.lvl, E = EXAMPLES[l];
   $("exLvl").textContent = LEVELS[l].t + " · " + LEVELS[l].s;
   $("exSub").innerHTML = E.sub;
-  $("exBody").innerHTML = exRender(E);
+  $("exBody").innerHTML = exRender(E); $("exBody").className = "exg" + (E.airy ? " airy" : "");
   $("exWin").hidden = false; document.querySelector(".exbox").scrollTop = 0; $("exOk").focus({ preventScroll: true });
 }
-function closeEx() { $("exWin").hidden = true; const b = $("trEx"); if (b) b.focus(); }
+function closeEx() {
+  $("exWin").hidden = true; const b = $("trEx");
+  // Fokus nur nach Tastatur-Bedienung zurück auf den Knopf, sonst bleibt er hässlich blau umrandet
+  if (exByKey) b.focus(); else if (document.activeElement) document.activeElement.blur();
+}
 $("trEx").addEventListener("click", openEx);
 $("exOk").addEventListener("click", closeEx);
 $("exClose").addEventListener("click", closeEx);

@@ -1,6 +1,6 @@
 .formula{font-family:var(--display);font-weight:800;font-size:clamp(24px,3vw,36px);line-height:1.2;white-space:nowrap;overflow-x:auto}
 .formula.off{color:var(--muted);font-weight:600;font-size:17px;white-space:normal}
-.ca{color:var(--a)} .cd{color:var(--d)} .ce{color:var(--e)} .cz{color:var(--z)}
+.ca{color:var(--a)} .cd{color:var(--d)} .ce{color:var(--e)} .cz{color:var(--z)} .cx{color:var(--curve)}
 .vertex{font-size:19px;font-weight:700;margin-top:6px;white-space:nowrap;overflow:hidden;font-variant-numeric:tabular-nums}
 .vertex .gap{display:inline-block;width:1.2em}
 .vertex.probe{position:fixed;left:0;top:0;visibility:hidden;overflow:visible;margin:0;pointer-events:none}
