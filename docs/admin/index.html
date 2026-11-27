@@ -89,6 +89,8 @@ td.name,td.tab{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .btn:disabled{opacity:.6;cursor:wait}
 .saving{font-size:13px;color:var(--muted);margin-left:8px}
 .empty{color:var(--muted);padding:16px 0}
+.mem{font-size:14px;color:var(--muted);margin:0 0 12px}
+.mem.warn{color:#e8862a;font-weight:700} .mem.voll{color:#ff4d4d;font-weight:700}
 [hidden]{display:none!important}
 </style>
 </head>
@@ -99,6 +101,7 @@ td.name,td.tab{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     <nav class="seg" id="labTabs"></nav>
   </header>
   <p class="err" id="err" hidden></p>
+  <p class="mem" id="mem" hidden></p>
   <form class="card" id="keyForm" hidden style="max-width:460px">
     <h2>Admin-Schlüssel</h2>
     <div class="link"><input id="keyIn" type="password" autocomplete="current-password" aria-label="Admin-Schlüssel"
@@ -242,6 +245,14 @@ async function mutate(fn, args, optimistic) {
 
 function render() {
   const d = data;
+  // Speicheranzeige (Apps Script: ca. 500 KB für alles zusammen)
+  if (d.speicher) {
+    const S = d.speicher, pct = x => { const v = 100 * x / S.max; return v < 10 ? (Math.round(v * 10) / 10).toString().replace(".", ",") : Math.round(v); }, g = Math.round(100 * S.gesamt / S.max), m = $("mem");
+    m.hidden = false; m.className = "mem" + (g >= 90 ? " voll" : g >= 70 ? " warn" : "");
+    m.textContent = "Speicher: " + pct(S.gesamt) + " % belegt (dieses Labor: " + pct(S.labor) + " %)"
+      + (g >= 90 ? ". Fast voll! Ab 100 % wird nichts mehr gespeichert. Bitte alte Labore oder Kinder löschen."
+        : g >= 70 ? ". Wird knapp: bald alte Labore oder Kinder löschen." : "");
+  }
   // Labor-Umschalter
   const nav = $("labTabs"); nav.innerHTML = "";
   d.labs.forEach(l => {

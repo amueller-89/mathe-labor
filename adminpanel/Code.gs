@@ -226,8 +226,22 @@ function adminDaten(key, lab, ohneUrl) {
   return {
     labs: Object.keys(LABS).map(k => ({ id: k, pfad: LABS[k].pfad || k, title: LABS[k].title, klasse: LABS[k].klasse })),
     tabs: LABS[lab].tabs.map(([id, label, grp]) => ({ id, label, grp, on: c.tabs.indexOf(id) >= 0 })),
-    need: c.need, kids, url, now,
+    need: c.need, kids, url, now, speicher: speicher_(lab),
   };
+}
+
+// Skripteigenschaften fassen insgesamt nur ca. 500 KB. Ist der Speicher voll, wird stillschweigend nichts mehr gespeichert.
+const SPEICHER_MAX = 500 * 1024;
+function speicher_(lab) {
+  const all = P().getProperties(), mark = '_' + lab + '_';
+  const len = x => unescape(encodeURIComponent(String(x))).length;   // Bytes in UTF-8
+  let gesamt = 0, labor = 0;
+  Object.keys(all).forEach(k => {
+    const n = len(k) + len(all[k]);
+    gesamt += n;
+    if (k.indexOf(mark) > 0 || k === 'cfg_' + lab) labor += n;
+  });
+  return { gesamt, labor, max: SPEICHER_MAX };
 }
 
 function adminFreigabe(key, lab, tabs) {
