@@ -26,12 +26,13 @@ const errMsg = e => {
   const m = e && e.message ? String(e.message).replace(/^(Exception|Error):\s*/, "") : "";
   return /Namen|Labor/.test(m) ? m : "Die Verbindung klappt gerade nicht. Versuch es gleich nochmal.";
 };
-let me = null, allowed = [], alle = false, started = false, pingTimer = null, debounce = null, online = true, epoch = 0;
+let me = null, allowed = [], alle = false, need = 3, started = false, pingTimer = null, debounce = null, online = true, epoch = 0;
 const tabOk = t => allowed.indexOf(t) >= 0;
 let toastT = null;
 // Haken für das Labor (labs/_shared/core.js liest window.LAB_ADMIN)
 window.LAB_ADMIN = {
   alle: () => alle,
+  need: () => need,
   tabOk,
   prog: null,
   changed: () => { clearTimeout(debounce); debounce = setTimeout(ping, 2000); },
@@ -63,7 +64,7 @@ async function login(name) {
         await new Promise(ok => setTimeout(ok, 1500 + Math.random() * 2500 * (i + 1)));
       }
     }
-    me = { id: r.id, name: r.name }; store.set(IDKEY, r.name); sess.set(r.name); allowed = r.tabs || []; alle = !!r.alle; epoch = r.epoch || 0;
+    me = { id: r.id, name: r.name }; store.set(IDKEY, r.name); sess.set(r.name); allowed = r.tabs || []; alle = !!r.alle; epoch = r.epoch || 0; need = r.need || 3;
     start(r.prog);
   } catch (e) {
     $("gLoad").hidden = true; $("gErr").textContent = errMsg(e);
@@ -100,7 +101,7 @@ async function ping() {
     if (!r.known) { clearInterval(pingTimer); me = null; store.del(IDKEY); sess.del(); gate("gBye"); return; }
     // Lehrkraft hat alle zurückgesetzt: neu laden, dann startet alles bei null (Anmeldung bleibt)
     if (r.epoch && epoch && r.epoch !== epoch) { clearInterval(pingTimer); location.reload(); return; }
-    if (JSON.stringify(r.tabs) !== JSON.stringify(allowed) || !!r.alle !== alle) { allowed = r.tabs || []; alle = !!r.alle; apply(); }
+    if (JSON.stringify(r.tabs) !== JSON.stringify(allowed) || !!r.alle !== alle || (r.need || 3) !== need) { allowed = r.tabs || []; alle = !!r.alle; need = r.need || 3; apply(); }
   } catch (e) { setOnline(false); }
 }
 function setOnline(v) { online = v; $("whoDot").classList.toggle("off", !v); $("whoDot").title = v ? "verbunden" : "keine Verbindung"; }

@@ -873,7 +873,8 @@ const EXPLORE = {
      check(F, fb) optional statt want: eigene Prüfung, gibt true/false zurück oder null (= unvollständig)
      failMsg() optional: eigene Meldung bei falscher Antwort
    ============================================================= */
-const NEED = 3, KEY = LAB.id + "-labor-v1";
+// Richtige Aufgaben je Stufe: in der Version mit Anmeldung stellt das die Lehrkraft im Adminpanel ein
+const need = () => (ADMIN && ADMIN.need && ADMIN.need()) || 3, KEY = LAB.id + "-labor-v1";
 const freshProg = () => ({ c: [0, 0, 0, 0], f: [0, 0, 0, 0], unl: 0, lvl: 0, won: false });
 let prog = freshProg();
 try { const s = ADMIN ? ADMIN.prog : JSON.parse(localStorage.getItem(KEY)); if (s && Array.isArray(s.c)) prog = Object.assign(prog, s); } catch (_) {}
@@ -882,13 +883,19 @@ const bTrain = new Board($("cTrain"));
 let task = null;
 
 function renderLevels() {
+  const N = need();
+  // Wurde die Zahl gesenkt: was jetzt reicht, wird freigeschaltet (gesperrt wird nie wieder)
+  let up = false;
+  while (prog.unl < 3 && prog.c[prog.unl] >= N) { prog.unl++; up = true; }
+  if (!prog.won && prog.c.every(c => c >= N)) { prog.won = true; up = true; setTimeout(showWin, 500); }
+  if (up) save();
   const box = $("levels"); box.innerHTML = "";
   LEVELS.forEach((L, i) => {
     const b = document.createElement("button"); b.className = "lvl";
     const open = allOpen() || i <= prog.unl;
     b.disabled = !open; b.setAttribute("aria-pressed", i === prog.lvl);
-    const n = Math.min(prog.c[i], NEED);
-    b.innerHTML = `<span class="t">${open ? "" : "🔒 "}${L.t}</span><span class="s">${L.s}</span><span class="dots">${"●".repeat(n)}${"○".repeat(NEED - n)}</span>`;
+    const n = Math.min(prog.c[i], N);
+    b.innerHTML = `<span class="t">${open ? "" : "🔒 "}${L.t}</span><span class="s">${L.s}</span><span class="dots">${"●".repeat(n)}${"○".repeat(N - n)}</span>`;
     b.addEventListener("click", () => { prog.lvl = i; save(); renderLevels(); newTask(); });
     box.appendChild(b);
   });
@@ -922,10 +929,10 @@ function checkTask() {
   if (ok) {
     task.state = "done"; prog.c[task.l]++;
     let msg = pick(["Richtig!", "Stark!", "Genau!", "Sauber gerechnet!"]);
-    if (prog.c[task.l] === NEED && task.l < 3 && prog.unl <= task.l) { prog.unl = task.l + 1; msg = `Richtig! ${LEVELS[task.l + 1].t} ist jetzt frei.`; }
+    if (prog.c[task.l] >= need() && task.l < 3 && prog.unl <= task.l) { prog.unl = task.l + 1; msg = `Richtig! ${LEVELS[task.l + 1].t} ist jetzt frei.`; }
     fb.className = "feedback ok"; fb.textContent = msg;
     $("trCheck").disabled = true; $("trShow").disabled = true; $("trNext").focus();
-    if (!prog.won && prog.c.every(c => c >= NEED)) { prog.won = true; save(); updProTab(); setTimeout(showWin, 500); }
+    if (!prog.won && prog.c.every(c => c >= need())) { prog.won = true; save(); updProTab(); setTimeout(showWin, 500); }
   } else {
     prog.f[task.l]++;
     fb.className = "feedback no"; fb.textContent = "Noch nicht. Rot markierte Felder nochmal prüfen.";

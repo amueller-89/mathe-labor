@@ -23,7 +23,7 @@
 // Speicher: jedes Kind ist eine eigene Skripteigenschaft (schnell, kein Tabellen-Zugriff, kein Lock beim Speichern).
 //   k_<lab>_<id>   = {"id","name","an","z","st"}   (an = angemeldet, z = zuletzt gespeichert, st = Fortschritt)
 //   n_<lab>_<name> = id                            (Index zum Wiederfinden per Vorname)
-//   cfg_<lab>      = {"tabs":[…], "alle":[ids], "epoch":n}
+//   cfg_<lab>      = {"tabs":[…], "alle":[ids], "epoch":n, "need":n}   (need = richtige Aufgaben je Stufe im Rechentrainer)
 // Die Tabelle „Schueler“ aus der alten Version wird einmalig übernommen und danach nicht mehr benutzt.
 const SHEET = 'Schueler';
 
@@ -62,7 +62,7 @@ function doGet(e) {
 }
 
 // Schnittstelle für die Version auf GitHub Pages: POST {fn, args} → {result} oder {error}
-const API = { anmelden: anmelden, ping: ping, adminDaten: adminDaten, adminFreigabe: adminFreigabe, adminLoeschen: adminLoeschen, adminAlles: adminAlles, adminReset: adminReset, adminAlleLoeschen: adminAlleLoeschen };
+const API = { anmelden: anmelden, ping: ping, adminDaten: adminDaten, adminFreigabe: adminFreigabe, adminLoeschen: adminLoeschen, adminAlles: adminAlles, adminReset: adminReset, adminAlleLoeschen: adminAlleLoeschen, adminNeed: adminNeed };
 function doPost(e) {
   let out;
   try {
@@ -118,6 +118,7 @@ function migrate_() {
   });
 }
 
+const NEED_STD = 3, NEED_MAX = 5;
 function cfg_(lab) {
   const c = C().get('cfg_' + lab);
   let o = parseJson_(c);
@@ -128,6 +129,7 @@ function cfg_(lab) {
     if (!o.epoch) o.epoch = 1;
     C().put('cfg_' + lab, JSON.stringify(o), 600);
   }
+  if (!o.need) o.need = NEED_STD;
   return o;
 }
 function setCfg_(lab, o) {
@@ -145,7 +147,7 @@ function kids_(lab) {
 
 function antwort_(lab, id, extra) {
   const c = cfg_(lab), alle = c.alle.indexOf(String(id)) >= 0;
-  const o = { tabs: alle ? LABS[lab].tabs.map(t => t[0]) : c.tabs, alle, epoch: c.epoch };
+  const o = { tabs: alle ? LABS[lab].tabs.map(t => t[0]) : c.tabs, alle, epoch: c.epoch, need: c.need };
   Object.keys(extra || {}).forEach(k => o[k] = extra[k]);
   return o;
 }
@@ -224,7 +226,7 @@ function adminDaten(key, lab, ohneUrl) {
   return {
     labs: Object.keys(LABS).map(k => ({ id: k, title: LABS[k].title, klasse: LABS[k].klasse })),
     tabs: LABS[lab].tabs.map(([id, label]) => ({ id, label, on: c.tabs.indexOf(id) >= 0 })),
-    kids, url, now,
+    need: c.need, kids, url, now,
   };
 }
 
@@ -234,6 +236,15 @@ function adminFreigabe(key, lab, tabs) {
   const valid = LABS[lab].tabs.map(t => t[0]);
   const list = (tabs || []).map(String).filter(t => valid.indexOf(t) >= 0);
   withLock_(() => { const c = cfg_(lab); c.tabs = list; setCfg_(lab, c); });
+  return adminDaten(key, lab, true);
+}
+
+// Wie viele richtige Aufgaben je Stufe der Rechentrainer verlangt (1 bis NEED_MAX)
+function adminNeed(key, lab, n) {
+  checkKey_(key);
+  if (!LABS[lab]) throw new Error('Unbekanntes Labor');
+  n = Math.max(1, Math.min(NEED_MAX, Math.round(Number(n)) || NEED_STD));
+  withLock_(() => { const c = cfg_(lab); c.need = n; setCfg_(lab, c); });
   return adminDaten(key, lab, true);
 }
 

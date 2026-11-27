@@ -36,7 +36,7 @@ const ctx = {
 };
 function out(html) { const o = { html, setTitle: () => o, addMetaTag: () => o }; return o; }
 let code = fs.readFileSync(path.join(DIR, 'Labs.gs'), 'utf8') + '\n' + fs.readFileSync(path.join(DIR, 'Code.gs'), 'utf8');
-vm.createContext(ctx); vm.runInContext(code + '\nthis.__api = {doGet, doPost, anmelden, ping, adminDaten, adminFreigabe, adminLoeschen, adminAlles, adminReset, adminAlleLoeschen};', ctx);
+vm.createContext(ctx); vm.runInContext(code + '\nthis.__api = {doGet, doPost, anmelden, ping, adminDaten, adminFreigabe, adminLoeschen, adminAlles, adminReset, adminAlleLoeschen, adminNeed};', ctx);
 const api = ctx.__api;
 
 const SHIM = `<script>

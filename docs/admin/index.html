@@ -53,18 +53,18 @@ h2{font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 10px}
 .stat b{font-family:var(--display);font-size:32px;font-weight:800;margin-right:6px}
 .tablewrap{overflow-x:auto}
 /* Tabelle: feste Spalten und feste Felder, damit gleiche Angaben in jeder Zeile genau untereinander stehen (ausgelegt auf MacBook Air 14") */
-table{border-collapse:collapse;width:100%;min-width:1416px;table-layout:fixed;font-size:15px;font-variant-numeric:tabular-nums}
-col.c-name{width:125px} col.c-on{width:85px} col.c-tab{width:140px} col.c-tr{width:595px} col.c-pro{width:285px} col.c-act{width:auto}
+table{border-collapse:collapse;width:100%;min-width:1446px;table-layout:fixed;font-size:15px;font-variant-numeric:tabular-nums}
+col.c-name{width:125px} col.c-on{width:85px} col.c-tab{width:120px} col.c-tr{width:645px} col.c-pro{width:285px} col.c-act{width:auto}
 th{text-align:left;font-size:13px;font-weight:700;color:var(--muted);padding:6px 10px;border-bottom:1.5px solid var(--line);white-space:nowrap}
 td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
 td.name{font-weight:700;white-space:nowrap}
 .on{color:var(--e);white-space:nowrap} .off{color:var(--muted);white-space:nowrap}
 td.act{white-space:nowrap}
 td.name,td.tab{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.lvs{display:flex;gap:14px;white-space:nowrap}
-.lv{display:grid;grid-template-columns:22px 50px 24px 28px;align-items:baseline}
+.lvs{display:flex;gap:10px;white-space:nowrap}
+.lv{display:grid;grid-template-columns:22px 68px 24px 26px;align-items:baseline}
 .lv .n{font-size:12px;color:var(--muted)}
-.lv .dots{color:var(--e);letter-spacing:1px}
+.lv .dots{color:var(--e);font-size:13px}
 .lv.locked{opacity:.35}
 .lv .f{font-size:12px;color:var(--pencil);text-align:right}
 .pro{display:grid;grid-template-columns:70px 125px 70px;align-items:baseline;white-space:nowrap}
@@ -75,6 +75,9 @@ td.name,td.tab{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .alle{font:inherit;font-size:13px;padding:2px 8px;border-radius:6px;border:1px solid var(--line);background:none;color:var(--muted);cursor:pointer;white-space:nowrap;margin-right:6px}
 .alle.on{border-color:#5fcf80;color:#5fcf80}
 .err{color:var(--pencil);font-weight:700}
+.need{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:15px}
+.need b{font-family:var(--display);font-size:20px;width:22px;text-align:center}
+.need .btn{width:34px;padding:4px 0;font-size:16px}
 .bulk{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
 .bulk .btn.danger{color:var(--pencil)}
 .bulk .btn.armed{border-color:var(--pencil);background:var(--bad-bg);color:var(--ink)}
@@ -102,6 +105,9 @@ td.name,td.tab{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
       <div class="card">
         <h2>Freigaben<span class="saving" id="saving" hidden>speichert …</span></h2>
         <div class="toggles" id="toggles"></div>
+        <div class="need">Rechentrainer:
+          <button class="btn" id="needMinus" type="button" aria-label="weniger">−</button><b id="needN">3</b><button class="btn" id="needPlus" type="button" aria-label="mehr">+</button>
+          richtige Aufgaben je Stufe</div>
         <div class="bulk">
           <button class="btn" id="bOpen" type="button">Alle Tabs freischalten</button>
           <button class="btn" id="bHide" type="button">Alle Tabs verstecken</button>
@@ -128,7 +134,7 @@ td.name,td.tab{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
       <div class="tablewrap">
         <table>
           <colgroup><col class="c-name"><col class="c-on"><col class="c-tab"><col class="c-tr"><col class="c-pro"><col class="c-act"></colgroup>
-          <thead><tr><th>Name</th><th>Online</th><th>Gerade in</th><th>Rechentrainer (3 richtige je Stufe)</th><th><div class="pro"><span>Profi ★</span><span>beim 1. Versuch</span><span>Fehler</span></div></th><th></th></tr></thead>
+          <thead><tr><th>Name</th><th>Online</th><th>Gerade in</th><th id="thTr">Rechentrainer</th><th><div class="pro"><span>Profi ★</span><span>beim 1. Versuch</span><span>Fehler</span></div></th><th></th></tr></thead>
           <tbody id="rows"></tbody>
         </table>
       </div>
@@ -140,7 +146,6 @@ td.name,td.tab{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 (() => {
 "use strict";
 const $ = id => document.getElementById(id);
-const NEED = 3;
 const call = (fn, ...args) => window.LABOR_API
   ? fetch(window.LABOR_API, { method: "POST", body: JSON.stringify({ fn, args }) })
       .then(r => r.json()).then(j => { if (j.error) throw new Error(j.error); return j.result; })
@@ -243,6 +248,9 @@ function render() {
     b.addEventListener("click", () => toggle(t.id));
     tg.appendChild(b);
   });
+  const N = d.need || 3;
+  $("needN").textContent = N; $("needMinus").disabled = N <= 1; $("needPlus").disabled = N >= 5;
+  $("thTr").textContent = "Rechentrainer (" + N + " richtige je Stufe)";
   renderLinks(d);
   // Statistik
   const kids = d.kids.slice().sort((a, b) => a.name.localeCompare(b.name, "de"));
@@ -267,11 +275,11 @@ function render() {
     if (p && Array.isArray(p.c)) {
       const lvs = el("div", "lvs"); tdT.appendChild(lvs);
       p.c.forEach((c, i) => {
-        const n = Math.min(c, NEED);
+        const n = Math.min(c, N);
         const s = el("span", "lv" + (i > (p.unl || 0) ? " locked" : ""));
         s.appendChild(el("span", "n", "S" + (i + 1)));
-        s.appendChild(el("span", "dots", "●".repeat(n) + "○".repeat(NEED - n)));
-        s.appendChild(el("span", "n", c > NEED ? "+" + (c - NEED) : ""));
+        s.appendChild(el("span", "dots", "●".repeat(n) + "○".repeat(N - n)));
+        s.appendChild(el("span", "n", c > N ? "+" + (c - N) : ""));
         s.appendChild(el("span", "f", p.f && p.f[i] ? p.f[i] + "✗" : ""));
         lvs.appendChild(s);
       });
@@ -311,6 +319,12 @@ function render() {
 function setTabs(next) {
   mutate("adminFreigabe", [next], d => d.tabs.forEach(t => t.on = next.indexOf(t.id) >= 0));
 }
+function setNeed(n) {
+  if (!data || n < 1 || n > 5) return;
+  mutate("adminNeed", [n], d => d.need = n);
+}
+$("needMinus").addEventListener("click", () => data && setNeed((data.need || 3) - 1));
+$("needPlus").addEventListener("click", () => data && setNeed((data.need || 3) + 1));
 function toggle(id) {
   const on = data.tabs.filter(t => t.on).map(t => t.id);
   setTabs(on.indexOf(id) >= 0 ? on.filter(t => t !== id) : on.concat(id));
