@@ -101,6 +101,16 @@ function draggable(board, hit, move, redraw) { // redraw optional
   const end = () => { grab = null; };
   c.addEventListener("pointerup", end); c.addEventListener("pointercancel", end);
 }
+// ---------- Schieberegler ----------
+// Jeder Regler sagt im HTML nur, wozu er da ist; die Schrittweite steht nur hier:
+//   data-step="look"   nur anschauen/erkunden: fein
+//   data-step="match"  etwas Gegebenes treffen (Quiz): grob, damit man es auch trifft
+// Umschalten (z. B. Erkunden ↔ Quiz) mit setStep(regler, "match").
+const STEP = { look: 0.05, match: 0.25 };
+function setStep(el, kind) { el.dataset.step = kind; el.step = STEP[kind]; }
+// Startwert neu setzen: ohne step-Attribut hat der Browser ihn schon auf ganze Zahlen gerundet
+document.querySelectorAll('input[type="range"]').forEach(el => { setStep(el, el.dataset.step || "look"); el.value = el.getAttribute("value"); });
+
 const nearPx = (board, x, y, px, py, r = 16) => Math.hypot(board.X(x) - px, board.Y(y) - py) <= r;
 const snapTo = (v, s) => r6(Math.round(v / s) * s);
 

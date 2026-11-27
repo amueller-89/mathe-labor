@@ -226,9 +226,9 @@ footer{font-size:13px;color:var(--muted)}
           <div class="vertex probe" id="spProbe" aria-hidden="true"></div>
         </div>
         <div class="card">
-          <div class="sl"><b class="cd">d</b><input type="range" id="spD" class="rd" min="-6" max="6" step="0.05" value="0"><output id="spDo"></output></div>
-          <div class="sl"><b class="ce">e</b><input type="range" id="spE" class="re" min="-6" max="6" step="0.05" value="0"><output id="spEo"></output></div>
-          <div class="sl"><b class="ca">a</b><input type="range" id="spA" class="ra" min="-3" max="3" step="0.05" value="1"><output id="spAo"></output></div>
+          <div class="sl"><b class="cd">d</b><input type="range" id="spD" class="rd" min="-6" max="6" data-step="look" value="0"><output id="spDo"></output></div>
+          <div class="sl"><b class="ce">e</b><input type="range" id="spE" class="re" min="-6" max="6" data-step="look" value="0"><output id="spEo"></output></div>
+          <div class="sl"><b class="ca">a</b><input type="range" id="spA" class="ra" min="-3" max="3" data-step="look" value="1"><output id="spAo"></output></div>
           <div class="row" style="margin-top:4px">
             <button class="btn" id="spReset">Zurück auf y = x²</button>
             <label class="chk"><input type="checkbox" id="spNorm" checked> Normalparabel</label>
@@ -269,9 +269,9 @@ footer{font-size:13px;color:var(--muted)}
           <div class="formula mid" id="fmNf"></div>
         </div>
         <div class="card">
-          <div class="sl"><b class="ca">a</b><input type="range" id="fmA" class="ra" min="-3" max="3" step="0.05" value="1"><output id="fmAo"></output></div>
-          <div class="sl"><b class="cz">x₁</b><input type="range" id="fmX1" class="rz" min="-7" max="7" step="0.05" value="-1"><output id="fmX1o" class="cz"></output></div>
-          <div class="sl"><b class="cz">x₂</b><input type="range" id="fmX2" class="rz" min="-7" max="7" step="0.05" value="3"><output id="fmX2o" class="cz"></output></div>
+          <div class="sl"><b class="ca">a</b><input type="range" id="fmA" class="ra" min="-3" max="3" data-step="look" value="1"><output id="fmAo"></output></div>
+          <div class="sl"><b class="cz">x₁</b><input type="range" id="fmX1" class="rz" min="-7" max="7" data-step="look" value="-1"><output id="fmX1o" class="cz"></output></div>
+          <div class="sl"><b class="cz">x₂</b><input type="range" id="fmX2" class="rz" min="-7" max="7" data-step="look" value="3"><output id="fmX2o" class="cz"></output></div>
           <p class="hint" id="fmZoff" hidden style="margin:0 0 8px">Keine Nullstellen: Zieh den Scheitel unter (bzw. über) die x-Achse, dann gehen die Regler wieder.</p>
           <div class="row">
             <button class="btn small" id="fmReset">Zurücksetzen</button>
@@ -304,8 +304,8 @@ footer{font-size:13px;color:var(--muted)}
           <div class="feedback" id="pqRes"></div>
         </div>
         <div class="card">
-          <div class="sl"><b class="cd">p</b><input type="range" id="pqP" class="rd" min="-8" max="8" step="0.1" value="-2"><output id="pqPo" class="cd"></output></div>
-          <div class="sl"><b class="ca">q</b><input type="range" id="pqQ" class="ra" min="-8" max="8" step="0.1" value="-3"><output id="pqQo" class="ca"></output></div>
+          <div class="sl"><b class="cd">p</b><input type="range" id="pqP" class="rd" min="-8" max="8" data-step="look" value="-2"><output id="pqPo" class="cd"></output></div>
+          <div class="sl"><b class="ca">q</b><input type="range" id="pqQ" class="ra" min="-8" max="8" data-step="look" value="-3"><output id="pqQo" class="ca"></output></div>
         </div>
         <p class="hint">Zum Üben: Tab 4 Rechentrainer, Stufe 3.</p>
       </aside>
@@ -659,6 +659,16 @@ function draggable(board, hit, move, redraw) { // redraw optional
   const end = () => { grab = null; };
   c.addEventListener("pointerup", end); c.addEventListener("pointercancel", end);
 }
+// ---------- Schieberegler ----------
+// Jeder Regler sagt im HTML nur, wozu er da ist; die Schrittweite steht nur hier:
+//   data-step="look"   nur anschauen/erkunden: fein
+//   data-step="match"  etwas Gegebenes treffen (Quiz): grob, damit man es auch trifft
+// Umschalten (z. B. Erkunden ↔ Quiz) mit setStep(regler, "match").
+const STEP = { look: 0.05, match: 0.25 };
+function setStep(el, kind) { el.dataset.step = kind; el.step = STEP[kind]; }
+// Startwert neu setzen: ohne step-Attribut hat der Browser ihn schon auf ganze Zahlen gerundet
+document.querySelectorAll('input[type="range"]').forEach(el => { setStep(el, el.dataset.step || "look"); el.value = el.getAttribute("value"); });
+
 const nearPx = (board, x, y, px, py, r = 16) => Math.hypot(board.X(x) - px, board.Y(y) - py) <= r;
 const snapTo = (v, s) => r6(Math.round(v / s) * s);
 
@@ -779,7 +789,6 @@ const fmA = $("fmA"), fmX1 = $("fmX1"), fmX2 = $("fmX2");
 function fmZeros() { const t = -fm.e / fm.a; if (t < -1e-9) return []; if (t <= 1e-9) return [fm.d]; const s = Math.sqrt(t); return [fm.d - s, fm.d + s]; }
 // Nullstellen in Beschriftungs-Reihenfolge [x1, x2] (x1 kann größer sein, wenn der Regler so steht)
 function fmLabeled() { const z = fmZeros(); if (!z.length) return null; if (z.length === 1) return [z[0], z[0]]; return fm.flip ? [z[1], z[0]] : [z[0], z[1]]; }
-const fmStep = () => 0.05;
 function fmSetZeros(x1, x2) { fm.d = (x1 + x2) / 2; fm.e = -fm.a * ((x2 - x1) / 2) ** 2; fm.flip = x1 > x2; }
 function updForms(fromSlider) {
   const { a, d, e } = fm, Z = fmLabeled();
@@ -830,7 +839,7 @@ draggable(bF,
     return null;
   },
   (g, x, y) => {
-    const s = fmStep(), R = bF.R - 0.5;
+    const s = STEP.look, R = bF.R - 0.5;
     if (g.kind === "v") { fm.d = Math.max(-R, Math.min(R, snapTo(x, s))); fm.e = Math.max(-R, Math.min(R, snapTo(y, s))); fm.flip = false; }
     else {
       const xi = Math.max(-R, Math.min(R, snapTo(x, s))), xo = g.other;
@@ -933,7 +942,7 @@ $("spSolve").addEventListener("click", () => {
 $("spNext").addEventListener("click", newTarget);
 function setSpMode(m) {
   spMode = m; if (hashOn) setHash();
-  sa.step = m === "quiz" ? 0.25 : 0.05; sd.step = se.step = m === "quiz" ? 0.2 : 0.05; // Quiz: grober, weniger fummelig (Ziele für a: halbe Werte)
+  [sa, sd, se].forEach(s => setStep(s, m === "quiz" ? "match" : "look"));
   $("spTabs").querySelectorAll("button").forEach(b => b.setAttribute("aria-selected", b.dataset.m === m));
   $("spQuizCard").hidden = m !== "quiz"; $("spLegTarget").hidden = m !== "quiz";
   $("spLegMine").textContent = m === "quiz" ? "Eure Parabel" : "Parabel";

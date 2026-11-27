@@ -35,9 +35,9 @@
           <div class="vertex probe" id="spProbe" aria-hidden="true"></div>
         </div>
         <div class="card">
-          <div class="sl"><b class="cd">d</b><input type="range" id="spD" class="rd" min="-6" max="6" step="0.05" value="0"><output id="spDo"></output></div>
-          <div class="sl"><b class="ce">e</b><input type="range" id="spE" class="re" min="-6" max="6" step="0.05" value="0"><output id="spEo"></output></div>
-          <div class="sl"><b class="ca">a</b><input type="range" id="spA" class="ra" min="-3" max="3" step="0.05" value="1"><output id="spAo"></output></div>
+          <div class="sl"><b class="cd">d</b><input type="range" id="spD" class="rd" min="-6" max="6" data-step="look" value="0"><output id="spDo"></output></div>
+          <div class="sl"><b class="ce">e</b><input type="range" id="spE" class="re" min="-6" max="6" data-step="look" value="0"><output id="spEo"></output></div>
+          <div class="sl"><b class="ca">a</b><input type="range" id="spA" class="ra" min="-3" max="3" data-step="look" value="1"><output id="spAo"></output></div>
           <div class="row" style="margin-top:4px">
             <button class="btn" id="spReset">Zurück auf y = x²</button>
             <label class="chk"><input type="checkbox" id="spNorm" checked> Normalparabel</label>
@@ -78,9 +78,9 @@
           <div class="formula mid" id="fmNf"></div>
         </div>
         <div class="card">
-          <div class="sl"><b class="ca">a</b><input type="range" id="fmA" class="ra" min="-3" max="3" step="0.05" value="1"><output id="fmAo"></output></div>
-          <div class="sl"><b class="cz">x₁</b><input type="range" id="fmX1" class="rz" min="-7" max="7" step="0.05" value="-1"><output id="fmX1o" class="cz"></output></div>
-          <div class="sl"><b class="cz">x₂</b><input type="range" id="fmX2" class="rz" min="-7" max="7" step="0.05" value="3"><output id="fmX2o" class="cz"></output></div>
+          <div class="sl"><b class="ca">a</b><input type="range" id="fmA" class="ra" min="-3" max="3" data-step="look" value="1"><output id="fmAo"></output></div>
+          <div class="sl"><b class="cz">x₁</b><input type="range" id="fmX1" class="rz" min="-7" max="7" data-step="look" value="-1"><output id="fmX1o" class="cz"></output></div>
+          <div class="sl"><b class="cz">x₂</b><input type="range" id="fmX2" class="rz" min="-7" max="7" data-step="look" value="3"><output id="fmX2o" class="cz"></output></div>
           <p class="hint" id="fmZoff" hidden style="margin:0 0 8px">Keine Nullstellen: Zieh den Scheitel unter (bzw. über) die x-Achse, dann gehen die Regler wieder.</p>
           <div class="row">
             <button class="btn small" id="fmReset">Zurücksetzen</button>
@@ -113,8 +113,8 @@
           <div class="feedback" id="pqRes"></div>
         </div>
         <div class="card">
-          <div class="sl"><b class="cd">p</b><input type="range" id="pqP" class="rd" min="-8" max="8" step="0.1" value="-2"><output id="pqPo" class="cd"></output></div>
-          <div class="sl"><b class="ca">q</b><input type="range" id="pqQ" class="ra" min="-8" max="8" step="0.1" value="-3"><output id="pqQo" class="ca"></output></div>
+          <div class="sl"><b class="cd">p</b><input type="range" id="pqP" class="rd" min="-8" max="8" data-step="look" value="-2"><output id="pqPo" class="cd"></output></div>
+          <div class="sl"><b class="ca">q</b><input type="range" id="pqQ" class="ra" min="-8" max="8" data-step="look" value="-3"><output id="pqQo" class="ca"></output></div>
         </div>
         <p class="hint">Zum Üben: Tab 4 Rechentrainer, Stufe 3.</p>
       </aside>
