@@ -821,8 +821,8 @@ const fk = x => 0.25 * x ** 3 - 3 * x + 1, dk = x => 0.75 * x * x - 3;
 const bK = new Board($("cKub"), 5, 0, 1), sK = new Board($("kubS"), 7, 0, 3);
 sK.lab = 2;
 const kubX = $("kubX"), KUB_Q = 2;
-// Frage erst, wenn in jedem Quadranten mindestens KUB_Q Punkte liegen (Punkte auf den Achsen zählen nicht)
-const kubEnough = () => [[1, 1], [-1, 1], [-1, -1], [1, -1]].every(([sx, sy]) => kub.pts.filter(([x, m]) => x * sx > 1e-9 && m * sy > 1e-9).length >= KUB_Q);
+// Frage erst, wenn in jedem Quadranten mindestens KUB_Q Punkte liegen (ein Punkt auf einer Achse zählt für beide Nachbarn)
+const kubEnough = () => [[1, 1], [-1, 1], [-1, -1], [1, -1]].every(([sx, sy]) => kub.pts.filter(([x, m]) => x * sx > -1e-9 && m * sy > -1e-9).length >= KUB_Q);
 let kub = Object.assign({ pts: [], stage: -1 }, EXS.kub || {}); // stage −1: nur der Graph
 const kubSave = () => { EXS.kub = kub; exSave(); };
 function updKub() {
