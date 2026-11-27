@@ -883,15 +883,16 @@ function drawTrain() {
 
 // ---------- Musterbeispiel je Stufe ----------
 
-// Farben im Musterbeispiel: a / x²-Glieder lila, d orange, x-Glieder blau, e / Zahlen grün
+// Farben im Musterbeispiel: nur Zahlen/Terme farbig, Rechenzeichen, Klammern, Exponenten und x bleiben weiß.
+// a und x²-Glieder lila, d orange, x-Glieder blau, e und reine Zahlen grün. Ein Objekt behält seine Farbe über alle Zeilen.
 const A = t => sp("ca", t), D = t => sp("cd", t), E = t => sp("ce", t), X = t => sp("cx", t);
 const EXAMPLES = [
-  { airy: true, sub: "Schreibe y = " + A("−2") + "(x − " + D("3") + ")² " + E("+ 4") + " in Normalform y = ax² + bx + c um.", rows: [
-    ["y", "= " + A("−2") + " · (x − " + D("3") + ")² " + E("+ 4"), "Aufgabe: a = −2, d = 3, e = 4"],
-    ["", "= " + A("−2") + " · (" + A("x²") + " " + X("− 2 · x · " + D("3")) + " " + E("+ " + D("3") + "²") + ") " + E("+ 4"), "2. binomische Formel: (a − b)² = a² − 2ab + b²"],
-    ["", "= " + A("−2") + " · (" + A("x²") + " " + X("− 6x") + " " + E("+ 9") + ") " + E("+ 4"), "In der Klammer ausrechnen"],
-    ["", "= " + A("−2x²") + " " + X("+ 12x") + " " + E("− 18") + " " + E("+ 4"), "−2 mal jeden Summanden. Achtung: −2 · (−6x) = +12x"],
-    ["", "= <span class=\"res\">" + A("−2x²") + " " + X("+ 12x") + " " + E("− 14") + "</span>", "Zahlen zusammenfassen: −18 + 4 = −14"],
+  { airy: true, sub: "Schreibe y = " + A("−2") + "(x − " + D("3") + ")² + " + E("4") + " in Normalform y = ax² + bx + c um.", rows: [
+    ["y", "= " + A("−2") + " · (x − " + D("3") + ")² + " + E("4"), "Aufgabe: a = −2, d = 3, e = 4"],
+    ["", "= " + A("−2") + " · (x² − 2 · x · " + D("3") + " + " + D("3") + "²) + " + E("4"), "2. binomische Formel: (a − b)² = a² − 2ab + b²"],
+    ["", "= " + A("−2") + " · (x² − " + X("6x") + " + " + E("9") + ") + " + E("4"), "In der Klammer ausrechnen"],
+    ["", "= " + A("−2x²") + " + " + X("12x") + " − " + E("18") + " + " + E("4"), "−2 mal jeden Summanden. Achtung: −2 · (−6x) = +12x"],
+    ["", "= <span class=\"res\">" + A("−2x²") + " + " + X("12x") + " − " + E("14") + "</span>", "Zahlen zusammenfassen: −18 + 4 = −14"],
   ] },
   { sub: "Schreibe y = 2(x + 1)(x − 4) in Normalform um.", rows: [
     ["y", "= 2(x + 1)(x − 4)", "Aufgabe"],
