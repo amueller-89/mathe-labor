@@ -19,3 +19,12 @@ table.wt td{font-weight:700}
 .tgrid .h{text-align:center;font-family:var(--body);font-size:18px;color:var(--muted)}
 .tgrid input.in{width:3.6em}
 .lock small{display:block;font-family:var(--body);font-size:15px;color:var(--muted);margin-top:4px}
+
+/* Stufe 4: Textaufgaben ohne Skizze */
+#tab-train .stage.nosk{grid-template-columns:minmax(0,1fr);max-width:760px}
+#tab-train .stage.nosk > section{display:none}
+.story{font-size:20px;line-height:1.5;margin:4px 0 0;font-weight:600;white-space:normal}
+.answer .u{font-size:20px;font-weight:600;margin-left:8px}
+.answer .q{margin:6px 0 10px;font-size:18px;line-height:1.4;font-weight:600}
+.answer input.in.eq{width:11em;text-align:left}
+#st2{margin-top:14px}

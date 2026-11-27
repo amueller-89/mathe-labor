@@ -22,6 +22,7 @@ function renderLevels() {
   while (prog.unl < 3 && prog.c[prog.unl] >= N) { prog.unl++; up = true; }
   if (!prog.won && prog.c.every(c => c >= N)) { prog.won = true; up = true; setTimeout(showWin, 500); }
   if (up) save();
+  document.querySelectorAll(".needN").forEach(e => e.textContent = N);
   const box = $("levels"); box.innerHTML = "";
   LEVELS.forEach((L, i) => {
     const b = document.createElement("button"); b.className = "lvl";

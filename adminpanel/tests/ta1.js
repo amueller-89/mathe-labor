@@ -49,7 +49,9 @@ await kid.click('#mainTabs [data-tab=pro]');await kid.waitForTimeout(300);
 console.log('pro locked: tab shown',await kid.isVisible('#tab-pro'),'toast',await kid.isVisible('.proToast'),'class',await kid.getAttribute('#mainTabs [data-tab=pro]','class'));
 await kid.click('#mainTabs [data-tab=train]');
 for(let lv=1;lv<4;lv++){ await kid.click(`#levels button:nth-child(${lv+1})`); for(let i=0;i<3;i++){
-  const t=await kid.evaluate(()=>window.__lab.task.want); for(const k in t) await kid.fill(`[data-k=${k}]`,fmt(t[k]));
+  const key=await kid.evaluate(()=>window.__lab.task.key);
+  if(key){await kid.fill('[data-k=eq]',key.eq);await kid.click('#trCheck');await kid.fill('[data-k=x]',fmt(key.x));}
+  else{const t=await kid.evaluate(()=>window.__lab.task.want); for(const k in t) await kid.fill(`[data-k=${k}]`,fmt(t[k]));}
   await kid.click('#trCheck'); if(!(lv===3&&i===2)) await kid.click('#trNext'); }}
 await kid.waitForTimeout(1200);
 console.log('win',await kid.isVisible('#win'),'winPro',await kid.isVisible('#winPro'));

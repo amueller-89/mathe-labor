@@ -315,7 +315,7 @@ footer{font-size:13px;color:var(--muted)}
 
   <!-- ================= 4 RECHENTRAINER ================= -->
   <section id="tab-train" class="tab" hidden>
-    <p class="lede" style="margin-bottom:12px">Rechne auf Papier, tippe das Ergebnis ein und prüfe. Die Skizze zeigt danach deine Parabel (blau) und, sobald es stimmt, die richtige (rot). 3 richtige Aufgaben schalten die nächste Stufe frei.</p>
+    <p class="lede" style="margin-bottom:12px">Rechne auf Papier, tippe das Ergebnis ein und prüfe. Die Skizze zeigt danach deine Parabel (blau) und, sobald es stimmt, die richtige (rot). <span class="needN">3</span> richtige Aufgaben schalten die nächste Stufe frei.</p>
     <div class="levels" id="levels" style="margin-bottom:16px"></div>
     <div class="stage">
       <section>
@@ -1190,6 +1190,7 @@ function renderLevels() {
   while (prog.unl < 3 && prog.c[prog.unl] >= N) { prog.unl++; up = true; }
   if (!prog.won && prog.c.every(c => c >= N)) { prog.won = true; up = true; setTimeout(showWin, 500); }
   if (up) save();
+  document.querySelectorAll(".needN").forEach(e => e.textContent = N);
   const box = $("levels"); box.innerHTML = "";
   LEVELS.forEach((L, i) => {
     const b = document.createElement("button"); b.className = "lvl";

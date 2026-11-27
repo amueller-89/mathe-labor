@@ -163,6 +163,15 @@ table.wt td{font-weight:700}
 .tgrid .h{text-align:center;font-family:var(--body);font-size:18px;color:var(--muted)}
 .tgrid input.in{width:3.6em}
 .lock small{display:block;font-family:var(--body);font-size:15px;color:var(--muted);margin-top:4px}
+
+/* Stufe 4: Textaufgaben ohne Skizze */
+#tab-train .stage.nosk{grid-template-columns:minmax(0,1fr);max-width:760px}
+#tab-train .stage.nosk > section{display:none}
+.story{font-size:20px;line-height:1.5;margin:4px 0 0;font-weight:600;white-space:normal}
+.answer .u{font-size:20px;font-weight:600;margin-left:8px}
+.answer .q{margin:6px 0 10px;font-size:18px;line-height:1.4;font-weight:600}
+.answer input.in.eq{width:11em;text-align:left}
+#st2{margin-top:14px}
 </style>
 </head>
 <body>
@@ -260,7 +269,7 @@ table.wt td{font-weight:700}
 
   <!-- ================= 3 RECHENTRAINER ================= -->
   <section id="tab-train" class="tab" hidden>
-    <p class="lede" style="margin-bottom:12px">Rechne auf Papier, tippe das Ergebnis ein und prüfe. Die Skizze zeigt danach deine Gerade (blau) und, sobald es stimmt, die richtige (rot). 3 richtige Aufgaben schalten die nächste Stufe frei.</p>
+    <p class="lede" style="margin-bottom:12px">Rechne auf Papier, tippe das Ergebnis ein und prüfe. Die Skizze zeigt danach deine Gerade (blau) und, sobald es stimmt, die richtige (rot). <span class="needN">3</span> richtige Aufgaben schalten die nächste Stufe frei.</p>
     <div class="levels" id="levels" style="margin-bottom:16px"></div>
     <div class="stage">
       <section>
@@ -339,7 +348,7 @@ table.wt td{font-weight:700}
     <div class="big" aria-hidden="true">🏆</div>
     <h2 id="winT">Glückwunsch!</h2>
     <p><b>Du hast alle 4 Stufen geschafft.</b></p>
-    <p>Ablesen, Normalform, Wertetabelle und Gerade durch zwei Punkte: Lineare Funktionen hast du drauf. Richtig gut gemacht!</p>
+    <p>Ablesen, Normalform, Wertetabelle und Textaufgaben: Lineare Funktionen hast du drauf. Richtig gut gemacht!</p>
     <p id="winProTxt"><b>Neu freigeschaltet: Tab 4 mit Profi-Aufgaben</b> zum Knobeln.</p>
     <div class="stats" id="winStats"></div>
     <div class="row" style="justify-content:center">
@@ -352,7 +361,7 @@ table.wt td{font-weight:700}
 <script>
 (() => {
 "use strict";
-const LAB = {"id": "geraden", "title": "Geraden-Labor", "thema": "Lineare Funktionen", "klasse": "UIIIb", "icon": "M4 25L28 6", "tabs": [{"id": "mb", "label": "Steigung & y-Achsenabschnitt", "slug": "steigung"}, {"id": "pts", "label": "Zwei Punkte", "slug": "zwei-punkte"}], "skizze": "Gerade", "win": "Ablesen, Normalform, Wertetabelle und Gerade durch zwei Punkte: Lineare Funktionen hast du drauf. Richtig gut gemacht!", "profi": "Geraden-Profi!", "file": "Geraden"};
+const LAB = {"id": "geraden", "title": "Geraden-Labor", "thema": "Lineare Funktionen", "klasse": "UIIIb", "icon": "M4 25L28 6", "tabs": [{"id": "mb", "label": "Steigung & y-Achsenabschnitt", "slug": "steigung"}, {"id": "pts", "label": "Zwei Punkte", "slug": "zwei-punkte"}], "skizze": "Gerade", "win": "Ablesen, Normalform, Wertetabelle und Textaufgaben: Lineare Funktionen hast du drauf. Richtig gut gemacht!", "profi": "Geraden-Profi!", "file": "Geraden"};
 /* Geteilter Kern aller Labore: kleine Helfer, Koordinatensystem, Zahlen einlesen.
    Wird vom Build (build.py) zusammen mit dem Code des Labors in eine Datei kopiert. */
 const $ = id => document.getElementById(id);
@@ -636,7 +645,7 @@ const LEVELS = [
   { t: "Stufe 1", s: "Gleichung aus dem Graphen" },
   { t: "Stufe 2", s: "In Normalform bringen" },
   { t: "Stufe 3", s: "Wertetabelle ausfüllen" },
-  { t: "Stufe 4", s: "Gerade durch zwei Punkte" },
+  { t: "Stufe 4", s: "Textaufgaben" },
 ];
 
 const mbSlots = `<div class="slots"><span>y =</span><span class="p cm">m</span><span>· x +</span><span class="p cb">b</span>
@@ -678,6 +687,11 @@ function makeTask(l) {
       answer: `<div class="tgrid">${head}</div>`, f: x => m * x + b,
       sol: () => xs.map(x => `x = ${num(x)}: y = ${num(r6(m * x + b))}`).join(" &nbsp; ") };
   }
+  return storyTask(l);
+}
+
+// Versteckt (früher Stufe 4): Gerade durch zwei Punkte. Zum Reaktivieren in LEVELS/makeTask wieder einhängen.
+function twoPointsTask(l) {
   const m = pick([-3, -2, -1, -0.5, 0.5, 1, 2, 3]), b = rnd(9) - 4;
   let x1, x2, y1, y2;
   do {
@@ -690,19 +704,93 @@ function makeTask(l) {
     answer: mbSlots, f: x => m * x + b, sol: () => `m = ${num(y2 - y1)} : ${num(x2 - x1)} = ${num(m)}, &nbsp; ${lineHTML(m, b, false)}` };
 }
 
+// ---------- Stufe 4: Textaufgaben (lineare Funktion aufstellen, dann Gleichung lösen) ----------
+const STORIES = [
+  { // steigend
+    make() { const b = pick([5, 6, 7.5, 8, 9.5, 10, 12]), m = (5 + rnd(11)) / 100, x = 10 * (3 + rnd(18)); return { b, m, x }; },
+    text: o => `Ein Handytarif kostet ${eur(o.b)} Grundgebühr im Monat und ${eur(o.m)} pro Gesprächsminute.`,
+    vars: "x = Minuten, y = Kosten in €",
+    ask: (o, y) => `Nach wie vielen Minuten kostet der Monat ${eur(y)}?`, unit: "Minuten",
+  },
+  { // steigend
+    make() { const b = pick([3, 3.5, 4, 4.5, 5]), m = pick([1.5, 1.8, 2, 2.1, 2.2, 2.4, 2.5]), x = 3 + rnd(18); return { b, m, x }; },
+    text: o => `Eine Taxifahrt kostet ${eur(o.b)} Grundpreis und ${eur(o.m)} pro Kilometer.`,
+    vars: "x = Kilometer, y = Preis in €",
+    ask: (o, y) => `Wie viele Kilometer kann man für ${eur(y)} fahren?`, unit: "km",
+  },
+  { // fallend
+    make() { const m = pick([0.5, 1, 1.5, 2]), b = 18 + 2 * rnd(7); let x; do x = 2 + rnd(Math.floor((b - 2) / m) - 1); while (b - m * x < 2); return { b, m: -m, x }; },
+    text: o => `Eine Kerze ist ${num(o.b)} cm hoch. Pro Stunde brennt sie ${num(-o.m)} cm herunter.`,
+    vars: "x = Stunden, y = Höhe in cm",
+    ask: (o, y) => `Nach wie vielen Stunden ist die Kerze noch ${num(y)} cm hoch?`, unit: "Stunden",
+  },
+  { // fallend
+    make() { const b = pick([80, 85, 90, 95, 100]), m = pick([4, 5, 6, 8, 10]); let x; do x = 2 + rnd(Math.floor((b - 5) / m) - 1); while (b - m * x < 5); return { b, m: -m, x }; },
+    text: o => `Ein Handy-Akku ist zu ${num(o.b)} % geladen. Beim Spielen verliert er ${num(-o.m)} % pro Stunde.`,
+    vars: "x = Stunden, y = Ladung in %",
+    ask: (o, y) => `Nach wie vielen Stunden hat der Akku noch ${num(y)} %?`, unit: "Stunden",
+  },
+];
+const eur = v => (Math.abs(v - Math.round(v)) < 1e-9 ? String(Math.round(v)) : r6(v).toFixed(2).replace(".", ",")) + " €";
+// „0,09x + 7,5“, „7,5 + 0,09·x“, „24 − 1,5x“ → {m, b}; null, wenn es keine Gerade in x ist
+function parseLin(str) {
+  let s = String(str).toLowerCase().replace(/^\s*y\s*=/, "").replace(/[−–—]/g, "-").replace(/[·*×\s€%]/g, "").replace(/,/g, ".");
+  if (!s) return null;
+  if (!/^[+-]/.test(s)) s = "+" + s;
+  const terms = s.match(/[+-][^+-]+/g);
+  if (!terms || terms.join("") !== s) return null;
+  let m = 0, b = 0;
+  for (const t of terms) {
+    if (t.endsWith("x")) { const k = t.slice(0, -1); const v = k === "+" ? 1 : k === "-" ? -1 : parse(k); if (isNaN(v)) return null; m += v; }
+    else { const v = parse(t); if (isNaN(v)) return null; b += v; }
+  }
+  return { m: r6(m), b: r6(b) };
+}
+const linTxt = (m, b) => `y = ${num(m)}x ${b < 0 ? "−" : "+"} ${num(Math.abs(b))}`;
+function storyTask(l) {
+  const S = pick(STORIES), o = S.make(), y = r6(o.m * o.x + o.b);
+  return { l, phase: 1, title: "Textaufgabe", f: x => o.m * x + o.b, noSketch: true, key: { eq: linTxt(o.m, o.b).slice(4), x: o.x }, // key: für die Tests
+    task: `<p class="story">${S.text(o)}</p>`,
+    hint: "",
+    answer: `<p class="q">1. Stelle die Funktionsgleichung auf (${S.vars}).</p>
+      <div class="slots"><span>y =</span><input class="in eq" data-k="eq" autocomplete="off" spellcheck="false" aria-label="Funktionsgleichung"></div>
+      <div id="st2" hidden><p class="q">2. ${S.ask(o, y)}</p>
+      <div class="slots">${inp("x")}<span class="u">${S.unit}</span></div></div>`,
+    check(F, fb) {
+      if (this.phase === 1) {
+        const g = parseLin(F.eq.value);
+        if (!g) { fb.className = "feedback no"; fb.textContent = "Bitte eine Gleichung mit x eintippen."; return null; }
+        const ok = near(g.m, o.m, 0.001) && near(g.b, o.b, 0.001);
+        mark(F.eq, ok); this.guess = g;
+        if (!ok) return false;
+        this.phase = 2; F.eq.readOnly = true; $("st2").hidden = false; F.x.focus();
+        fb.className = "feedback ok"; fb.textContent = "Richtig! Jetzt Teil 2.";
+        return null;
+      }
+      const v = parse(F.x.value);
+      if (isNaN(v)) { fb.className = "feedback no"; fb.textContent = "Bitte eine Zahl eintippen."; return null; }
+      const ok = near(v, o.x, 0.001); mark(F.x, ok); return ok;
+    },
+    sol: () => `1. ${linTxt(o.m, o.b)} &nbsp;&nbsp; 2. ${num(o.x)} ${S.unit}` };
+}
+
 function drawTrain() {
-  const B = bTrain; B.begin(); if (!task) return;
+  const B = bTrain;
+  // Textaufgaben haben keine Skizze im Koordinatensystem
+  document.querySelector("#tab-train .stage").classList.toggle("nosk", !!(task && task.noSketch));
+  if (task && task.noSketch) { $("legTrain").innerHTML = ""; return; }
+  B.begin(); if (!task) return;
   const reveal = task.state !== "open", leg = []; // richtige Skizze erst nach richtiger Antwort oder „Lösung zeigen“, sonst könnte man ablesen
   if (task.l === 0) { B.curve(task.f, tok("--pencil"), 5); leg.push(["--pencil", "Gegebene Gerade"]); }
   else if (reveal) { B.curve(task.f, tok("--pencil"), 5); leg.push(["--pencil", "Richtige Gerade"]); }
-  if (task.l === 3) { B.dot(task.P[0], task.P[1], tok("--z"), 7); B.dot(task.Q[0], task.Q[1], tok("--z"), 7); leg.push(["--z", "P und Q"]); }
+  if (task.P) { B.dot(task.P[0], task.P[1], tok("--z"), 7); B.dot(task.Q[0], task.Q[1], tok("--z"), 7); leg.push(["--z", "P und Q"]); }
   if (task.l === 2 && reveal) task.xs.forEach(x => B.dot(x, task.f(x), tok("--pencil"), 6));
   const g = task.guess;
   if (g && task.state !== "shown") {
     if (task.l === 2) { task.xs.forEach((x, i) => B.dot(x, g["y" + i], tok("--curve"), 5)); leg.push(["--curve", "Deine Punkte"]); }
     else { B.curve(x => g.m * x + g.b, tok("--curve"), 3); leg.push(["--curve", "Deine Gerade"]); }
   }
-  if (!reveal && task.l !== 0 && task.l !== 3) B.tag([[task.guess ? "Die richtige Skizze kommt, sobald es stimmt" : "Skizze erscheint nach dem Prüfen", tok("--muted")]], B.w / 2, B.Y(-6), { align: "center", base: "middle" });
+  if (!reveal && task.l !== 0 && !task.P) B.tag([[task.guess ? "Die richtige Skizze kommt, sobald es stimmt" : "Skizze erscheint nach dem Prüfen", tok("--muted")]], B.w / 2, B.Y(-6), { align: "center", base: "middle" });
   $("legTrain").innerHTML = leg.map(([c, t]) => `<span><i style="background:var(${c})"></i>${t}</span>`).join("");
 }
 
@@ -752,18 +840,17 @@ const EXAMPLES = [
     { sec: "Genauso für x = " + Z("0") + " und x = " + Z("1") },
     { html: `<div class="extab"><span>x</span><span>${Z("−2")}</span><span>${Z("0")}</span><span>${Z("1")}</span><span>${Z("3")}</span><span>y</span><span>7</span><span>3</span><span>1</span><span>−3</span></div>` },
   ] },
-  { sub: "Bestimme die Gerade durch P(" + Z("−1") + " | " + Z("4") + ") und Q(" + Z("3") + " | " + Z("−4") + ").", rows: [
-    { sec: "1. Steigung" },
-    [M("m"), "= " + frac("f(x₂) − f(x₁)", "x₂ − x₁"), "Q und P einsetzen"],
-    ["", "= " + frac(Z("−4") + " − " + Z("4"), Z("3") + " − (" + Z("−1") + ")")],
-    ["", "= " + frac("−8", "4")],
-    ["", "= " + M("−2")],
-    { sec: "2. b: P in y = mx + b einsetzen" },
-    [Z("4"), "= " + M("−2") + " · (" + Z("−1") + ") + " + Bc("b")],
-    [Z("4"), "= 2 + " + Bc("b"), "", "| − 2"],
-    ["2", "= " + Bc("b")],
-    { sec: "3. Ergebnis" },
-    ["y", "= " + res(M("−2") + "x + " + Bc("2"))],
+  // Das Musterbeispiel zur versteckten Stufe „Gerade durch zwei Punkte“ liegt in der Git-Historie.
+  { sub: "Eine Kerze ist 24 cm hoch. Pro Stunde brennt sie 1,5 cm herunter. Nach wie vielen Stunden ist sie noch 9 cm hoch?", rows: [
+    { sec: "1. Funktionsgleichung" },
+    [M("m"), "= " + M("−1,5"), "pro Stunde weniger"],
+    [Bc("b"), "= " + Bc("24"), "am Anfang"],
+    ["y", "= " + res(M("−1,5") + "x + " + Bc("24"))],
+    { sec: "2. y = 9 einsetzen" },
+    ["9", "= " + M("−1,5") + "x + " + Bc("24"), "", "| − 24"],
+    ["−15", "= " + M("−1,5") + "x", "", "| : (−1,5)"],
+    ["10", "= x"],
+    { sec: "Nach " + res("10 Stunden") + " ist die Kerze noch 9 cm hoch." },
   ] },
 ];
 
@@ -889,6 +976,7 @@ function renderLevels() {
   while (prog.unl < 3 && prog.c[prog.unl] >= N) { prog.unl++; up = true; }
   if (!prog.won && prog.c.every(c => c >= N)) { prog.won = true; up = true; setTimeout(showWin, 500); }
   if (up) save();
+  document.querySelectorAll(".needN").forEach(e => e.textContent = N);
   const box = $("levels"); box.innerHTML = "";
   LEVELS.forEach((L, i) => {
     const b = document.createElement("button"); b.className = "lvl";
