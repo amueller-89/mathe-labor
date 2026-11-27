@@ -182,6 +182,9 @@ footer{font-size:13px;color:var(--muted)}
 
 /* Gleichungskette: linke Seite und „=“ in fester Spalte */
 .eqrows{display:grid;grid-template-columns:1em auto;column-gap:.3em;justify-content:start}
+.slots.s7{grid-template-columns:repeat(7,auto)}
+.answer .q{flex-basis:100%;margin:4px 0 6px;font-size:18px;line-height:1.4;font-weight:600}
+.answer #nf2{flex-basis:100%;margin-top:10px}
 #mainTabs button.locked{opacity:.55}
 #mainTabs button.locked::before{content:"\1F512\00A0"}
 .proToast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:70;background:var(--surface);color:var(--ink);border:2px solid var(--line);border-radius:12px;padding:12px 18px;box-shadow:0 12px 40px rgb(0 0 0 / .4);max-width:calc(100vw - 32px);text-align:center}
@@ -1008,7 +1011,7 @@ $("spTabs").querySelectorAll("button").forEach(b => b.addEventListener("click", 
 const LEVELS = [
   { t: "Stufe 1", s: "Scheitelpunktform → allgemeine Form" },
   { t: "Stufe 2", s: "Nullstellenform → allgemeine Form" },
-  { t: "Stufe 3", s: "Nullstellen mit der pq-Formel" },
+  { t: "Stufe 3", s: "allgemeine Form → Nullstellenform" },
   { t: "Stufe 4", s: "Gleichung aus der Skizze" },
 ];
 
@@ -1030,33 +1033,49 @@ function makeTask(l) {
       f: x => a * (x - x1) * (x - x2), sol: () => `${nullHTML(a, x1, x2, false)} = ${polyBody(a, -a * (x1 + x2), a * x1 * x2)}` };
   }
   if (l === 2) {
-    const k = pick([1, 1, 1, 2, -1, 3]);
+    const k = pick([1, 1, 2, -1, 2, 3, -2]);
     let p, q, roots;
-    if (Math.random() < 0.18) { const h = rnd(7) - 3; p = 2 * h; q = h * h + 1 + rnd(5); roots = []; }
+    if (Math.random() < 0.12) { const h = rnd(7) - 3; p = 2 * h; q = h * h + 1 + rnd(5); roots = []; }
     else { let r1 = rnd(15) - 7, r2 = rnd(15) - 7; if (r1 > r2) [r1, r2] = [r2, r1]; p = -(r1 + r2); q = r1 * r2; roots = r1 === r2 ? [r1] : [r1, r2]; }
-    return { l, k, p, q, roots,
-      title: "Berechne die Lösungen.", task: polyBody(k, k * p, k * q) + " = 0",
-      answer: `x₁ = ${inp("x1")} &nbsp; x₂ = ${inp("x2")} <label class="chk" style="font-size:17px;font-weight:700"><input type="checkbox" data-k="none"> keine Lösung</label>`,
+    const want = roots.length === 1 ? [roots[0], roots[0]] : roots.slice();
+    const same = (g, w) => (near(g[0], w[0], 0.01) && near(g[1], w[1], 0.01)) || (near(g[0], w[1], 0.01) && near(g[1], w[0], 0.01));
+    return { l, k, p, q, roots, phase: 1, key: { a: k, xs: want }, // key: für die Tests
+      title: "Bestimme die Nullstellen und die Nullstellenform.", task: "y = " + polyBody(k, k * p, k * q),
+      answer: `<p class="q">1. Nullstellen</p>
+      <div class="nrow">x₁ = ${inp("x1")} &nbsp; x₂ = ${inp("x2")} <label class="chk" style="font-size:17px;font-weight:700"><input type="checkbox" data-k="none"> keine Nullstelle</label></div>
+      <div id="nf2" hidden><p class="q">2. Nullstellenform</p>
+      <div class="slots s7"><span>y =</span><span class="p">a</span><span>· (x −</span><span class="p">x₁</span><span>) · (x −</span><span class="p">x₂</span><span>)</span>
+      <span>y =</span>${inp("a")}<span>· (x −</span>${inp("n1")}<span>) · (x −</span>${inp("n2")}<span>)</span></div></div>`,
       f: x => k * (x * x + p * x + q),
-      // eigene Prüfung: Reihenfolge egal, Kästchen „keine Lösung“
+      // eigene Prüfung: Reihenfolge egal, Kästchen „keine Nullstelle“; danach Teil 2
       check(F, fb) {
+        if (this.phase === 2) {
+          const g = { a: parse(F.a.value), xs: [parse(F.n1.value), parse(F.n2.value)] };
+          if (isNaN(g.a) || g.xs.some(isNaN)) { fb.className = "feedback no"; fb.textContent = "Bitte alle drei Kästchen ausfüllen."; return null; }
+          this.guess = { xs: this.guess.xs, nf: g };
+          const okX = same(g.xs, want), okA = near(g.a, k, 0.001);
+          mark(F.a, okA); [F.n1, F.n2].forEach((el, i) => mark(el, okX || want.some(w => near(w, g.xs[i], 0.01))));
+          return okA && okX;
+        }
         if (F.none.checked) { this.guess = { none: true }; [F.x1, F.x2].forEach(el => el.classList.remove("ok", "bad")); return roots.length === 0; }
         let g = [parse(F.x1.value), parse(F.x2.value)];
-        if (g.every(isNaN)) { fb.className = "feedback no"; fb.textContent = "Bitte ausfüllen (oder „keine Lösung“)."; return null; }
-        if (g.some(isNaN)) { const v = g.find(x => !isNaN(x)); g = [v, v]; } // ein Feld leer = nur eine Lösung
+        if (g.every(isNaN)) { fb.className = "feedback no"; fb.textContent = "Bitte ausfüllen (oder „keine Nullstelle“)."; return null; }
+        if (g.some(isNaN)) { const v = g.find(x => !isNaN(x)); g = [v, v]; } // ein Feld leer = nur eine Nullstelle
         this.guess = { xs: g };
-        const want = roots.length === 1 ? [roots[0], roots[0]] : roots.slice();
         if (want.length === 0) { mark(F.x1, false); mark(F.x2, false); return false; }
-        const ok = (near(g[0], want[0], 0.01) && near(g[1], want[1], 0.01)) || (near(g[0], want[1], 0.01) && near(g[1], want[0], 0.01));
-        if (ok) { mark(F.x1, true); mark(F.x2, true); }
-        else { mark(F.x1, want.some(w => near(w, g[0], 0.01))); mark(F.x2, want.some(w => near(w, g[1], 0.01))); }
-        return ok;
+        const ok = same(g, want);
+        if (!ok) { mark(F.x1, want.some(w => near(w, g[0], 0.01))); mark(F.x2, want.some(w => near(w, g[1], 0.01))); return false; }
+        mark(F.x1, true); mark(F.x2, true);
+        this.phase = 2; [F.x1, F.x2].forEach(el => el.readOnly = true); F.none.disabled = true; $("nf2").hidden = false; F.a.focus();
+        fb.className = "feedback ok"; fb.textContent = "Richtig! Jetzt Teil 2."; drawTrain();
+        return null;
       },
       failMsg() {
-        if (this.guess.none) return "Doch, es gibt Lösungen. Rechne D = (p/2)² − q nochmal nach.";
+        if (this.guess.none) return "Doch, es gibt Nullstellen. Rechne D = (p/2)² − q nochmal nach.";
         if (roots.length === 0) return "Schau auf D = (p/2)² − q. Was ist, wenn D negativ ist?";
+        if (this.guess.nf && !near(this.guess.nf.a, k, 0.001)) return "Das a ist die Zahl vor dem x².";
       },
-      sol: () => roots.length === 0 ? `D = (p/2)² − q = ${num((p / 2) ** 2 - q)} &lt; 0 → keine Lösung` : roots.length === 1 ? `x = ${num(roots[0])} (nur eine Lösung)` : `x₁ = ${num(roots[0])}, &nbsp; x₂ = ${num(roots[1])}` };
+      sol: () => roots.length === 0 ? `D = (p/2)² − q = ${num((p / 2) ** 2 - q)} &lt; 0 → keine Nullstelle` : nullHTML(k, want[0], want[1], false) };
   }
   const a = pick([1, -1, 2, -2, 0.5, -0.5]), d = rnd(11) - 5, e = rnd(11) - 5;
   return { l, a, d, e, want: { a, d, e },
@@ -1068,7 +1087,7 @@ function makeTask(l) {
 
 function drawTrain() {
   const B = bTrain; B.begin(); if (!task) return;
-  const reveal = task.state !== "open"; // richtige Skizze erst nach richtiger Antwort oder „Lösung zeigen“, sonst könnte man ablesen
+  const reveal = task.state !== "open" || task.phase === 2; // richtige Skizze erst nach richtiger Antwort oder „Lösung zeigen“, sonst könnte man ablesen
   const leg = [];
   if (task.l === 3) {
     B.curve(task.f, tok("--pencil"), 5); leg.push(["--pencil", "Gegebene Parabel"]);
@@ -1081,7 +1100,8 @@ function drawTrain() {
   if (g && task.state !== "shown") {
     if (task.l === 0 || task.l === 1) { B.curve(x => g.A * x * x + g.B * x + g.C, tok("--curve"), 3); leg.push(["--curve", "Deine Parabel"]); }
     if (task.l === 3) { B.curve(x => g.a * (x - g.d) ** 2 + g.e, tok("--curve"), 3); leg.push(["--curve", "Deine Parabel"]); }
-    if (task.l === 2 && g.xs) { g.xs.forEach(x => B.dot(x, 0, tok("--curve"), 5)); leg.push(["--curve", "Deine Lösungen"]); }
+    if (task.l === 2 && g.nf) { B.curve(x => g.nf.a * (x - g.nf.xs[0]) * (x - g.nf.xs[1]), tok("--curve"), 3); leg.push(["--curve", "Deine Parabel"]); }
+    else if (task.l === 2 && g.xs) { g.xs.forEach(x => B.dot(x, 0, tok("--curve"), 5)); leg.push(["--curve", "Deine Nullstellen"]); }
   }
   if (!reveal && task.l !== 3) {
     const c = B.ctx; c.font = `15px ${tok("--body")}`; c.fillStyle = tok("--muted"); c.textAlign = "center";
@@ -1095,7 +1115,7 @@ function drawTrain() {
 // Musterbeispiele: Kommentar steht in der Zeile VOR dem Schritt (wie bei Äquivalenzumformungen).
 // Farben nur für Zahlen/Terme, Rechenzeichen, Klammern, Exponenten und x bleiben weiß; jedes Objekt behält seine Farbe.
 // Stufe 1/2: Streckfaktor und x²-Glieder lila, d orange, Nullstellen türkis, x-Glieder blau, Zahlen grün.
-// Stufe 3 wie im pq-Tab: p und Mitte −p/2 orange, q lila, Wurzel grün.
+// Stufe 3 wie im pq-Tab: p und Mitte −p/2 orange, q lila, Wurzel grün; Faktor a blau, Nullstellen türkis.
 const A = t => sp("ca", t), D = t => sp("cd", t), E = t => sp("ce", t), X = t => sp("cx", t), Z = t => sp("cz", t);
 const res = t => `<span class="res">${t}</span>`;
 const EXAMPLES = [
@@ -1113,9 +1133,9 @@ const EXAMPLES = [
     ["", "= " + A("2") + " · (x² − " + X("3x") + " − " + E("4") + ")", "mal 2"],
     ["", "= " + res(A("2x²") + " − " + X("6x") + " − " + E("8"))],
   ] },
-  { sub: "Löse 2x² − 4x − 6 = 0 mit der pq-Formel.", rows: [
+  { sub: "Bestimme die Nullstellenform von y = " + X("2") + "x² − 4x − 6.", rows: [
     { sec: "1. Normalform herstellen" },
-    ["2x² − 4x − 6", "= 0", "", "| : 2"],
+    [X("2") + "x² − 4x − 6", "= 0", "", "| : " + X("2")],
     ["x² − " + D("2") + "x − " + A("3"), "= 0"],
     { sec: "2. pq-Formel" },
     ["x", "= −" + D("p") + "/2 ± √((" + D("p") + "/2)² − " + A("q") + ")", "einsetzen"],
@@ -1124,9 +1144,13 @@ const EXAMPLES = [
     ["", "= " + D("1") + " ± " + E("√") + "(" + E("1") + " + " + E("3") + ")"],
     ["", "= " + D("1") + " ± " + E("√4")],
     ["", "= " + D("1") + " ± " + E("2")],
-    { sec: "3. Die zwei Lösungen" },
-    ["x₁", "= " + D("1") + " − " + E("2") + " = " + res("−1")],
-    ["x₂", "= " + D("1") + " + " + E("2") + " = " + res("3")],
+    { sec: "3. Die zwei Nullstellen" },
+    ["x₁", "= " + D("1") + " − " + E("2") + " = " + Z("−1")],
+    ["x₂", "= " + D("1") + " + " + E("2") + " = " + Z("3")],
+    { sec: "4. Nullstellenform" },
+    ["y", "= a · (x − x₁) · (x − x₂)", "einsetzen"],
+    ["", "= " + X("2") + " · (x − (" + Z("−1") + ")) · (x − " + Z("3") + ")", "− (−1) = + 1"],
+    ["", "= " + res(X("2") + " · (x + " + Z("1") + ") · (x − " + Z("3") + ")")],
   ] },
   { sub: "Lies die Scheitelpunktform der blauen Parabel ab.", rows: [
     { html: exGraph({ x0: -6, x1: 3, y0: -5, y1: 5, f: x => -2 * (x + 2) ** 2 + 3, label: "Parabel mit Scheitel und Schritt", skipY: [3],

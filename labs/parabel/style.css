@@ -18,3 +18,6 @@ footer{font-size:13px;color:var(--muted)}
 
 /* Gleichungskette: linke Seite und „=“ in fester Spalte */
 .eqrows{display:grid;grid-template-columns:1em auto;column-gap:.3em;justify-content:start}
+.slots.s7{grid-template-columns:repeat(7,auto)}
+.answer .q{flex-basis:100%;margin:4px 0 6px;font-size:18px;line-height:1.4;font-weight:600}
+.answer #nf2{flex-basis:100%;margin-top:10px}
