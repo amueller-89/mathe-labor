@@ -19,7 +19,7 @@
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
-.wrap{max-width:1240px;margin:0 auto;padding:20px 16px 40px;display:flex;flex-direction:column;gap:16px}
+.wrap{max-width:1480px;margin:0 auto;padding:20px 16px 40px;display:flex;flex-direction:column;gap:16px}
 header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 24px}
 h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,4vw,40px);line-height:1.05;margin:0}
 h2{font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 10px}
@@ -51,16 +51,23 @@ h2{font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 10px}
 .stats{display:flex;gap:24px;flex-wrap:wrap;align-items:baseline}
 .stat b{font-family:var(--display);font-size:32px;font-weight:800;margin-right:6px}
 .tablewrap{overflow-x:auto}
-table{border-collapse:collapse;width:100%;font-size:15px;font-variant-numeric:tabular-nums}
+/* Tabelle: feste Spalten und feste Felder, damit gleiche Angaben in jeder Zeile genau untereinander stehen (ausgelegt auf MacBook Air 14") */
+table{border-collapse:collapse;width:100%;min-width:1416px;table-layout:fixed;font-size:15px;font-variant-numeric:tabular-nums}
+col.c-name{width:125px} col.c-on{width:85px} col.c-tab{width:140px} col.c-tr{width:595px} col.c-pro{width:300px} col.c-act{width:auto}
 th{text-align:left;font-size:13px;font-weight:700;color:var(--muted);padding:6px 10px;border-bottom:1.5px solid var(--line);white-space:nowrap}
 td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
 td.name{font-weight:700;white-space:nowrap}
 .on{color:var(--e);white-space:nowrap} .off{color:var(--muted);white-space:nowrap}
-.lv{display:inline-flex;align-items:baseline;gap:4px;margin-right:12px;white-space:nowrap}
+td.act{white-space:nowrap}
+td.name,td.tab{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lvs{display:flex;gap:14px;white-space:nowrap}
+.lv{display:grid;grid-template-columns:22px 50px 24px 28px;align-items:baseline}
 .lv .n{font-size:12px;color:var(--muted)}
-.lv .dots{color:var(--e);letter-spacing:2px}
+.lv .dots{color:var(--e);letter-spacing:1px}
 .lv.locked{opacity:.35}
-.lv .f{font-size:12px;color:var(--pencil)}
+.lv .f{font-size:12px;color:var(--pencil);text-align:right}
+.pro{display:grid;grid-template-columns:85px 125px 70px;align-items:baseline;white-space:nowrap}
+.pro .f{color:var(--pencil)}
 .won{color:var(--e);font-weight:700}
 .del{font:inherit;font-size:13px;padding:2px 8px;border-radius:6px;border:1px solid var(--line);background:none;color:var(--muted);cursor:pointer;white-space:nowrap}
 .del.armed{border-color:var(--pencil);color:var(--pencil)}
@@ -119,7 +126,8 @@ td.name{font-weight:700;white-space:nowrap}
     <div class="card" style="margin-top:16px">
       <div class="tablewrap">
         <table>
-          <thead><tr><th>Name</th><th>Online</th><th>Gerade in</th><th>Rechentrainer (3 richtige je Stufe)</th><th>Profi ★</th><th></th></tr></thead>
+          <colgroup><col class="c-name"><col class="c-on"><col class="c-tab"><col class="c-tr"><col class="c-pro"><col class="c-act"></colgroup>
+          <thead><tr><th>Name</th><th>Online</th><th>Gerade in</th><th>Rechentrainer (3 richtige je Stufe)</th><th><div class="pro"><span>Profi ★</span><span>beim 1. Versuch</span><span>Fehler</span></div></th><th></th></tr></thead>
           <tbody id="rows"></tbody>
         </table>
       </div>
@@ -246,33 +254,39 @@ function render() {
     const on = k.vorSek < 60;
     tr.appendChild(el("td", on ? "on" : "off", on ? "● online" : ago(k.vorSek)));
     const st = k.state || {};
-    tr.appendChild(el("td", "", st.tab ? (label[st.tab] || st.tab) : "–"));
-    // Rechentrainer
+    const tdTab = el("td", "tab", st.tab ? (label[st.tab] || st.tab) : "–"); tdTab.title = tdTab.textContent; tr.appendChild(tdTab);
+    // Rechentrainer: je Stufe feste Felder (Name, Punkte, Extra, Fehler), auch wenn leer
     const tdT = el("td");
     const p = st.prog;
     if (p && Array.isArray(p.c)) {
+      const lvs = el("div", "lvs"); tdT.appendChild(lvs);
       p.c.forEach((c, i) => {
         const n = Math.min(c, NEED);
         const s = el("span", "lv" + (i > (p.unl || 0) ? " locked" : ""));
         s.appendChild(el("span", "n", "S" + (i + 1)));
         s.appendChild(el("span", "dots", "●".repeat(n) + "○".repeat(NEED - n)));
-        if (c > NEED) s.appendChild(el("span", "n", "+" + (c - NEED)));
-        if (p.f && p.f[i]) s.appendChild(el("span", "f", p.f[i] + "✗"));
-        tdT.appendChild(s);
+        s.appendChild(el("span", "n", c > NEED ? "+" + (c - NEED) : ""));
+        s.appendChild(el("span", "f", p.f && p.f[i] ? p.f[i] + "✗" : ""));
+        lvs.appendChild(s);
       });
-      if (p.won) tdT.appendChild(el("span", "won", "🏆"));
+      if (p.won) lvs.appendChild(el("span", "won", "🏆"));
     } else tdT.textContent = "–";
     tr.appendChild(tdT);
     // Profi
     const q = st.pro, tdP = el("td");
     const errs = q && q.errs ? q.errs.reduce((s, v) => s + (v || 0), 0) : 0;
     if (!q || (!q.done && q.i === 0 && !errs && !q.answered)) tdP.textContent = "–";
-    else if (q.done) { tdP.appendChild(el("span", "won", "fertig ")); tdP.appendChild(document.createTextNode(q.score + "/" + q.n + " beim 1. Versuch · " + errs + " Fehler")); }
-    else tdP.textContent = "Frage " + (q.i + 1) + "/" + q.n + " · " + q.score + " beim 1. Versuch · " + errs + " Fehler";
+    else {
+      // feste Felder: Stand · beim 1. Versuch richtig · Fehler
+      const g = el("div", "pro"); tdP.appendChild(g);
+      g.appendChild(q.done ? el("span", "won", "fertig ✓") : el("span", "", "Frage " + (q.i + 1) + "/" + q.n));
+      g.appendChild(el("span", "", q.score + "/" + q.n + " sofort ✓"));
+      g.appendChild(el("span", errs ? "f" : "muted", errs + " Fehler"));
+    }
     tr.appendChild(tdP);
     // Löschen
-    const tdD = el("td");
-    const all = el("button", "alle" + (k.alle ? " on" : ""), k.alle ? "✓ alles frei" : "alles freischalten");
+    const tdD = el("td", "act");
+    const all = el("button", "alle" + (k.alle ? " on" : ""), k.alle ? "✓ alles frei" : "alles frei");
     all.title = k.alle ? "Klicken, um wieder die normalen Freigaben zu nutzen" : "Alle Tabs, alle Stufen und Profi nur für dieses Kind";
     all.addEventListener("click", () => mutate("adminAlles", [k.id, !k.alle], d => { const x = d.kids.find(y => y.id === k.id); if (x) x.alle = !k.alle; }));
     tdD.appendChild(all);

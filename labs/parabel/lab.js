@@ -94,7 +94,6 @@ const fmA = $("fmA"), fmX1 = $("fmX1"), fmX2 = $("fmX2");
 function fmZeros() { const t = -fm.e / fm.a; if (t < -1e-9) return []; if (t <= 1e-9) return [fm.d]; const s = Math.sqrt(t); return [fm.d - s, fm.d + s]; }
 // Nullstellen in Beschriftungs-Reihenfolge [x1, x2] (x1 kann größer sein, wenn der Regler so steht)
 function fmLabeled() { const z = fmZeros(); if (!z.length) return null; if (z.length === 1) return [z[0], z[0]]; return fm.flip ? [z[1], z[0]] : [z[0], z[1]]; }
-const fmStep = () => 0.05;
 function fmSetZeros(x1, x2) { fm.d = (x1 + x2) / 2; fm.e = -fm.a * ((x2 - x1) / 2) ** 2; fm.flip = x1 > x2; }
 function updForms(fromSlider) {
   const { a, d, e } = fm, Z = fmLabeled();
@@ -145,7 +144,7 @@ draggable(bF,
     return null;
   },
   (g, x, y) => {
-    const s = fmStep(), R = bF.R - 0.5;
+    const s = STEP.look, R = bF.R - 0.5;
     if (g.kind === "v") { fm.d = Math.max(-R, Math.min(R, snapTo(x, s))); fm.e = Math.max(-R, Math.min(R, snapTo(y, s))); fm.flip = false; }
     else {
       const xi = Math.max(-R, Math.min(R, snapTo(x, s))), xo = g.other;
@@ -248,7 +247,7 @@ $("spSolve").addEventListener("click", () => {
 $("spNext").addEventListener("click", newTarget);
 function setSpMode(m) {
   spMode = m; if (hashOn) setHash();
-  sa.step = m === "quiz" ? 0.25 : 0.05; sd.step = se.step = m === "quiz" ? 0.2 : 0.05; // Quiz: grober, weniger fummelig (Ziele für a: halbe Werte)
+  [sa, sd, se].forEach(s => setStep(s, m === "quiz" ? "match" : "look"));
   $("spTabs").querySelectorAll("button").forEach(b => b.setAttribute("aria-selected", b.dataset.m === m));
   $("spQuizCard").hidden = m !== "quiz"; $("spLegTarget").hidden = m !== "quiz";
   $("spLegMine").textContent = m === "quiz" ? "Eure Parabel" : "Parabel";
