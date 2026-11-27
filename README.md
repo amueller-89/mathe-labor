@@ -35,7 +35,7 @@ Erzeugte Dateien nie von Hand ändern, sie werden überschrieben.
 | Datei | Klasse | Inhalt |
 |---|---|---|
 | `Geraden-Labor.html` | 8 | Lineare Funktionen: Steigung und y-Achsenabschnitt erkunden, Gerade durch zwei Punkte, Rechentrainer mit 4 Stufen, Profi-Fragen |
-| `Parabel-Labor.html` | 9 | Quadratische Funktionen: Scheitelpunktform, drei Formen (Normal-, Scheitelpunkt-, Nullstellenform), pq-Formel, Rechentrainer, Profi-Fragen |
+| `Parabel-Labor.html` | 9 | Quadratische Funktionen: Scheitelpunktform, drei Formen (allgemeine Form, Scheitelpunkt-, Nullstellenform), pq-Formel, Rechentrainer, Profi-Fragen |
 | `Scheitelpunktform.html` | 9 | ältere Einzeldatei, nicht Teil des Builds |
 
 Jede Datei ist eigenständig und läuft ohne Server direkt im Browser.

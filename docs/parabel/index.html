@@ -237,7 +237,7 @@ footer{font-size:13px;color:var(--muted)}
           </div>
         </div>
         <div class="card">
-          <p class="label">Ausmultipliziert (Normalform)</p>
+          <p class="label">Ausmultipliziert (allgemeine Form)</p>
           <div class="formula small" id="spSteps"></div>
           <div class="formula small" id="spNf" style="margin-top:4px"></div>
         </div>
@@ -267,7 +267,7 @@ footer{font-size:13px;color:var(--muted)}
           <div class="formula mid" id="fmSp"></div>
         </div>
         <div class="card">
-          <p class="label">Normalform &nbsp; y = ax² + bx + c</p>
+          <p class="label">Allgemeine Form &nbsp; y = ax² + bx + c</p>
           <div class="formula mid" id="fmNf"></div>
         </div>
         <div class="card">
@@ -957,8 +957,8 @@ $("spTabs").querySelectorAll("button").forEach(b => b.addEventListener("click", 
    ============================================================= */
 
 const LEVELS = [
-  { t: "Stufe 1", s: "Scheitelpunktform → Normalform" },
-  { t: "Stufe 2", s: "Nullstellenform → Normalform" },
+  { t: "Stufe 1", s: "Scheitelpunktform → allgemeine Form" },
+  { t: "Stufe 2", s: "Nullstellenform → allgemeine Form" },
   { t: "Stufe 3", s: "Nullstellen mit der pq-Formel" },
   { t: "Stufe 4", s: "Gleichung aus der Skizze" },
 ];
@@ -967,7 +967,7 @@ function makeTask(l) {
   if (l === 0) {
     const a = pick([1, 1, -1, 2, -2, 3]), d = nz(-5, 5), e = rnd(13) - 6;
     return { l, a, d, e, want: { A: a, B: -2 * a * d, C: a * d * d + e },
-      title: "Schreibe in Normalform um.", task: scheitelHTML(a, d, e),
+      title: "Schreibe in die allgemeine Form um.", task: scheitelHTML(a, d, e),
       hint: "Erst die Klammer mit der binomischen Formel auflösen, dann mit a malnehmen. Negative Zahlen mit Minus eintippen.",
       answer: `<div class="slots"><span>y =</span><span class="p">a</span><span>x² +</span><span class="p">b</span><span>x +</span><span class="p">c</span>
       <span>y =</span>${inp("A")}<span>x² +</span>${inp("B")}<span>x +</span>${inp("C")}</div>`,
@@ -976,7 +976,7 @@ function makeTask(l) {
   if (l === 1) {
     const a = pick([1, 1, -1, 2, -2]); let x1 = rnd(13) - 6, x2 = rnd(13) - 6; if (x1 > x2) [x1, x2] = [x2, x1];
     return { l, a, x1, x2, want: { A: a, B: -a * (x1 + x2), C: a * x1 * x2 },
-      title: "Schreibe in Normalform um.", task: nullHTML(a, x1, x2),
+      title: "Schreibe in die allgemeine Form um.", task: nullHTML(a, x1, x2),
       hint: "Klammern ausmultiplizieren (jedes mit jedem), dann mit a malnehmen.",
       answer: `<div class="slots"><span>y =</span><span class="p">a</span><span>x² +</span><span class="p">b</span><span>x +</span><span class="p">c</span>
       <span>y =</span>${inp("A")}<span>x² +</span>${inp("B")}<span>x +</span>${inp("C")}</div>`,
@@ -989,7 +989,7 @@ function makeTask(l) {
     else { let r1 = rnd(15) - 7, r2 = rnd(15) - 7; if (r1 > r2) [r1, r2] = [r2, r1]; p = -(r1 + r2); q = r1 * r2; roots = r1 === r2 ? [r1] : [r1, r2]; }
     return { l, k, p, q, roots,
       title: "Berechne die Lösungen.", task: polyBody(k, k * p, k * q) + " = 0",
-      hint: k === 1 ? "pq-Formel: x = −p/2 ± √((p/2)² − q). Gibt es nur eine Lösung, trag sie in beide Felder ein." : "Erst durch den Faktor vor x² teilen, dann die pq-Formel. Gibt es nur eine Lösung, trag sie in beide Felder ein.",
+      hint: k === 1 ? "pq-Formel: x = −p/2 ± √((p/2)² − q). Gibt es nur eine Lösung, trag sie in beide Felder ein." : "Erst durch die Zahl vor x² teilen (Normalform), dann die pq-Formel. Gibt es nur eine Lösung, trag sie in beide Felder ein.",
       answer: `x₁ = ${inp("x1")} &nbsp; x₂ = ${inp("x2")} <label class="chk" style="font-size:17px;font-weight:700"><input type="checkbox" data-k="none"> keine Lösung</label>`,
       f: x => k * (x * x + p * x + q),
       // eigene Prüfung: Reihenfolge egal, Kästchen „keine Lösung“
@@ -1053,14 +1053,14 @@ function drawTrain() {
 const A = t => sp("ca", t), D = t => sp("cd", t), E = t => sp("ce", t), X = t => sp("cx", t), Z = t => sp("cz", t);
 const res = t => `<span class="res">${t}</span>`;
 const EXAMPLES = [
-  { sub: "Schreibe y = " + A("−2") + "(x − " + D("3") + ")² + " + E("4") + " in Normalform um.", rows: [
+  { sub: "Schreibe y = " + A("−2") + "(x − " + D("3") + ")² + " + E("4") + " in die allgemeine Form um.", rows: [
     ["y", "= " + A("−2") + " · (x − " + D("3") + ")² + " + E("4"), "binomische Formel"],
     ["", "= " + A("−2") + " · (x² − 2 · x · " + D("3") + " + " + D("3") + "²) + " + E("4"), "ausrechnen"],
     ["", "= " + A("−2") + " · (x² − " + X("6x") + " + " + E("9") + ") + " + E("4"), "mal −2, Vorzeichen!"],
     ["", "= " + A("−2x²") + " + " + X("12x") + " − " + E("18") + " + " + E("4"), "zusammenfassen"],
     ["", "= " + res(A("−2x²") + " + " + X("12x") + " − " + E("14"))],
   ] },
-  { sub: "Schreibe y = " + A("2") + "(x + " + Z("1") + ")(x − " + Z("4") + ") in Normalform um.", rows: [
+  { sub: "Schreibe y = " + A("2") + "(x + " + Z("1") + ")(x − " + Z("4") + ") in die allgemeine Form um.", rows: [
     ["y", "= " + A("2") + " · (x + " + Z("1") + ") · (x − " + Z("4") + ")", "jedes mit jedem"],
     ["", "= " + A("2") + " · (x · x − x · " + Z("4") + " + " + Z("1") + " · x − " + Z("1") + " · " + Z("4") + ")", "ausrechnen"],
     ["", "= " + A("2") + " · (x² − " + X("4x") + " + " + X("x") + " − " + E("4") + ")", "zusammenfassen"],
@@ -1068,7 +1068,7 @@ const EXAMPLES = [
     ["", "= " + res(A("2x²") + " − " + X("6x") + " − " + E("8"))],
   ] },
   { sub: "Löse 2x² − 4x − 6 = 0 mit der pq-Formel.", rows: [
-    { sec: "1. Vor x² muss eine 1 stehen" },
+    { sec: "1. Normalform herstellen" },
     ["2x² − 4x − 6", "= 0", "", "| : 2"],
     ["x² − " + D("2") + "x − " + A("3"), "= 0"],
     { sec: "2. pq-Formel" },
@@ -1117,7 +1117,7 @@ const PRO = [
     opts: ["Sie wandern beide 2 nach oben.", "Sie rücken näher zusammen.", "Sie rücken weiter auseinander.", "Sie bleiben gleich."], ok: 1,
     ex: "Nullstellen liegen immer auf der x-Achse, sie können nicht „nach oben wandern“. Die verschobene Parabel schneidet die x-Achse weiter unten im Bogen, wo er schmaler ist. Aus 1 und 5 werden 3 − √2 ≈ 1,59 und 3 + √2 ≈ 4,41." },
   { q: "Was haben y = (x − 3)² + 1 und y = −(x − 3)² + 1 gemeinsam?",
-    opts: ["Dieselben Nullstellen", "Denselben Scheitel", "Dieselbe Normalform", "Beide haben keine Nullstellen"], ok: 1,
+    opts: ["Dieselben Nullstellen", "Denselben Scheitel", "Dieselbe allgemeine Form", "Beide haben keine Nullstellen"], ok: 1,
     after: [{ f: x => (x - 3) ** 2 + 1 }, { f: x => -((x - 3) ** 2) + 1, c: "--pencil" }], afterPts: [[3, 1]],
     ex: "Beide haben S(3 | 1). Die blaue ist nach oben geöffnet und hat keine Nullstellen, die rote nach unten und schneidet die x-Achse bei 2 und 4." },
   { q: "Bei der pq-Formel kommt unter der Wurzel genau 0 heraus. Was bedeutet das für die Parabel y = x² + px + q?",
@@ -1141,7 +1141,7 @@ const PRO = [
     ex: "Die Parabel ist nach oben geöffnet (a = 0,5 > 0). Alles andere stimmt: y = 0,5(x + 2)² − 2." },
   { q: "Du willst 2x² − 8x = −6 mit der pq-Formel lösen. Welche Werte haben p und q?",
     opts: ["p = −8, q = 6", "p = −4, q = 3", "p = −4, q = −3", "p = 4, q = 3"], ok: 1,
-    ex: "Erst alles auf eine Seite: 2x² − 8x + 6 = 0. Dann durch 2 teilen: x² − 4x + 3 = 0. Also p = −4 und q = 3." },
+    ex: "Erst alles auf eine Seite: 2x² − 8x + 6 = 0. Dann durch 2 teilen, das ergibt die Normalform x² − 4x + 3 = 0. Also p = −4 und q = 3." },
   { q: "Wie viele Schnittpunkte haben y = x² und die Gerade y = 2x − 1?",
     opts: ["Keinen", "Genau einen", "Zwei", "Kann man ohne Zeichnung nicht sagen"], ok: 1,
     after: [{ f: x => x * x }, { f: x => 2 * x - 1, c: "--pencil" }], afterPts: [[1, 1]],
@@ -1149,7 +1149,7 @@ const PRO = [
   { q: "Was stimmt für y = (x − 2)² − 9 und y = (x + 1)(x − 5)?",
     opts: ["Das ist dieselbe Parabel.", "Gleicher Scheitel, aber andere Öffnung", "Gleiche Nullstellen, aber verschiedene Scheitel", "Sie haben nichts gemeinsam."], ok: 0,
     after: [{ f: x => (x - 2) ** 2 - 9 }], afterPts: [[2, -9], [-1, 0], [5, 0]],
-    ex: "Beide ausmultiplizieren: x² − 4x + 4 − 9 = x² − 4x − 5 und x² − 5x + x − 5 = x² − 4x − 5. Gleiche Normalform, also dieselbe Parabel in zwei Schreibweisen." },
+    ex: "Beide ausmultiplizieren: x² − 4x + 4 − 9 = x² − 4x − 5 und x² − 5x + x − 5 = x² − 4x − 5. Gleiche allgemeine Form, also dieselbe Parabel in zwei Schreibweisen." },
   { q: "Welche Gleichung gehört zu dieser Parabel?", graph: [{ f: x => (x - 2) ** 2 - 3 }],
     opts: ["y = (x + 2)² − 3", "y = x² − 4x + 1", "y = x² + 4x + 1", "y = (x − 2)² + 3"], ok: 1,
     ex: "Scheitel ablesen: S(2 | −3), also y = (x − 2)² − 3. Die steht hier nicht, aber ausmultipliziert: x² − 4x + 4 − 3 = x² − 4x + 1." },
