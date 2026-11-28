@@ -1,0 +1,16 @@
+canvas.wide{aspect-ratio:16/10}
+.formula{font-family:var(--display);font-weight:800;font-size:clamp(26px,3vw,38px);line-height:1.2;white-space:nowrap}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .1em;line-height:1.05;font-size:.8em}
+.frac>span:first-child{border-bottom:3px solid currentColor;padding:0 .15em}
+.frac>span:last-child{padding:0 .15em}
+.cd{color:var(--d)} .cu{color:var(--curve)} .ce{color:var(--e)}
+.hitline{margin:10px 0 0;font-size:18px}
+.kv{display:grid;grid-template-columns:150px minmax(0,1fr);row-gap:6px;align-items:center;font-size:18px}
+.kv .k{color:var(--muted);font-size:15px}
+.kv .v{font-family:var(--display);font-weight:800;font-size:26px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.strip{display:flex;gap:4px;margin-top:8px;height:34px;overflow:hidden}
+.strip span{flex:0 0 30px;height:30px;border-radius:6px;display:grid;place-items:center;font-weight:700;font-size:17px;background:var(--surface);color:var(--muted)}
+.strip span.hit{background:var(--d);color:#fff}
+.seg .cnt{width:3em;font-weight:700;cursor:default;opacity:1}
+.seg.sums button{padding:8px 0;width:40px;font-weight:700}
+.last{font-size:30px;line-height:1;margin-left:4px;font-variant-numeric:tabular-nums}

@@ -1,0 +1,63 @@
+  <!-- ================= 1 STREUUNG ================= -->
+  <section id="tab-st" class="tab">
+    <p class="lede" style="margin-bottom:12px">Punkte im Test, zwei Gruppen. Zieh die Punkte.</p>
+    <div class="stage">
+      <section>
+        <canvas id="stC" class="wide" aria-label="Punkte zweier Gruppen auf dem Zahlenstrahl"></canvas>
+        <div class="row" style="margin-top:8px">
+          <label class="chk"><input type="checkbox" id="stDev"> Abweichungen zeigen</label>
+          <label class="chk"><input type="checkbox" id="stBand" checked> Bereich x̄ ± s zeigen</label>
+        </div>
+      </section>
+      <aside class="side">
+        <div class="card">
+          <div class="cmp" id="stSum"></div>
+        </div>
+        <div class="card">
+          <div class="row" style="justify-content:space-between;margin-bottom:8px">
+            <p class="label" style="margin:0">Standardabweichung s</p>
+            <div class="seg" id="stG"><button data-g="0" aria-selected="true">Gruppe A</button><button data-g="1" aria-selected="false">Gruppe B</button></div>
+          </div>
+          <div class="calc" id="stCalc"></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= 2 MITTELWERT & MEDIAN ================= -->
+  <section id="tab-mm" class="tab" hidden>
+    <p class="lede" style="margin-bottom:12px">Monatsgehälter in einer kleinen Firma. Zieh den Chef.</p>
+    <div class="stage">
+      <section>
+        <canvas id="mmC" class="wide" aria-label="Gehälter auf dem Zahlenstrahl"></canvas>
+      </section>
+      <aside class="side">
+        <div class="card">
+          <div class="kv" id="mmOut"></div>
+        </div>
+        <div class="card ad">
+          <p class="adtxt" id="mmAd"></p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= 3 GRAFIKEN, DIE TÄUSCHEN ================= -->
+  <section id="tab-gf" class="tab" hidden>
+    <p class="lede" style="margin-bottom:12px">Handyzeit pro Tag in Minuten.</p>
+    <div class="stage">
+      <section>
+        <canvas id="gfC" class="wide" aria-label="Diagramm Handyzeit"></canvas>
+      </section>
+      <aside class="side">
+        <div class="card">
+          <div class="seg" id="gfMode"><button data-m="bar" aria-selected="true">Balken</button><button data-m="pic" aria-selected="false">Bilder</button></div>
+          <p class="label" style="margin:14px 0 0">y-Achse beginnt bei</p>
+          <div class="sl wide"><input type="range" id="gfStart" min="0" max="175" data-step="look" value="0"><output id="gfStartO"></output></div>
+        </div>
+        <div class="card">
+          <div class="kv" id="gfOut"></div>
+        </div>
+      </aside>
+    </div>
+  </section>

@@ -1,0 +1,15 @@
+{
+  "id": "statistik",
+  "title": "Statistik-Labor",
+  "thema": "Statistische Auswertung von Daten",
+  "klasse": "OIIIa",
+  "versteckt": true,
+  "icon": "M6 22H28",
+  "icon2": "M10 16V28M17 10V28M24 19V28",
+  "ueben": false,
+  "tabs": [
+    { "id": "st", "label": "Streuung", "slug": "streuung" },
+    { "id": "mm", "label": "Mittelwert & Median", "slug": "median" },
+    { "id": "gf", "label": "Grafiken, die täuschen", "slug": "grafiken" }
+  ]
+}

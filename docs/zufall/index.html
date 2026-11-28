@@ -1,0 +1,914 @@
+<!doctype html>
+<html lang="de" data-theme="dark">
+<head>
+<meta name="robots" content="noindex">
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%2317212b%22/%3E%3Cpath%20d%3D%22M4%2026H29M7%2029V3%22%20stroke%3D%22%2393a5b6%22%20stroke-width%3D%222%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22/%3E%3Cpath%20d%3D%22M10%2026V14M17%2026V8M24%2026V18%22%20stroke%3D%22%236b9bff%22%20stroke-width%3D%223.2%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22/%3E%3Cpath%20d%3D%22M6%2011H28%22%20stroke%3D%22%23f5a25a%22%20stroke-width%3D%222.2%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22/%3E%3C/svg%3E">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Zufalls-Labor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+:root{
+  --paper:#fbfcfd; --ink:#15212c; --muted:#58697a; --line:#d4dee8; --surface:#eef3f8;
+  --grid:#dbe6f0; --grid-strong:#b3c6d8;
+  --a:#8e44ad; --d:#e07a1f; --e:#2e9e4f; --z:#0e7c86; --curve:#1f5eff; --pencil:#d2452f; --focus:#1f5eff;
+  --ok-bg:#e3f4e8; --bad-bg:#fbe6e2;
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible",system-ui,-apple-system,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0f161d; --ink:#e5ecf3; --muted:#93a5b6; --line:#273543; --surface:#17212b;
+  --grid:#1c2834; --grid-strong:#2e3f50;
+  --a:#c387e0; --d:#f5a25a; --e:#5fcf82; --z:#4fc3cf; --curve:#6b9bff; --pencil:#ff7d60; --focus:#6b9bff;
+  --ok-bg:#16301f; --bad-bg:#3a1d17; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0f161d; --ink:#e5ecf3; --muted:#93a5b6; --line:#273543; --surface:#17212b;
+  --grid:#1c2834; --grid-strong:#2e3f50;
+  --a:#c387e0; --d:#f5a25a; --e:#5fcf82; --z:#4fc3cf; --curve:#6b9bff; --pencil:#ff7d60; --focus:#6b9bff;
+  --ok-bg:#16301f; --bad-bg:#3a1d17; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+.wrap{max-width:1240px;margin:0 auto;padding:20px max(16px,env(safe-area-inset-right,0px)) 32px max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 24px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,4vw,40px);line-height:1.05;margin:0}
+.seg{display:inline-flex;flex-wrap:wrap}
+.seg button{font:inherit;font-size:15px;padding:8px 14px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer;margin-left:-1.5px}
+.seg button:first-child{border-radius:8px 0 0 8px;margin-left:0}
+.seg button:last-child{border-radius:0 8px 8px 0}
+.seg button[aria-selected="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.lede{margin:0;color:var(--muted);max-width:75ch}
+.stage{display:grid;grid-template-columns:minmax(0,11fr) minmax(0,10fr);gap:18px;align-items:start}
+@media (max-width:860px){.stage{grid-template-columns:minmax(0,1fr)}}
+.stage.nosketch{grid-template-columns:minmax(0,820px)}
+.stage.nosketch>section{display:none}
+canvas{display:block;width:100%;aspect-ratio:1/1;max-height:640px;border:1px solid var(--line);border-radius:12px;background:var(--paper);touch-action:none}
+.side{display:flex;flex-direction:column;gap:14px;min-width:0}
+.card{background:var(--surface);border-radius:12px;padding:14px 16px;min-width:0}
+.label{font-size:13px;color:var(--muted);margin:0 0 4px}
+.formula.mid{font-size:clamp(20px,2.4vw,28px)}
+.formula.small{font-size:clamp(17px,2vw,22px);font-weight:600}
+.sl{display:grid;grid-template-columns:28px minmax(0,1fr) 72px;align-items:center;gap:10px;margin:8px 0}
+.sl b{font-family:var(--display);font-size:22px}
+.sl input{width:100%;min-width:0}
+.sl output{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button.btn{font:inherit;font-size:15px;padding:8px 14px;border-radius:8px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+button.btn.primary{background:var(--curve);border-color:var(--curve);color:#fff;font-weight:700}
+button.btn:disabled{opacity:.45;cursor:default}
+button.btn.small{font-size:13px;padding:4px 10px}
+button:focus-visible,input:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.feedback{font-family:var(--display);font-weight:800;font-size:21px;min-height:30px;margin-top:8px}
+.feedback.ok{color:var(--e)} .feedback.no{color:var(--pencil)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px;color:var(--muted);margin-top:8px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{display:inline-block;width:22px;height:3px;border-radius:2px}
+.hint{font-size:13px;color:var(--muted);margin:6px 0 0}
+.levels{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:860px){.levels{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.lvl{font:inherit;text-align:left;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+.lvl[aria-pressed="true"]{border-color:var(--curve);box-shadow:inset 0 0 0 1.5px var(--curve)}
+.lvl:disabled{cursor:not-allowed;opacity:.5}
+.lvl .t{font-weight:700;display:block}
+.lvl .s{font-size:13px;color:var(--muted);display:block}
+.dots{letter-spacing:3px;color:var(--e);font-size:14px}
+.answer{font-family:var(--display);font-weight:800;font-size:clamp(20px,2.4vw,28px);line-height:2.1;display:flex;flex-wrap:wrap;align-items:center;gap:2px 6px}
+.answer input.in{font:inherit;font-family:var(--body);font-weight:700;font-size:22px;width:4.2em;padding:2px 6px;text-align:center;border:2px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink)}
+.answer input.in.ok{border-color:var(--e);background:var(--ok-bg)}
+.answer input.in.bad{border-color:var(--pencil);background:var(--bad-bg)}
+.slots .p{text-align:center;font-size:1.3em}
+.prog{display:grid;grid-template-columns:auto 1fr auto;gap:2px 12px;font-size:15px;font-variant-numeric:tabular-nums}
+.prog .muted{color:var(--muted)}
+.prowrap{max-width:860px;display:flex;flex-direction:column;gap:14px}
+.proq{font-family:var(--display);font-weight:800;font-size:clamp(21px,2.6vw,28px);line-height:1.25;margin:2px 0 12px}
+canvas.procan{max-width:400px;margin:0 0 14px}
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:600px){.opts:not(.graphs){grid-template-columns:minmax(0,1fr)}}
+.opt{font:inherit;font-size:18px;text-align:left;display:flex;align-items:center;gap:12px;padding:12px 14px;border:2px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--curve)}
+.opt:disabled{cursor:default;opacity:.55}
+.opt.right{border-color:var(--e);background:var(--ok-bg);opacity:1}
+.opt.wrong{border-color:var(--pencil);background:var(--bad-bg)}
+.opt .badge{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--surface);font-weight:700;font-size:15px}
+.opts.graphs{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:700px){.opts.graphs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.opts.graphs .opt{flex-direction:column;align-items:stretch;padding:8px;gap:6px}
+.opts.graphs .opt:disabled:not(.wrong){opacity:.8}
+.opts.graphs canvas{max-height:none;border:0}
+.optwrap{position:relative}
+.lock{position:absolute;inset:-6px;display:grid;place-items:center;text-align:center;padding:12px;border-radius:12px;border:2px solid var(--pencil);background:var(--bad-bg);color:var(--pencil);font-family:var(--display);font-size:clamp(20px,2.6vw,26px);line-height:1.3;z-index:2}
+.lock .count{font-size:38px;font-weight:800;line-height:1.1;margin:2px 0}
+.revlist{display:flex;flex-direction:column;gap:6px;text-align:left}
+.revitem{font:inherit;font-size:15px;display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);cursor:pointer;text-align:left}
+.revitem:hover{border-color:var(--curve)}
+.revitem .nr{font-weight:700;color:var(--muted)}
+.revitem .er{font-weight:700;color:var(--e);white-space:nowrap}
+.revitem.had .er{color:var(--pencil)}
+.proex{margin:4px 0 0;padding:10px 12px;border-left:4px solid var(--e);background:var(--paper);border-radius:6px}
+.win{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:16px;background:rgb(10 16 24 / .55)}
+.win canvas{position:fixed;inset:0;width:100%;height:100%;aspect-ratio:auto;max-height:none;border:0;border-radius:0;background:transparent;pointer-events:none}
+.win .box{position:relative;background:var(--paper);color:var(--ink);border-radius:18px;padding:28px 28px 22px;max-width:520px;width:100%;text-align:center;box-shadow:0 20px 60px rgb(0 0 0 / .35);animation:pop .45s cubic-bezier(.2,1.4,.4,1)}
+.win h2{font-family:var(--display);font-weight:800;font-size:clamp(30px,5vw,44px);line-height:1.05;margin:4px 0 10px}
+.win .big{font-size:56px;line-height:1}
+.win p{margin:0 0 8px}
+.win .stats{color:var(--muted);font-size:15px;margin:10px 0 18px}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion: reduce){.win .box{animation:none}}
+[hidden]{display:none!important}
+
+/* Musterbeispiel */
+.win .box.exbox{max-width:780px;text-align:left;max-height:calc(100vh - 32px);overflow:auto;padding:22px 24px 18px}
+.exbox h2{font-size:clamp(24px,4vw,32px);margin:0 0 4px}
+.exbox .exsub{color:var(--muted);margin:0 0 8px}
+.exclose{position:absolute;top:10px;right:12px;font:inherit;font-size:26px;line-height:1;background:none;border:0;color:var(--muted);cursor:pointer;padding:4px 8px}
+.exg{display:grid;grid-template-columns:max-content max-content minmax(0,1fr);gap:14px 18px;align-items:center;margin:8px 0 14px}
+.exg .l{text-align:right;font-family:var(--display);font-weight:700;font-size:24px;white-space:nowrap}
+.exg .r{font-family:var(--display);font-weight:700;font-size:24px;white-space:nowrap}
+.exg .op{font-family:var(--display);font-weight:700;font-size:22px;color:var(--ink)}
+.exg .c{font-size:15px;line-height:1.35;color:var(--muted);border-left:3px solid var(--line);padding:2px 0 2px 10px}
+.exg .c:empty{border:0;padding:0}
+.exg .sec{grid-column:1/-1;font-weight:700;margin:10px 0 -4px}
+.exg .sec:first-child{margin-top:0}
+.exg .note{grid-column:1/-1;font-size:15px;background:var(--surface);border-radius:8px;padding:8px 12px;margin-top:6px}
+.exg .wide{grid-column:1/-1;margin:4px 0}
+.exg .res{background:var(--ok-bg);border-radius:6px;padding:0 6px}
+.exg .frac{font-size:.85em}
+.exsvg{display:block;width:100%;max-width:330px;height:auto;margin:0 auto}
+.extab{display:inline-grid;grid-template-columns:repeat(5,auto);border:1.5px solid var(--line);border-radius:8px;overflow:hidden;font-weight:700;font-variant-numeric:tabular-nums}
+.extab span{padding:4px 14px;border-left:1px solid var(--line);text-align:center}
+.extab span:nth-child(5n+1){border-left:0;color:var(--muted)}
+.extab span:nth-child(n+6){border-top:1px solid var(--line)}
+@media (max-width:640px){
+  .exg{grid-template-columns:max-content minmax(0,1fr)}
+  .exg .c{grid-column:1/-1;margin:0 0 6px}
+  .exg .l,.exg .r{font-size:19px;white-space:normal}
+}
+
+/* Musterbeispiel-Knopf direkt neben dem Aufgabentitel */
+.trhead{display:flex;align-items:center;gap:16px;margin-bottom:6px}
+.trhead .label{margin:0}
+
+/* Tabs in zwei Gruppen: Erkunden | Üben */
+.tabnav{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 20px}
+.tgrp{display:flex;flex-direction:column;gap:4px}
+.tgrp .gl{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.fx{display:inline-block;text-align:center}
+/* Wertetabelle (Erkunden + Profi) */
+table.wt{border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:18px;width:100%}
+table.wt td,table.wt th{border:1.5px solid var(--line);padding:4px 6px;text-align:center;min-width:2.6em}
+table.wt th{color:var(--muted);font-weight:700;background:var(--paper)}
+table.wt td{font-weight:700}
+/* Profi: Fragenliste bei „alles frei“ */
+.pjump{display:grid;grid-template-columns:repeat(auto-fill,40px);gap:6px;margin-bottom:12px}
+.pjump button{font:inherit;font-size:14px;font-weight:700;height:34px;border-radius:8px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+.pjump button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+a.btn{font:inherit;font-size:15px;padding:8px 14px;border-radius:8px;border:1.5px solid var(--curve);background:var(--paper);color:var(--curve);font-weight:700;text-decoration:none}
+a.btn.primary{background:var(--curve);color:#fff}
+a.btn::after{content:" →"}
+#nextWin .box{max-width:680px}
+canvas.wide{aspect-ratio:16/10}
+.formula{font-family:var(--display);font-weight:800;font-size:clamp(26px,3vw,38px);line-height:1.2;white-space:nowrap}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .1em;line-height:1.05;font-size:.8em}
+.frac>span:first-child{border-bottom:3px solid currentColor;padding:0 .15em}
+.frac>span:last-child{padding:0 .15em}
+.cd{color:var(--d)} .cu{color:var(--curve)} .ce{color:var(--e)}
+.hitline{margin:10px 0 0;font-size:18px}
+.kv{display:grid;grid-template-columns:150px minmax(0,1fr);row-gap:6px;align-items:center;font-size:18px}
+.kv .k{color:var(--muted);font-size:15px}
+.kv .v{font-family:var(--display);font-weight:800;font-size:26px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.strip{display:flex;gap:4px;margin-top:8px;height:34px;overflow:hidden}
+.strip span{flex:0 0 30px;height:30px;border-radius:6px;display:grid;place-items:center;font-weight:700;font-size:17px;background:var(--surface);color:var(--muted)}
+.strip span.hit{background:var(--d);color:#fff}
+.seg .cnt{width:3em;font-weight:700;cursor:default;opacity:1}
+.seg.sums button{padding:8px 0;width:40px;font-weight:700}
+.last{font-size:30px;line-height:1;margin-left:4px;font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Zufalls-Labor</h1>
+    <nav class="tabnav" role="tablist" id="mainTabs">
+      <div class="tgrp" data-grp="Erkunden"><span class="gl">Erkunden</span><div class="seg">
+        <button role="tab" data-tab="hf" aria-selected="true">1 Werfen &amp; zählen</button>
+        <button role="tab" data-tab="gr" aria-selected="false">2 Glücksrad</button>
+        <button role="tab" data-tab="zw" aria-selected="false">3 Zwei Würfel</button>
+      </div></div>
+    </nav>
+  </header>
+
+  <!-- ================= 1 WERFEN & ZÄHLEN ================= -->
+  <section id="tab-hf" class="tab">
+    <div class="stage">
+      <section>
+        <canvas id="hfC" class="wide" aria-label="Relative Häufigkeit nach Anzahl der Würfe"></canvas>
+        <div class="strip" id="hfStrip"></div>
+      </section>
+      <aside class="side">
+        <div class="card">
+          <div class="seg" id="hfExp">
+            <button data-e="muenze" aria-selected="true">Münze</button>
+            <button data-e="wuerfel" aria-selected="false">Würfel</button>
+            <button data-e="zwecke" aria-selected="false">Reißzwecke</button>
+          </div>
+          <p class="hitline" id="hfHit"></p>
+        </div>
+        <div class="card">
+          <div class="row">
+            <button class="btn primary" data-n="1">1×</button>
+            <button class="btn primary" data-n="10">10×</button>
+            <button class="btn primary" data-n="100">100×</button>
+            <button class="btn primary" data-n="1000">1000×</button>
+            <button class="btn" id="hfReset">Neu</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="kv" id="hfOut"></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= 2 GLÜCKSRAD ================= -->
+  <section id="tab-gr" class="tab" hidden>
+    <p class="lede" style="margin-bottom:12px">Tippe Felder an: orange = Treffer.</p>
+    <div class="stage">
+      <section>
+        <canvas id="grC" aria-label="Glücksrad"></canvas>
+      </section>
+      <aside class="side">
+        <div class="card">
+          <div class="row">
+            <span class="label" style="margin:0">Felder</span>
+            <div class="seg"><button id="grMinus" aria-label="weniger Felder">−</button><button class="cnt" id="grN" disabled></button><button id="grPlus" aria-label="mehr Felder">+</button></div>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <span class="label" style="margin:0">Ereignis</span>
+            <div class="seg" id="grEv">
+              <button data-ev="gerade" aria-selected="false">gerade</button>
+              <button data-ev="ungerade" aria-selected="false">ungerade</button>
+              <button data-ev="prim" aria-selected="false">Primzahl</button>
+              <button data-ev="gross" aria-selected="false">größer als 4</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="formula" id="grP"></div>
+        </div>
+        <div class="card">
+          <div class="row">
+            <button class="btn primary" id="grSpin">Drehen</button>
+            <button class="btn" id="grMany">100× drehen</button>
+            <button class="btn" id="grReset">Neu</button>
+          </div>
+          <div class="kv" id="grOut" style="margin-top:10px"></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= 3 ZWEI WÜRFEL ================= -->
+  <section id="tab-zw" class="tab" hidden>
+    <p class="lede" style="margin-bottom:12px">Wähle eine Augensumme.</p>
+    <div class="stage">
+      <section>
+        <canvas id="zwC" aria-label="Alle 36 Ergebnisse mit zwei Würfeln"></canvas>
+      </section>
+      <aside class="side">
+        <div class="card">
+          <div class="seg sums" id="zwSum"></div>
+          <div class="formula" id="zwP" style="margin-top:12px"></div>
+        </div>
+        <div class="card">
+          <div class="row">
+            <button class="btn primary" data-n="1">1×</button>
+            <button class="btn primary" data-n="100">100×</button>
+            <button class="btn primary" data-n="1000">1000×</button>
+            <button class="btn" id="zwReset">Neu</button>
+            <span class="last" id="zwLast"></span>
+          </div>
+          <canvas id="zwH" class="wide" style="margin-top:10px" aria-label="Häufigkeit der Augensummen"></canvas>
+          <div class="legend">
+            <span><i style="background:var(--curve)"></i>gewürfelt (relative Häufigkeit)</span>
+            <span><i style="background:var(--ink)"></i>Wahrscheinlichkeit</span>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= 2 RECHENTRAINER ================= -->
+  <section id="tab-train" class="tab" hidden>
+    <p class="lede" style="margin-bottom:12px">Rechne auf Papier, tippe das Ergebnis ein und prüfe. <span class="needN">3</span> richtige Aufgaben schalten die nächste Stufe frei.</p>
+    <div class="levels" id="levels" style="margin-bottom:16px"></div>
+    <div class="stage nosketch">
+      <section>
+        <canvas id="cTrain" aria-label="Koordinatensystem zur Aufgabe"></canvas>
+        <div class="legend" id="legTrain"></div>
+      </section>
+      <aside class="side">
+        <div class="card">
+          <div class="trhead"><p class="label" id="trTitle"></p><button class="btn small" id="trEx" type="button">📘 Musterbeispiel ansehen</button></div>
+          <div class="formula" id="trTask"></div>
+        </div>
+        <div class="card">
+          <p class="label">Deine Antwort</p>
+          <div class="answer" id="trAnswer"></div>
+          <div class="row" style="margin-top:8px">
+            <button class="btn primary" id="trCheck">Prüfen</button>
+            <button class="btn" id="trShow">Lösung zeigen</button>
+            <button class="btn" id="trNext">Nächste Aufgabe</button>
+          </div>
+          <div class="feedback" id="trFb" aria-live="polite"></div>
+          <div class="formula small" id="trSol" hidden></div>
+        </div>
+        <div class="card">
+          <p class="label">Dein Fortschritt</p>
+          <div class="prog" id="trProg"></div>
+          <div class="row" style="margin-top:8px"><button class="btn small" id="trReset">Fortschritt zurücksetzen</button></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= 3 PROFI ================= -->
+  <section id="tab-pro" class="tab" hidden>
+    <div class="prowrap">
+      <p class="lede">Profi-Aufgaben für alle, die den Rechentrainer geschafft haben. Erst nachdenken, dann klicken.</p>
+      <div class="pjump" id="proJump" hidden></div>
+      <div id="proQuiz" class="card">
+        <p class="label" id="proHead"></p>
+        <div class="proq" id="proQ"></div>
+        <div id="proTable" style="margin:0 0 14px;max-width:420px" hidden></div>
+        <canvas id="cPro" class="procan" aria-label="Skizze zur Frage"></canvas>
+        <p class="hint" id="proCap" style="margin:-8px 0 14px" hidden></p>
+        <div class="optwrap">
+          <div class="opts" id="proOpts"></div>
+          <div class="lock" id="proLock" hidden aria-live="assertive"><div><b>Leider nicht. Überleg nochmal …</b><small id="proPicked"></small><div class="count" id="proCount">3</div></div></div>
+        </div>
+        <div class="feedback" id="proFb" aria-live="polite"></div>
+        <p class="proex" id="proEx" hidden></p>
+        <div class="row" style="margin-top:10px"><button class="btn primary" id="proNext" hidden>Nächste Frage</button></div>
+      </div>
+      <div id="proDone" class="card" hidden style="text-align:center;padding:28px 16px">
+        <h2 class="proq" id="proDoneT" style="font-size:34px;margin:0 0 8px"></h2>
+        <p id="proDoneS" style="margin:0 0 16px"></p>
+        <button class="btn primary" id="proAgain">Nochmal von vorn</button>
+        <p class="label" style="text-align:left;margin:24px 0 8px">Alle Fragen zum Nachschauen (Fehler pro Frage):</p>
+        <div class="revlist" id="proList"></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="win" id="exWin" hidden role="dialog" aria-modal="true" aria-labelledby="exT">
+  <div class="box exbox">
+    <button class="exclose" id="exClose" type="button" aria-label="Schließen">×</button>
+    <p class="label" id="exLvl"></p>
+    <h2 id="exT">Musterbeispiel</h2>
+    <p class="exsub" id="exSub"></p>
+    <div class="exg" id="exBody"></div>
+    <div class="row" style="justify-content:center"><button class="btn primary" id="exOk" type="button">Verstanden, jetzt ich!</button></div>
+  </div>
+</div>
+<div class="win" id="nextWin" hidden role="dialog" aria-modal="true" aria-labelledby="nextT">
+  <div class="box">
+    <div class="big" id="nextIcon" aria-hidden="true"></div>
+    <h2 id="nextT"></h2>
+    <p id="nextS"></p>
+    <p id="nextS2" hidden></p>
+    <p id="nextS3" hidden></p>
+    <div class="row" style="justify-content:center;margin-top:14px">
+      <button class="btn" id="nextClose" type="button">Schließen</button>
+      <a class="btn primary" id="nextGo" href="#"></a>
+      <button class="btn primary" id="nextAgain" type="button">Nochmal von vorn</button>
+      <a class="btn" id="nextAlt" href="#"></a>
+      <a class="btn" id="nextAlt2" href="#"></a>
+    </div>
+  </div>
+</div>
+<div class="win" id="win" hidden role="dialog" aria-modal="true" aria-labelledby="winT">
+  <canvas id="confetti" aria-hidden="true"></canvas>
+  <div class="box">
+    <div class="big" aria-hidden="true">🏆</div>
+    <h2 id="winT">Glückwunsch!</h2>
+    <p><b>Du hast alle Stufen geschafft.</b></p>
+    <p></p>
+    <p id="winProTxt"><b>Neu freigeschaltet: Tab 3 mit Profi-Aufgaben</b> zum Knobeln.</p>
+    <div class="stats" id="winStats"></div>
+    <div class="row" style="justify-content:center">
+      <button class="btn" id="winClose">Weiter üben</button>
+      <button class="btn primary" id="winPro">Zu den Profi-Aufgaben ★</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+"use strict";
+const LAB = {"id": "zufall", "title": "Zufalls-Labor", "thema": "Zufall und Wahrscheinlichkeit", "klasse": "UIIIb", "versteckt": true, "icon": "M10 26V14M17 26V8M24 26V18", "icon2": "M6 11H28", "ueben": false, "tabs": [{"id": "hf", "label": "Werfen & zählen", "slug": "haeufigkeit"}, {"id": "gr", "label": "Glücksrad", "slug": "gluecksrad"}, {"id": "zw", "label": "Zwei Würfel", "slug": "zwei-wuerfel"}], "file": "Zufall", "pfad": "zufall"};
+const PFADE = {"binomi": "binomi", "geraden": "gerade", "parabel": "parabel", "tangenten": "tangente"};
+/* Geteilter Kern aller Labore: kleine Helfer, Koordinatensystem, Zahlen einlesen.
+   Wird vom Build (build.py) zusammen mit dem Code des Labors in eine Datei kopiert. */
+const $ = id => document.getElementById(id);
+const tok = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const r6 = v => Math.round(v * 1e6) / 1e6;
+const num = v => { const r = r6(v); return (r < 0 ? "−" : "") + String(Math.abs(r)).replace(".", ","); };
+const sp = (cls, t) => cls ? `<span class="${cls}">${t}</span>` : t;
+const rnd = n => Math.floor(Math.random() * n);
+const pick = arr => arr[rnd(arr.length)];
+const near = (u, v, tol = 1e-6) => Math.abs(u - v) <= tol;
+const paren = v => r6(v) < 0 ? `(${num(v)})` : num(v);
+// Zahl in fester Breite, damit Text dahinter beim Ziehen nicht springt
+const fx = (cls, t, w = 3.2, al = "center") => `<span class="fx ${cls}" style="width:${w}em;text-align:${al}">${t}</span>`;
+const frac = (a, b) => `<span class="frac"><span>${a}</span><span>${b}</span></span>`;
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+function nz(lo, hi) { let v; do v = lo + rnd(hi - lo + 1); while (v === 0); return v; }
+function shuffle(n) { const a = [...Array(n).keys()]; for (let i = n - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+// Eingabefeld für den Rechentrainer; data-k ist der Schlüssel in task.want
+const inp = k => `<input class="in" data-k="${k}" inputmode="decimal" autocomplete="off" spellcheck="false" aria-label="${k}">`;
+
+// ---------- Koordinatensystem ----------
+class Board {
+  // R = halbe Breite in Einheiten; cx, cy = Mitte des Ausschnitts (Standard: Ursprung)
+  constructor(canvas, R = 8, cx = 0, cy = 0) { this.c = canvas; this.R = R; this.cx = cx; this.cy = cy; this.lab = 1; }
+  begin() {
+    const c = this.c, r = c.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+    const w = Math.max(1, Math.round(r.width * dpr)), h = Math.max(1, Math.round(r.height * dpr));
+    if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
+    const ctx = this.ctx = c.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    this.w = r.width; this.h = r.height;
+    const R = this.R, m = 14; this.u = (Math.min(this.w, this.h) - 2 * m) / (2 * R);
+    this.ox = this.w / 2 - this.cx * this.u; this.oy = this.h / 2 + this.cy * this.u;
+    const X = x => this.X(x), Y = y => this.Y(y);
+    const x0 = this.cx - R, x1 = this.cx + R, y0 = this.cy - R, y1 = this.cy + R;
+    ctx.clearRect(0, 0, this.w, this.h); ctx.setLineDash([]);
+    ctx.lineWidth = 1;
+    for (let i = Math.ceil(x0); i <= x1; i++) {
+      ctx.strokeStyle = i % 5 ? tok("--grid") : tok("--grid-strong");
+      ctx.beginPath(); ctx.moveTo(X(i), Y(y0)); ctx.lineTo(X(i), Y(y1)); ctx.stroke();
+    }
+    for (let i = Math.ceil(y0); i <= y1; i++) {
+      ctx.strokeStyle = i % 5 ? tok("--grid") : tok("--grid-strong");
+      ctx.beginPath(); ctx.moveTo(X(x0), Y(i)); ctx.lineTo(X(x1), Y(i)); ctx.stroke();
+    }
+    const ink = tok("--ink"), muted = tok("--muted");
+    ctx.strokeStyle = ink; ctx.fillStyle = ink; ctx.lineWidth = 1.6;
+    ctx.beginPath(); ctx.moveTo(X(x0), Y(0)); ctx.lineTo(X(x1), Y(0)); ctx.moveTo(X(0), Y(y0)); ctx.lineTo(X(0), Y(y1)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X(x1) + 2, Y(0)); ctx.lineTo(X(x1) - 7, Y(0) - 4); ctx.lineTo(X(x1) - 7, Y(0) + 4); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(X(0), Y(y1) - 2); ctx.lineTo(X(0) - 4, Y(y1) + 7); ctx.lineTo(X(0) + 4, Y(y1) + 7); ctx.fill();
+    ctx.font = `12px ${tok("--body")}`; ctx.fillStyle = muted;
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    for (let i = Math.floor(x0) + 1; i < x1; i++) if (i && i % this.lab === 0) ctx.fillText(num(i), X(i), Y(0) + 4);
+    ctx.textAlign = "right"; ctx.textBaseline = "middle";
+    for (let i = Math.floor(y0) + 1; i < y1; i++) if (i && i % this.lab === 0) ctx.fillText(num(i), X(0) - 5, Y(i));
+    ctx.fillStyle = ink; ctx.font = `700 14px ${tok("--body")}`;
+    ctx.textAlign = "right"; ctx.textBaseline = "bottom"; ctx.fillText(this.xName || "x", X(x1) - 4, Y(0) - 6);
+    ctx.textAlign = "left"; ctx.textBaseline = "top"; ctx.fillText(this.yName || "y", X(0) + 8, Y(y1) + 2);
+    return ctx;
+  }
+  X(x) { return this.ox + x * this.u; }
+  Y(y) { return this.oy - y * this.u; }
+  ix(px) { return (px - this.ox) / this.u; }
+  iy(py) { return (this.oy - py) / this.u; }
+  clip(fn) { const c = this.ctx, R = this.R; c.save(); c.beginPath(); c.rect(this.X(this.cx - R), this.Y(this.cy + R), 2 * R * this.u, 2 * R * this.u); c.clip(); fn(c); c.restore(); }
+  curve(f, color, width, dash) {
+    const R = this.R, lo = this.cy - R - 4 * R / 8, hi = this.cy + R + 4 * R / 8;
+    this.clip(c => {
+      c.strokeStyle = color; c.lineWidth = width; c.setLineDash(dash || []); c.lineJoin = "round"; c.lineCap = "round";
+      c.beginPath(); let started = false; const N = 700;
+      for (let i = 0; i <= N; i++) {
+        const x = this.cx - R + 2 * R * i / N, y = f(x);
+        if (y > hi || y < lo) { if (started) { c.lineTo(this.X(x), this.Y(Math.max(lo, Math.min(hi, y)))); c.stroke(); c.beginPath(); started = false; } continue; }
+        if (!started) { c.moveTo(this.X(x), this.Y(y)); started = true; } else c.lineTo(this.X(x), this.Y(y));
+      }
+      c.stroke();
+    });
+  }
+  seg(x1, y1, x2, y2, color, width = 1.5, dash = [5, 4]) {
+    this.clip(c => { c.strokeStyle = color; c.lineWidth = width; c.setLineDash(dash); c.beginPath(); c.moveTo(this.X(x1), this.Y(y1)); c.lineTo(this.X(x2), this.Y(y2)); c.stroke(); });
+  }
+  dot(x, y, color, r = 6, ring = true) {
+    if (Math.abs(x - this.cx) > this.R || Math.abs(y - this.cy) > this.R) return;
+    const c = this.ctx; c.setLineDash([]); c.fillStyle = color; c.strokeStyle = tok("--paper"); c.lineWidth = 2;
+    c.beginPath(); c.arc(this.X(x), this.Y(y), r, 0, 2 * Math.PI); c.fill(); if (ring) c.stroke();
+  }
+  // farbiger Text mit Hintergrund; parts = [[text, farbe], ...]
+  tag(parts, px, py, { align = "left", base = "top", size = 15 } = {}) {
+    const c = this.ctx; c.font = `700 ${size}px ${tok("--body")}`; c.textBaseline = "alphabetic"; c.textAlign = "left";
+    const tw = parts.reduce((s, p) => s + c.measureText(p[0]).width, 0);
+    let x = align === "left" ? px : align === "right" ? px - tw : px - tw / 2;
+    x = Math.max(4, Math.min(this.w - tw - 4, x));
+    let y = base === "top" ? py + size : base === "bottom" ? py - 4 : py + size / 2 - 2;
+    y = Math.max(size + 2, Math.min(this.h - 6, y));
+    c.fillStyle = tok("--paper"); c.globalAlpha = .85; c.fillRect(x - 3, y - size, tw + 6, size + 6); c.globalAlpha = 1;
+    for (const [t, col] of parts) { c.fillStyle = col; c.fillText(t, x, y); x += c.measureText(t).width; }
+  }
+  pointer(e) { const r = this.c.getBoundingClientRect(); return [this.ix(e.clientX - r.left), this.iy(e.clientY - r.top), e.clientX - r.left, e.clientY - r.top]; }
+}
+
+// Ziehen: hit(x,y,px,py) liefert Griff oder null; move(griff,x,y)
+function draggable(board, hit, move, redraw) { // redraw optional
+  const c = board.c; let grab = null;
+  c.addEventListener("pointerdown", e => { const [x, y, px, py] = board.pointer(e); grab = hit(x, y, px, py); if (grab) { c.setPointerCapture(e.pointerId); e.preventDefault(); } });
+  c.addEventListener("pointermove", e => {
+    const [x, y, px, py] = board.pointer(e);
+    if (grab) { move(grab, x, y); if (redraw) redraw(); } else c.style.cursor = hit(x, y, px, py) ? "grab" : "default";
+  });
+  const end = () => { grab = null; };
+  c.addEventListener("pointerup", end); c.addEventListener("pointercancel", end);
+}
+// ---------- Schieberegler ----------
+// Jeder Regler sagt im HTML nur, wozu er da ist; die Schrittweite steht nur hier:
+//   data-step="look"   nur anschauen/erkunden: fein
+//   data-step="match"  etwas Gegebenes treffen (Quiz): grob, damit man es auch trifft
+// Umschalten (z. B. Erkunden ↔ Quiz) mit setStep(regler, "match").
+const STEP = { look: 0.05, match: 0.25 };
+function setStep(el, kind) { el.dataset.step = kind; el.step = STEP[kind]; }
+// Startwert neu setzen: ohne step-Attribut hat der Browser ihn schon auf ganze Zahlen gerundet
+document.querySelectorAll('input[type="range"]').forEach(el => { setStep(el, el.dataset.step || "look"); el.value = el.getAttribute("value"); });
+
+const nearPx = (board, x, y, px, py, r = 16) => Math.hypot(board.X(x) - px, board.Y(y) - py) <= r;
+const snapTo = (v, s) => r6(Math.round(v / s) * s);
+
+// ---------- Zahlen einlesen (Komma, Minuszeichen, Brüche wie 3/4) ----------
+function parse(str) {
+  let s = String(str).trim().replace(/[−–—]/g, "-").replace(/\s/g, "").replace(",", ".");
+  if (s === "") return NaN;
+  if (s === "-") return -1;
+  if (s === "+") return 1;
+  const fr = s.match(/^([+-]?\d*\.?\d+)\/(\d*\.?\d+)$/);
+  if (fr) return Number(fr[1]) / Number(fr[2]);
+  if (!/^[+-]?(\d+\.?\d*|\.\d+)$/.test(s)) return NaN;
+  return Number(s);
+}
+
+// „0,09x + 7,5“, „7,5 + 0,09·x“, „24 − 1,5x“ → {m, b}; null, wenn es keine Gerade in x ist
+function parseLin(str) {
+  let s = String(str).toLowerCase().replace(/^\s*y\s*=/, "").replace(/[−–—]/g, "-").replace(/[·*×\s€%]/g, "").replace(/,/g, ".");
+  if (!s) return null;
+  if (!/^[+-]/.test(s)) s = "+" + s;
+  const terms = s.match(/[+-][^+-]+/g);
+  if (!terms || terms.join("") !== s) return null;
+  let m = 0, b = 0;
+  for (const t of terms) {
+    if (t.endsWith("x")) { const k = t.slice(0, -1); const v = k === "+" ? 1 : k === "-" ? -1 : parse(k); if (isNaN(v)) return null; m += v; }
+    else { const v = parse(t); if (isNaN(v)) return null; b += v; }
+  }
+  return { m: r6(m), b: r6(b) };
+}
+
+// ---------- Admin-Version ----------
+// Die Version mit Anmeldung (adminpanel/, docs/) setzt vorher window.LAB_ADMIN, sonst ist es null.
+// alle(): Lehrkraft hat für dieses Kind alles geöffnet · tabOk(t): Tab freigegeben · prog: gespeicherter Fortschritt
+// changed(): Fortschritt geändert (wird gebündelt an den Server geschickt) · proLocked(): Hinweis „Profi noch zu“
+const ADMIN = window.LAB_ADMIN || null;
+const changed = () => { if (ADMIN) ADMIN.changed(); };
+// #alle in der Adresse öffnet alle Stufen und den Profi-Tab (für die Lehrkraft)
+const allOpen = () => ADMIN ? ADMIN.alle() : /alle/i.test(location.hash);
+
+/* =============================================================
+   ZUFALLS-LABOR (Klasse 8, versteckt): Wahrscheinlichkeit, relative Häufigkeit,
+   Laplace-Experimente, Ereignisse, zwei Würfel
+   ============================================================= */
+// Canvas in Gerätepixeln vorbereiten, liefert Zeichenfläche in CSS-Pixeln
+function fit(c) {
+  const r = c.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+  const w = Math.max(1, Math.round(r.width * dpr)), h = Math.max(1, Math.round(r.height * dpr));
+  if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
+  const ctx = c.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, r.width, r.height);
+  return { ctx, w: r.width, h: r.height };
+}
+const font = (s, b = 400) => `${b} ${s}px ${tok("--body")}`;
+const dec = (v, d = 3) => num(Math.round(v * 10 ** d) / 10 ** d);
+const gcd = (a, b) => b ? gcd(b, a % b) : a;
+// Bruch k/n, gekürzt dazu, wenn es kürzer geht: 6/36 = 1/6
+function fracRed(k, n, cls = "") {
+  const g = gcd(k, n) || 1;
+  return sp(cls, frac(k, n)) + (g > 1 && k ? " = " + sp(cls, frac(k / g, n / g)) : "");
+}
+// Schöne Obergrenze für die x-Achse: 10, 20, 50, 100, …
+function niceMax(n) { let m = 10; for (;;) { for (const f of [1, 2, 5]) if (m * f >= n) return m * f; m *= 10; } }
+const big = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+/* =============================================================
+   1 WERFEN & ZÄHLEN: relative Häufigkeit nähert sich der Wahrscheinlichkeit
+   ============================================================= */
+const HF = (() => {
+  // Reißzwecke: Wahrscheinlichkeit unbekannt, pro Besuch etwas anders (zwischen 0,55 und 0,7)
+  const PZ = r6(0.55 + rnd(16) / 100);
+  const EXP = {
+    muenze: { hit: "Kopf", p: 1 / 2, pf: [1, 2], roll: () => Math.random() < .5 ? 1 : 0, sym: v => v ? "K" : "Z", isHit: v => v === 1 },
+    wuerfel: { hit: "Sechs", p: 1 / 6, pf: [1, 6], roll: () => 1 + rnd(6), sym: v => v, isHit: v => v === 6 },
+    zwecke: { hit: "Spitze nach oben", p: PZ, pf: null, roll: () => Math.random() < PZ ? 1 : 0, sym: v => v ? "↑" : "↘", isHit: v => v === 1 },
+  };
+  const st = { e: "muenze", n: 0, k: 0, h: [], last: [] };
+  const c = $("hfC");
+  function reset() { st.n = 0; st.k = 0; st.h = []; st.last = []; upd(); }
+  function throwN(m) {
+    const E = EXP[st.e];
+    for (let i = 0; i < m; i++) {
+      const v = E.roll(); st.n++; if (E.isHit(v)) st.k++;
+      st.h.push(st.k / st.n); st.last.push(v);
+    }
+    if (st.last.length > 40) st.last = st.last.slice(-40);
+    upd();
+  }
+  function upd() {
+    const E = EXP[st.e];
+    $("hfHit").innerHTML = `Treffer: <b class="cd">${E.hit}</b>`;
+    $("hfStrip").innerHTML = st.last.map(v => `<span class="${E.isHit(v) ? "hit" : ""}">${E.sym(v)}</span>`).reverse().join("");
+    const h = st.n ? st.k / st.n : 0;
+    $("hfOut").innerHTML = `<span class="k">Würfe</span><span class="v">${big(st.n)}</span>
+      <span class="k">Treffer</span><span class="v cd">${big(st.k)}</span>
+      <span class="k">relative Häufigkeit</span><span class="v cu">${st.n ? fx("", dec(h), 3.4, "left") : "–"}</span>
+      <span class="k">Wahrscheinlichkeit</span><span class="v">${E.pf ? frac(E.pf[0], E.pf[1]) + " ≈ " + dec(E.p) : "?"}</span>`;
+    draw();
+  }
+  function draw() {
+    const { ctx, w, h } = fit(c), E = EXP[st.e];
+    const L = 46, Rm = 14, T = 14, B = 34, pw = w - L - Rm, ph = h - T - B;
+    const N = niceMax(Math.max(10, st.n));
+    const X = i => L + i / N * pw, Y = v => T + (1 - v) * ph;
+    ctx.lineWidth = 1; ctx.font = font(12); ctx.fillStyle = tok("--muted");
+    for (let j = 0; j <= 10; j++) {
+      ctx.strokeStyle = j % 5 ? tok("--grid") : tok("--grid-strong");
+      ctx.beginPath(); ctx.moveTo(L, Y(j / 10)); ctx.lineTo(L + pw, Y(j / 10)); ctx.stroke();
+      ctx.textAlign = "right"; ctx.textBaseline = "middle"; ctx.fillText(num(j / 10), L - 6, Y(j / 10));
+    }
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    for (let j = 0; j <= 5; j++) {
+      const v = N * j / 5; ctx.strokeStyle = tok("--grid");
+      ctx.beginPath(); ctx.moveTo(X(v), T); ctx.lineTo(X(v), T + ph); ctx.stroke();
+      ctx.fillText(big(v), X(v), T + ph + 6);
+    }
+    ctx.strokeStyle = tok("--ink"); ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(L, T); ctx.lineTo(L, T + ph); ctx.lineTo(L + pw, T + ph); ctx.stroke();
+    ctx.fillStyle = tok("--ink"); ctx.font = font(13, 700); ctx.textAlign = "right"; ctx.textBaseline = "bottom";
+    ctx.fillText("Würfe", L + pw, T + ph - 4);
+    if (E.pf) {
+      ctx.strokeStyle = tok("--ink"); ctx.setLineDash([7, 5]); ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(L, Y(E.p)); ctx.lineTo(L + pw, Y(E.p)); ctx.stroke(); ctx.setLineDash([]);
+    }
+    if (st.h.length) {
+      ctx.strokeStyle = tok("--curve"); ctx.lineWidth = 2.5; ctx.lineJoin = "round"; ctx.beginPath();
+      const step = Math.max(1, Math.floor(st.h.length / 1500));
+      for (let i = 0; i < st.h.length; i += step) { const x = X(i + 1), y = Y(st.h[i]); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+      ctx.lineTo(X(st.h.length), Y(st.h[st.h.length - 1])); ctx.stroke();
+      ctx.fillStyle = tok("--curve"); ctx.beginPath(); ctx.arc(X(st.h.length), Y(st.h[st.h.length - 1]), 5, 0, 7); ctx.fill();
+    }
+  }
+  document.querySelectorAll("#tab-hf [data-n]").forEach(b => b.addEventListener("click", () => throwN(+b.dataset.n)));
+  $("hfReset").addEventListener("click", reset);
+  document.querySelectorAll("#hfExp button").forEach(b => b.addEventListener("click", () => {
+    document.querySelectorAll("#hfExp button").forEach(x => x.setAttribute("aria-selected", x === b));
+    st.e = b.dataset.e; reset();
+  }));
+  return { draw, init: upd, st };
+})();
+
+/* =============================================================
+   2 GLÜCKSRAD: Laplace-Experiment, Ereignisse als Menge von Feldern
+   ============================================================= */
+const GR = (() => {
+  const c = $("grC");
+  const st = { n: 8, hits: new Set([0, 1, 2]), rot: 0, spin: null, N: 0, K: 0, res: null };
+  const S = () => 2 * Math.PI / st.n;
+  const mod = (a, m) => ((a % m) + m) % m;
+  const under = rot => Math.floor(mod(-rot, 2 * Math.PI) / S()); // Feld unter dem Zeiger (oben)
+  const EV = { gerade: z => z % 2 === 0, ungerade: z => z % 2 === 1, prim: z => [2, 3, 5, 7, 11].includes(z), gross: z => z > 4 };
+  let ev = null;
+  function geo() { const r = c.getBoundingClientRect(); const R = Math.min(r.width, r.height) * 0.42; return { cx: r.width / 2, cy: r.height / 2 + 14, R }; }
+  function draw() {
+    const { ctx } = fit(c), { cx, cy, R } = geo(), s = S();
+    for (let i = 0; i < st.n; i++) {
+      const a0 = i * s + st.rot - Math.PI / 2, a1 = a0 + s;
+      const lit = st.res !== null && !st.spin && i === st.res;
+      ctx.fillStyle = st.hits.has(i) ? tok("--d") : tok("--surface");
+      ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, R, a0, a1); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = tok("--paper"); ctx.lineWidth = 3; ctx.stroke();
+      if (lit) { ctx.strokeStyle = tok("--ink"); ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(cx, cy, R - 2, a0 + .02, a1 - .02); ctx.stroke(); }
+      const am = (a0 + a1) / 2;
+      ctx.fillStyle = st.hits.has(i) ? "#fff" : tok("--ink"); ctx.font = font(Math.max(16, Math.min(30, R * 0.16)), 700);
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText(i + 1, cx + Math.cos(am) * R * 0.72, cy + Math.sin(am) * R * 0.72);
+    }
+    ctx.strokeStyle = tok("--muted"); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, R, 0, 7); ctx.stroke();
+    ctx.fillStyle = tok("--muted"); ctx.beginPath(); ctx.arc(cx, cy, 8, 0, 7); ctx.fill();
+    // Zeiger oben
+    ctx.fillStyle = tok("--ink"); ctx.beginPath(); ctx.moveTo(cx, cy - R + 16); ctx.lineTo(cx - 13, cy - R - 16); ctx.lineTo(cx + 13, cy - R - 16); ctx.closePath(); ctx.fill();
+  }
+  function upd() {
+    $("grN").textContent = st.n;
+    const k = st.hits.size;
+    $("grP").innerHTML = `P(<span class="cd">Treffer</span>) = ${fracRed(k, st.n, "cd")} ≈ ${fx("", dec(k / st.n, 2), 2.6, "left")}`;
+    const lastTxt = st.res === null ? "–" : st.hits.has(st.res) ? `<span class="cd">${st.res + 1} Treffer</span>` : `${st.res + 1}`;
+    $("grOut").innerHTML = `<span class="k">zuletzt</span><span class="v">${lastTxt}</span>
+      <span class="k">Drehungen</span><span class="v">${big(st.N)}</span>
+      <span class="k">Treffer</span><span class="v cd">${big(st.K)}</span>
+      <span class="k">relative Häufigkeit</span><span class="v cu">${st.N ? fx("", dec(st.K / st.N, 2), 2.6, "left") : "–"}</span>`;
+    document.querySelectorAll("#grEv button").forEach(b => b.setAttribute("aria-selected", b.dataset.ev === ev));
+    draw();
+  }
+  function tally(i) { st.N++; if (st.hits.has(i)) st.K++; st.res = i; }
+  function resetTally() { st.N = 0; st.K = 0; st.res = null; }
+  function spin() {
+    if (st.spin) return;
+    const target = rnd(st.n), th = (target + 0.15 + 0.7 * Math.random()) * S();
+    const r0 = st.rot, r1 = r0 + 2 * Math.PI * 4 + mod(-th - r0, 2 * Math.PI), t0 = performance.now(), D = 1800;
+    st.res = null;
+    const step = t => {
+      const u = Math.min(1, (t - t0) / D), e = 1 - Math.pow(1 - u, 3);
+      st.rot = r0 + (r1 - r0) * e;
+      if (u < 1) { st.spin = requestAnimationFrame(step); draw(); }
+      else { st.spin = null; st.rot = mod(r1, 2 * Math.PI); tally(under(st.rot)); upd(); }
+    };
+    st.spin = requestAnimationFrame(step);
+  }
+  c.addEventListener("pointerdown", e => {
+    if (st.spin) return;
+    const r = c.getBoundingClientRect(), { cx, cy, R } = geo(), dx = e.clientX - r.left - cx, dy = e.clientY - r.top - cy;
+    if (Math.hypot(dx, dy) > R) return;
+    const i = Math.floor(mod(Math.atan2(dx, -dy) - st.rot, 2 * Math.PI) / S());
+    st.hits.has(i) ? st.hits.delete(i) : st.hits.add(i);
+    ev = null; resetTally(); upd();
+  });
+  c.addEventListener("pointermove", e => {
+    const r = c.getBoundingClientRect(), { cx, cy, R } = geo();
+    c.style.cursor = Math.hypot(e.clientX - r.left - cx, e.clientY - r.top - cy) <= R ? "pointer" : "default";
+  });
+  function setN(n) {
+    if (st.spin) return;
+    st.n = clamp(n, 2, 12);
+    st.hits = ev ? new Set([...Array(st.n).keys()].filter(i => EV[ev](i + 1))) : new Set([...st.hits].filter(i => i < st.n));
+    resetTally(); upd();
+  }
+  $("grMinus").addEventListener("click", () => setN(st.n - 1));
+  $("grPlus").addEventListener("click", () => setN(st.n + 1));
+  document.querySelectorAll("#grEv button").forEach(b => b.addEventListener("click", () => { ev = b.dataset.ev; setN(st.n); }));
+  $("grSpin").addEventListener("click", spin);
+  $("grMany").addEventListener("click", () => { if (st.spin) return; for (let i = 0; i < 100; i++) tally(rnd(st.n)); st.rot = -(st.res + 0.5) * S(); upd(); });
+  $("grReset").addEventListener("click", () => { if (!st.spin) { resetTally(); upd(); } });
+  return { draw, init: upd, st };
+})();
+
+/* =============================================================
+   3 ZWEI WÜRFEL: 36 gleich wahrscheinliche Ergebnisse, Augensumme
+   ============================================================= */
+const ZW = (() => {
+  const c = $("zwC"), ch = $("zwH");
+  const st = { s: 7, cnt: Array(13).fill(0), N: 0, last: null };
+  const ways = s => 6 - Math.abs(s - 7);
+  const PIPS = { 1: [[1, 1]], 2: [[0, 0], [2, 2]], 3: [[0, 0], [1, 1], [2, 2]], 4: [[0, 0], [2, 0], [0, 2], [2, 2]], 5: [[0, 0], [2, 0], [1, 1], [0, 2], [2, 2]], 6: [[0, 0], [2, 0], [0, 1], [2, 1], [0, 2], [2, 2]] };
+  function die(ctx, x, y, a, v, col) {
+    ctx.fillStyle = tok("--paper"); ctx.strokeStyle = col; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.roundRect(x, y, a, a, a * 0.18); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = col;
+    for (const [i, j] of PIPS[v]) { ctx.beginPath(); ctx.arc(x + a * (0.25 + 0.25 * i), y + a * (0.25 + 0.25 * j), a * 0.085, 0, 7); ctx.fill(); }
+  }
+  function grid() {
+    const r = c.getBoundingClientRect(), a = Math.min(r.width, r.height) / 7.3;
+    return { a, x0: (r.width - 7 * a) / 2 + a, y0: (r.height - 7 * a) / 2 + a };
+  }
+  function draw() {
+    const { ctx } = fit(c), { a, x0, y0 } = grid();
+    for (let i = 1; i <= 6; i++) {
+      die(ctx, x0 + (i - 1) * a + a * 0.18, y0 - a + a * 0.12, a * 0.64, i, tok("--curve"));
+      die(ctx, x0 - a + a * 0.12, y0 + (i - 1) * a + a * 0.18, a * 0.64, i, tok("--a"));
+    }
+    for (let i = 1; i <= 6; i++) for (let j = 1; j <= 6; j++) {
+      const x = x0 + (i - 1) * a, y = y0 + (j - 1) * a, on = i + j === st.s;
+      ctx.fillStyle = on ? tok("--d") : tok("--surface");
+      ctx.beginPath(); ctx.roundRect(x + 3, y + 3, a - 6, a - 6, 8); ctx.fill();
+      ctx.fillStyle = on ? "#fff" : tok("--muted"); ctx.font = font(Math.round(a * 0.34), 700);
+      ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(i + j, x + a / 2, y + a / 2 + 1);
+    }
+    drawH();
+  }
+  function drawH() {
+    const { ctx, w, h } = fit(ch), L = 40, T = 10, B = 26, pw = w - L - 8, ph = h - T - B, bw = pw / 11;
+    const ymax = 0.25, Y = v => T + (1 - v / ymax) * ph;
+    ctx.font = font(12); ctx.lineWidth = 1;
+    for (let v = 0; v <= 0.25 + 1e-9; v += 0.05) {
+      ctx.strokeStyle = tok("--grid"); ctx.beginPath(); ctx.moveTo(L, Y(v)); ctx.lineTo(L + pw, Y(v)); ctx.stroke();
+      ctx.fillStyle = tok("--muted"); ctx.textAlign = "right"; ctx.textBaseline = "middle"; ctx.fillText(num(r6(v)), L - 6, Y(v));
+    }
+    for (let s = 2; s <= 12; s++) {
+      const x = L + (s - 2) * bw, f = st.N ? st.cnt[s] / st.N : 0;
+      ctx.fillStyle = s === st.s ? tok("--d") : tok("--curve");
+      if (f) ctx.fillRect(x + bw * 0.18, Y(Math.min(f, ymax)), bw * 0.64, Y(0) - Y(Math.min(f, ymax)));
+      ctx.strokeStyle = tok("--ink"); ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(x + bw * 0.08, Y(ways(s) / 36)); ctx.lineTo(x + bw * 0.92, Y(ways(s) / 36)); ctx.stroke();
+      ctx.fillStyle = s === st.s ? tok("--d") : tok("--muted"); ctx.font = font(13, s === st.s ? 700 : 400);
+      ctx.textAlign = "center"; ctx.textBaseline = "top"; ctx.fillText(s, x + bw / 2, T + ph + 6);
+    }
+    ctx.strokeStyle = tok("--ink"); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(L, T); ctx.lineTo(L, T + ph); ctx.lineTo(L + pw, T + ph); ctx.stroke();
+  }
+  function upd() {
+    const k = ways(st.s);
+    $("zwP").innerHTML = `P(Summe&nbsp;${fx("cd", st.s, 1.15, "left")}) = ${fracRed(k, 36, "cd")}`;
+    document.querySelectorAll("#zwSum button").forEach(b => b.setAttribute("aria-selected", +b.dataset.s === st.s));
+    const D = ["", "⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
+    $("zwLast").innerHTML = st.last ? `<span class="cu">${D[st.last[0]]}</span><span style="color:var(--a)">${D[st.last[1]]}</span> <b>${st.N > 0 ? big(st.N) + " Würfe" : ""}</b>` : "";
+    draw();
+  }
+  $("zwSum").innerHTML = [...Array(11)].map((_, i) => `<button data-s="${i + 2}" aria-selected="false">${i + 2}</button>`).join("");
+  document.querySelectorAll("#zwSum button").forEach(b => b.addEventListener("click", () => { st.s = +b.dataset.s; upd(); }));
+  document.querySelectorAll("#tab-zw [data-n]").forEach(b => b.addEventListener("click", () => {
+    for (let i = 0; i < +b.dataset.n; i++) { const d = [1 + rnd(6), 1 + rnd(6)]; st.cnt[d[0] + d[1]]++; st.N++; st.last = d; }
+    upd();
+  }));
+  $("zwReset").addEventListener("click", () => { st.cnt.fill(0); st.N = 0; st.last = null; upd(); });
+  c.addEventListener("pointerdown", e => {
+    const r = c.getBoundingClientRect(), { a, x0, y0 } = grid();
+    const i = Math.floor((e.clientX - r.left - x0) / a), j = Math.floor((e.clientY - r.top - y0) / a);
+    if (i >= 0 && i < 6 && j >= 0 && j < 6) { st.s = i + j + 2; upd(); }
+  });
+  return { draw, init: upd, st };
+})();
+
+/* ---------- Anbindung an das gemeinsame Gerüst ---------- */
+const EXPLORE = {
+  draw: { hf: HF.draw, gr: GR.draw, zw: ZW.draw },
+  canvases: ["hfC", "grC", "zwC", "zwH"],
+  init() { HF.init(); GR.init(); ZW.init(); window.__zufall = { HF, GR, ZW }; },
+};
+
+/* =============================================================
+   OHNE ÜBEN (geteilt): für Labore mit "ueben": false im Steckbrief.
+   Ersetzt trainer.js und profi.js: kein Rechentrainer, kein Profi-Tab.
+   Stellt nur bereit, was app.js und die Admin-Anbindung erwarten.
+   ============================================================= */
+const KEY = LAB.id + "-labor-v1";
+const prog = { c: [], f: [], unl: 0, lvl: 0, won: false }, pro = { i: 0, score: 0, errs: [], answered: false };
+const PRO = [];
+let task = null;
+function renderLevels() {}
+function newTask() {}
+function drawTrain() {}
+function renderPro() {}
+function drawPro() {}
+function updProTab() {}
+const proVisible = () => false, proLocked = () => false;
+
+/* =============================================================
+   TABS, ADRESSE, START (geteilt)
+   Das Labor liefert EXPLORE = { draw: {tab: zeichne}, canvases: [ids], init(), quiz?, fontsReady? }
+   ============================================================= */
+// Adresse merkt sich den Tab (z. B. …#rechentrainer), damit Neuladen und Links an derselben Stelle landen
+var hashOn = false;
+const SLUG = {};
+LAB.tabs.forEach(t => SLUG[t.id] = t.slug);
+if (document.querySelector('#mainTabs [data-tab="train"]')) { SLUG.train = "rechentrainer"; SLUG.pro = "profi"; }
+function setHash() {
+  const q = EXPLORE.quiz, sub = q && current === q.tab && q.on() ? "/quiz" : "";
+  const h = "#" + SLUG[current] + sub + (/alle/i.test(location.hash) ? "/alle" : "");
+  if (location.hash !== h) { try { history.replaceState(null, "", h); } catch (_) {} }
+}
+function hashTab() {
+  const h = decodeURIComponent(location.hash.slice(1)).toLowerCase().split("/");
+  for (const t in SLUG) if (h[0] === SLUG[t]) return { tab: t, quiz: h.indexOf("quiz") >= 0 };
+  return null;
+}
+const FIRST = LAB.tabs.length ? LAB.tabs[0].id : "train"; // Labor ohne Erkunden-Tabs startet im Rechentrainer
+let current = FIRST;
+const drawers = Object.assign({}, EXPLORE.draw, { train: drawTrain, pro: drawPro });
+function show(tab) {
+  if (ADMIN && tab === "pro" && proLocked()) { const f = [...document.querySelectorAll("#mainTabs button")].find(b => !b.hidden && b.dataset.tab !== "pro"); if (!f) return; tab = f.dataset.tab; }
+  current = tab; changed();
+  document.querySelectorAll("#mainTabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === tab));
+  document.querySelectorAll(".tab").forEach(s => s.hidden = s.id !== "tab-" + tab);
+  try { localStorage.setItem(KEY + "-tab", tab); } catch (_) {}
+  if (hashOn) setHash();
+  requestAnimationFrame(drawers[tab]);
+}
+document.querySelectorAll("#mainTabs button").forEach(b => b.addEventListener("click", () => {
+  if (ADMIN && b.dataset.tab === "pro" && proLocked()) { ADMIN.proLocked(); return; }
+  show(b.dataset.tab);
+}));
+const redraw = () => drawers[current]();
+[...EXPLORE.canvases, "cTrain", "cPro", "proOpts"].forEach(id => new ResizeObserver(redraw).observe($(id)));
+try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", redraw); } catch (_) {}
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (EXPLORE.fontsReady) EXPLORE.fontsReady(); redraw(); });
+
+renderLevels(); newTask(); EXPLORE.init(); renderPro(); updProTab();
+// Admin-Version: Adresse und localStorage gehören evtl. dem Kind, das vorher an diesem Rechner saß
+const startHash = ADMIN && !ADMIN.resume ? null : hashTab();
+let startTab = FIRST;
+if (ADMIN) startTab = ADMIN.tab || FIRST; else try { startTab = localStorage.getItem(KEY + "-tab") || FIRST; } catch (_) {}
+if (startHash) startTab = startHash.tab;
+show(drawers[startTab] && (startTab !== "pro" || proVisible()) ? startTab : FIRST);
+{ const q = EXPLORE.quiz; if (startHash && startHash.quiz && q && current === q.tab) q.start(); }
+hashOn = true; setHash();
+window.addEventListener("hashchange", () => {
+  const t = hashTab(), b = t && document.querySelector('#mainTabs [data-tab="' + t.tab + '"]');
+  if (b && !b.hidden && t.tab !== current) b.click();
+});
+// für Tests und die Admin-Anbindung
+window.__lab = { get task() { return task; }, prog: () => prog, pro: () => pro, current: () => current, show, updProTab, renderLevels, PRO_N: PRO.length };
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+canvas.wide{aspect-ratio:16/10}
+.cu{color:var(--curve)} .ca{color:var(--a)} .cd{color:var(--d)} .ce{color:var(--e)} .cp{color:var(--pencil)}
+label.chk{display:inline-flex;gap:6px;align-items:center;font-size:15px;color:var(--muted);cursor:pointer}
+.cmp{display:grid;grid-template-columns:110px 120px 120px;row-gap:4px;align-items:baseline;font-variant-numeric:tabular-nums}
+.cmp .h{color:var(--muted);font-size:15px}
+.cmp .g{font-weight:700;font-size:18px}
+.cmp .v{font-family:var(--display);font-weight:800;font-size:28px}
+.calc{display:grid;grid-template-columns:70px 110px 110px;row-gap:2px;font-size:17px;font-variant-numeric:tabular-nums;text-align:right}
+.calc .h{color:var(--muted);font-size:14px;padding-bottom:4px}
+.calc .res{grid-column:1/-1;text-align:left;font-family:var(--display);font-weight:800;font-size:22px;margin-top:10px;white-space:nowrap}
+.kv{display:grid;grid-template-columns:170px minmax(0,1fr);row-gap:8px;align-items:center}
+.kv .k{color:var(--muted);font-size:15px}
+.kv .v{font-family:var(--display);font-weight:800;font-size:28px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.ad{border:2px dashed var(--line)}
+.adtxt{margin:0;font-family:var(--display);font-weight:800;font-size:24px;line-height:1.3}
+.sl.wide{grid-template-columns:minmax(0,1fr) 72px;margin-top:4px}

@@ -1,0 +1,15 @@
+{
+  "id": "zufall",
+  "title": "Zufalls-Labor",
+  "thema": "Zufall und Wahrscheinlichkeit",
+  "klasse": "UIIIb",
+  "versteckt": true,
+  "icon": "M10 26V14M17 26V8M24 26V18",
+  "icon2": "M6 11H28",
+  "ueben": false,
+  "tabs": [
+    { "id": "hf", "label": "Werfen & zählen", "slug": "haeufigkeit" },
+    { "id": "gr", "label": "Glücksrad", "slug": "gluecksrad" },
+    { "id": "zw", "label": "Zwei Würfel", "slug": "zwei-wuerfel" }
+  ]
+}

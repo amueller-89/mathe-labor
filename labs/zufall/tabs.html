@@ -1,0 +1,99 @@
+  <!-- ================= 1 WERFEN & ZÄHLEN ================= -->
+  <section id="tab-hf" class="tab">
+    <div class="stage">
+      <section>
+        <canvas id="hfC" class="wide" aria-label="Relative Häufigkeit nach Anzahl der Würfe"></canvas>
+        <div class="strip" id="hfStrip"></div>
+      </section>
+      <aside class="side">
+        <div class="card">
+          <div class="seg" id="hfExp">
+            <button data-e="muenze" aria-selected="true">Münze</button>
+            <button data-e="wuerfel" aria-selected="false">Würfel</button>
+            <button data-e="zwecke" aria-selected="false">Reißzwecke</button>
+          </div>
+          <p class="hitline" id="hfHit"></p>
+        </div>
+        <div class="card">
+          <div class="row">
+            <button class="btn primary" data-n="1">1×</button>
+            <button class="btn primary" data-n="10">10×</button>
+            <button class="btn primary" data-n="100">100×</button>
+            <button class="btn primary" data-n="1000">1000×</button>
+            <button class="btn" id="hfReset">Neu</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="kv" id="hfOut"></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= 2 GLÜCKSRAD ================= -->
+  <section id="tab-gr" class="tab" hidden>
+    <p class="lede" style="margin-bottom:12px">Tippe Felder an: orange = Treffer.</p>
+    <div class="stage">
+      <section>
+        <canvas id="grC" aria-label="Glücksrad"></canvas>
+      </section>
+      <aside class="side">
+        <div class="card">
+          <div class="row">
+            <span class="label" style="margin:0">Felder</span>
+            <div class="seg"><button id="grMinus" aria-label="weniger Felder">−</button><button class="cnt" id="grN" disabled></button><button id="grPlus" aria-label="mehr Felder">+</button></div>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <span class="label" style="margin:0">Ereignis</span>
+            <div class="seg" id="grEv">
+              <button data-ev="gerade" aria-selected="false">gerade</button>
+              <button data-ev="ungerade" aria-selected="false">ungerade</button>
+              <button data-ev="prim" aria-selected="false">Primzahl</button>
+              <button data-ev="gross" aria-selected="false">größer als 4</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="formula" id="grP"></div>
+        </div>
+        <div class="card">
+          <div class="row">
+            <button class="btn primary" id="grSpin">Drehen</button>
+            <button class="btn" id="grMany">100× drehen</button>
+            <button class="btn" id="grReset">Neu</button>
+          </div>
+          <div class="kv" id="grOut" style="margin-top:10px"></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= 3 ZWEI WÜRFEL ================= -->
+  <section id="tab-zw" class="tab" hidden>
+    <p class="lede" style="margin-bottom:12px">Wähle eine Augensumme.</p>
+    <div class="stage">
+      <section>
+        <canvas id="zwC" aria-label="Alle 36 Ergebnisse mit zwei Würfeln"></canvas>
+      </section>
+      <aside class="side">
+        <div class="card">
+          <div class="seg sums" id="zwSum"></div>
+          <div class="formula" id="zwP" style="margin-top:12px"></div>
+        </div>
+        <div class="card">
+          <div class="row">
+            <button class="btn primary" data-n="1">1×</button>
+            <button class="btn primary" data-n="100">100×</button>
+            <button class="btn primary" data-n="1000">1000×</button>
+            <button class="btn" id="zwReset">Neu</button>
+            <span class="last" id="zwLast"></span>
+          </div>
+          <canvas id="zwH" class="wide" style="margin-top:10px" aria-label="Häufigkeit der Augensummen"></canvas>
+          <div class="legend">
+            <span><i style="background:var(--curve)"></i>gewürfelt (relative Häufigkeit)</span>
+            <span><i style="background:var(--ink)"></i>Wahrscheinlichkeit</span>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
