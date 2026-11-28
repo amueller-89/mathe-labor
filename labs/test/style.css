@@ -1,0 +1,12 @@
+.formula{font-family:var(--display);font-weight:800;font-size:clamp(30px,3.6vw,44px);line-height:1.2;white-space:nowrap}
+.cm{color:var(--d)} .cb{color:var(--e)} .cu{color:var(--curve)}
+.score{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums}
+.steps{display:grid;grid-template-columns:28px minmax(0,1fr);row-gap:8px;font-size:18px;align-items:center}
+.steps .n{font-family:var(--display);font-weight:800;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:14px;background:var(--line);color:var(--ink)}
+.steps .n.act{background:var(--curve);color:#fff}
+.steps .n.ok{background:var(--e);color:#fff}
+.steps .t{white-space:nowrap}
+.steps .t.off{color:var(--muted)}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .1em;line-height:1.05;font-size:.72em}
+.frac>span:first-child{border-bottom:3px solid currentColor;padding:0 .15em}
+.frac>span:last-child{padding:0 .15em}

@@ -1,0 +1,53 @@
+  <!-- ================= 1 ZEICHNEN: ZWEI PUNKTE ================= -->
+  <section id="tab-zp" class="tab">
+    <p class="lede" style="margin-bottom:12px">Setze zwei Punkte auf die Gerade.</p>
+    <div class="stage">
+      <section>
+        <canvas id="cZp" aria-label="Koordinatensystem zum Zeichnen"></canvas>
+      </section>
+      <aside class="side">
+        <div class="card">
+          <p class="label">Zeichne</p>
+          <div class="formula" id="zpTask"></div>
+        </div>
+        <div class="card">
+          <div class="row">
+            <button class="btn primary" id="zpCheck">Prüfen</button>
+            <button class="btn" id="zpClear">Löschen</button>
+            <button class="btn" id="zpShow">Lösung zeigen</button>
+            <button class="btn" id="zpNext">Nächste Aufgabe</button>
+          </div>
+          <div class="feedback" id="zpFb" aria-live="polite"></div>
+        </div>
+        <div class="card"><div class="score" id="zpScore"></div></div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= 2 ZEICHNEN: STEIGUNGSDREIECK ================= -->
+  <section id="tab-sd" class="tab" hidden>
+    <div class="stage">
+      <section>
+        <canvas id="cSd" aria-label="Koordinatensystem zum Zeichnen"></canvas>
+      </section>
+      <aside class="side">
+        <div class="card">
+          <p class="label">Zeichne</p>
+          <div class="formula" id="sdTask"></div>
+        </div>
+        <div class="card">
+          <div class="steps" id="sdSteps"></div>
+        </div>
+        <div class="card">
+          <div class="row">
+            <button class="btn primary" id="sdCheck">Prüfen</button>
+            <button class="btn" id="sdClear">Löschen</button>
+            <button class="btn" id="sdShow">Lösung zeigen</button>
+            <button class="btn" id="sdNext">Nächste Aufgabe</button>
+          </div>
+          <div class="feedback" id="sdFb" aria-live="polite"></div>
+        </div>
+        <div class="card"><div class="score" id="sdScore"></div></div>
+      </aside>
+    </div>
+  </section>

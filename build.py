@@ -8,6 +8,7 @@ Quelle (von Hand bearbeiten):
 
 Ergebnis (nie von Hand bearbeiten, wird überschrieben):
   labore/<Titel>.html          eigenständig, ohne Anmeldung (Doppelklick genügt)
+  docs/<pfad>/index.html       "versteckt": true im Steckbrief: nur das, ohne Anmeldung, nirgends verlinkt (Testlabor)
   adminpanel/<Id>.html         mit Anmeldung, für die Google-Web-App (kommt in den Drive-Ordner Adminpanel)
   docs/<id>/index.html         mit Anmeldung, für GitHub Pages
   docs/index.html              Startseite mit allen Laboren
@@ -103,7 +104,7 @@ for d in sorted(os.listdir(LABS)):
     lab['file'] = d.capitalize()
     lab.setdefault('pfad', d)
     labs.append(lab)
-PFADE = {l['id']: l['pfad'] for l in labs}
+PFADE = {l['id']: l['pfad'] for l in labs if not l.get('versteckt')}
 
 # Weiterleitung von alten Adressen (…/geraden/ → …/gerade/), Suche und #Tab bleiben erhalten
 REDIRECT = """<!doctype html>
@@ -114,6 +115,9 @@ REDIRECT = """<!doctype html>
 """
 for lab in labs:
     d = lab['id']
+    if lab.get('versteckt'):  # Testlabor: nur unter docs/<pfad>/, ohne Anmeldung, nicht auf Startseite/Adminpanel/Server
+        write(f'docs/{lab["pfad"]}/index.html', page(d, lab, admin=False).replace('<head>\n', '<head>\n<meta name="robots" content="noindex">\n', 1))
+        continue
     write(f'labore/{lab["title"]}.html', page(d, lab, admin=False))
     a = page(d, lab, admin=True)
     write(f'adminpanel/{lab["file"]}.html', a)
@@ -122,6 +126,7 @@ for lab in labs:
         write(f'docs/{d}/index.html', REDIRECT.replace('{to}', lab['pfad']))
 
 # Reihenfolge (Startseite, Adminpanel): "reihe" im Steckbrief, neue Labore ohne "reihe" hinten
+labs = [l for l in labs if not l.get('versteckt')]
 labs.sort(key=lambda l: l.get('reihe', 99))
 
 # Labor-Liste für den Server

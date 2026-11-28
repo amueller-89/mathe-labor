@@ -1,0 +1,14 @@
+{
+  "id": "test",
+  "title": "Testlabor",
+  "thema": "Versteckt: Ideen ausprobieren",
+  "klasse": "Test",
+  "versteckt": true,
+  "icon": "M4 25L28 6",
+  "icon2": "M10 20.3H22V10.8",
+  "ueben": false,
+  "tabs": [
+    { "id": "zp", "label": "Zeichnen: zwei Punkte", "slug": "zwei-punkte" },
+    { "id": "sd", "label": "Zeichnen: Steigungsdreieck", "slug": "steigungsdreieck" }
+  ]
+}
