@@ -180,6 +180,8 @@ a.btn::after{content:" →"}
 .frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .1em;line-height:1.05;font-size:.72em}
 .frac>span:first-child{border-bottom:3px solid currentColor;padding:0 .15em}
 .frac>span:last-child{padding:0 .15em}
+.formula.quot{font-size:clamp(34px,4vw,48px)}
+.formula.quot .frac{font-size:.8em}
 </style>
 </head>
 <body>
@@ -233,6 +235,9 @@ a.btn::after{content:" →"}
         </div>
         <div class="card">
           <div class="steps" id="sdSteps"></div>
+        </div>
+        <div class="card">
+          <div class="formula quot" id="sdM"></div>
         </div>
         <div class="card">
           <div class="row">
@@ -547,7 +552,9 @@ function lineThrough(bd, A, B, color, w = 3) {
   if (near(A[0], B[0])) bd.seg(A[0], -R_DRAW, A[0], R_DRAW, color, w, []);
   else { const m = (B[1] - A[1]) / (B[0] - A[0]); bd.curve(x => A[1] + m * (x - A[0]), color, w); }
 }
-const gridPt = (x, y) => [clamp(Math.round(x), -R_DRAW, R_DRAW), clamp(Math.round(y), -R_DRAW, R_DRAW)];
+// auf Gitter mit Schrittweite h einrasten (Variante A: 1, Variante B: 0,5)
+const gridPt = (x, y, h = 1) => [clamp(snapTo(x, h), -R_DRAW, R_DRAW), clamp(snapTo(y, h), -R_DRAW, R_DRAW)];
+const H_SD = 0.5;
 const samePt = (A, B) => A && B && A[0] === B[0] && A[1] === B[1];
 function setFb(el, ok, text) { el.className = "feedback" + (ok === null ? "" : ok ? " ok" : " no"); el.textContent = text; }
 const scoreTxt = n => `Richtig gezeichnet: ${n}`;
@@ -640,7 +647,12 @@ const SD = (() => {
       const col = st.res === null || st.B[1] === t.b ? tok("--e") : tok("--pencil");
       bd.dot(0, st.B[1], col, 8);
     }
-    steps();
+    steps(); quot();
+  }
+  // m als Quotient aus dem gezeichneten Dreieck, feste Breiten: nichts springt beim Ziehen
+  function quot() {
+    const d = st.B && st.Q, dy = d ? num(st.Q[1] - st.B[1]) : "", dx = d ? num(st.Q[0] - st.B[0]) : "";
+    $("sdM").innerHTML = `m = ${frac("Δy", "Δx")} = ${sp("cm", frac(fx("", dy, 2.2), fx("", dx, 2.2)))}`;
   }
   function steps() {
     const s1 = st.B ? "ok" : "act", s2 = st.B && st.Q ? "ok" : st.B ? "act" : "";
@@ -654,19 +666,20 @@ const SD = (() => {
   grabber(bd, (x, y, px, py) => {
     if (onQ(px, py)) return { k: "Q" };
     if (onB(px, py) && st.Q) return { k: "B" };
-    if (!st.B) { if (Math.abs(x) > 1) return null; st.B = [0, gridPt(0, y)[1]]; changed(); return { k: "B" }; }
-    // Steigungsdreieck: vom Punkt auf der y-Achse aus aufziehen
-    if (onB(px, py)) return { k: "Q", fresh: true };
-    const G = gridPt(x, y); if (G[0] === 0) return null;
+    if (!st.B) { if (Math.abs(x) > 1) return null; st.B = [0, gridPt(0, y, H_SD)[1]]; changed(); return { k: "B" }; }
+    // noch kein Dreieck: entlang der y-Achse = Punkt verschieben, zur Seite = Dreieck aufziehen
+    if (onB(px, py)) return { k: "auto" };
+    const G = gridPt(x, y, H_SD); if (G[0] === 0) return null;
     st.Q = G; changed(); return { k: "Q" };
   }, (g, x, y) => {
-    if (g.k === "B") {
-      const yb = gridPt(0, y)[1]; if (yb === st.B[1]) return false;
+    if (g.k === "auto" && Math.abs(bd.X(x) - bd.X(0)) > 14) g.k = "Q";
+    if (g.k !== "Q") {
+      const yb = gridPt(0, y, H_SD)[1]; if (yb === st.B[1]) return false;
       // Dreieck wandert mit
       if (st.Q) st.Q = [st.Q[0], clamp(st.Q[1] + yb - st.B[1], -R_DRAW, R_DRAW)];
       st.B = [0, yb]; changed(); return true;
     }
-    const G = gridPt(x, y); if (G[0] === 0 || samePt(G, st.Q)) return false;
+    const G = gridPt(x, y, H_SD); if (G[0] === 0 || samePt(G, st.Q)) return false;
     st.Q = G; changed(); return true;
   }, (x, y, px, py) => onQ(px, py) || onB(px, py) ? "grab" : !st.B && Math.abs(x) > 1 ? "default" : "crosshair", draw);
 
@@ -680,7 +693,7 @@ const SD = (() => {
   $("sdClear").addEventListener("click", () => { st.B = st.Q = null; changed(); draw(); });
   $("sdShow").addEventListener("click", () => { st.show = true; draw(); });
   $("sdNext").addEventListener("click", newTask);
-  return { draw, init() { $("sdTask").innerHTML = eqHTML(st.t); $("sdScore").textContent = scoreTxt(0); steps(); }, st };
+  return { draw, init() { $("sdTask").innerHTML = eqHTML(st.t); $("sdScore").textContent = scoreTxt(0); steps(); quot(); }, st };
 })();
 
 /* ---------- Anbindung an das gemeinsame Gerüst ---------- */

@@ -10,3 +10,5 @@
 .frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .1em;line-height:1.05;font-size:.72em}
 .frac>span:first-child{border-bottom:3px solid currentColor;padding:0 .15em}
 .frac>span:last-child{padding:0 .15em}
+.formula.quot{font-size:clamp(34px,4vw,48px)}
+.formula.quot .frac{font-size:.8em}
